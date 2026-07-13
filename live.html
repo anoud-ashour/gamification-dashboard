@@ -237,7 +237,7 @@ const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
 const PSOPS=[{id:'vip',name:'VIP / tPro',c:['vip_ar','vip_en']},{id:'def',name:'Default',c:['def_ar','def_en']},{id:'tkt',name:'TKT',c:['tkt_ar','tkt_en']}];
 const PCELLS=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'];
-const statusOf=v=>{const s=(v||'').toLowerCase();return s.includes('done')?'Done':(s.includes('progress')?'In Progress':'Not started');};
+const statusOf=v=>{const s=(v||'').toLowerCase();return (s.includes('done')||s.includes('found')||s.includes('complete'))?'Done':(s.includes('progress')||s.includes('pro...'))?'In Progress':'Not started';};
 // % of a member's status cells (from the tracker sheet) that are Done
 const memberDone=m=>{const rr=PROG.filter(r=>r.member===m);let d=0,t=0;rr.forEach(r=>PCELLS.forEach(k=>{t++;if(statusOf(r[k])==='Done')d++;}));return{pct:pct(d,t),done:d,total:t,articles:rr.length};};
 
@@ -542,6 +542,28 @@ function parseTrackerGviz(text){
  return out;
 }
 
+// Parser for the Progress tab (custom column layout):
+// A(0)=Article | B(1)=Name | C(2)=5 Steps | D(3)=VIP_AR | E(4)=VIP_EN | F(5)=Default_AR | G(6)=Default_EN | H(7)=TKT_AR | I(8)=TKT_EN | J(9)=Start Date | K(10)=End Date
+function parseProgressTab(text){
+ const rows=parseCsv(text);const out=[];
+ for(const cells of rows){
+  while(cells.length<11)cells.push('');
+  const c0=(cells[0]||'').replace(/"/g,'').trim();
+  // Skip header rows and empty rows
+  if(!c0||/^(article|name|vip|tpro|default|tkt|arabic|english|5 steps|start|end|day)/i.test(c0)||/^-+$/.test(c0))continue;
+  const cl=i=>(cells[i]||'').replace(/"/g,'').trim();
+  out.push({
+   article:c0,
+   member:cl(1)||'—',
+   vip_ar:cl(3),vip_en:cl(4),
+   vip_start:cl(9),vip_end:cl(10),
+   def_ar:cl(5),def_en:cl(6),
+   def_start:cl(9),def_end:cl(10),
+   tkt_ar:cl(7),tkt_en:cl(8)
+  });
+ }
+ return out;
+}
 async function load(){
  let usedFallback=false;
  // 1. Try live coverage sheet
@@ -559,7 +581,7 @@ async function load(){
  try{
   const resp2=await fetch(PROGRESS_TAB_URL);
   if(!resp2.ok)throw new Error('HTTP '+resp2.status);
-  const t2=await resp2.text();PROG=parseTrackerGviz(t2);
+  const t2=await resp2.text();PROG=parseProgressTab(t2);
   if(!PROG.length)throw new Error('empty');
  }catch(e){
   try{
