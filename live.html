@@ -471,6 +471,7 @@ const FALLBACK_CSV='Journey,Article,Member,Default_AR,Default_EN,Default_DropOff
 // To enable live sync: open each Google Sheet → Share → change to "Anyone with the link" → Viewer.
 const COVERAGE_URL='https://docs.google.com/spreadsheets/d/1APIWxMmN2hr1PHLSEgSvP6Env9zJsAG2ASIeK5GflHc/gviz/tq?tqx=out:csv';
 const TRACKER_URL='https://docs.google.com/spreadsheets/d/1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk/gviz/tq?tqx=out:csv';
+const PROGRESS_TAB_URL='https://docs.google.com/spreadsheets/d/1APIWxMmN2hr1PHLSEgSvP6Env9zJsAG2ASIeK5GflHc/gviz/tq?tqx=out:csv&gid=1732890800';
 
 // ===== CSV PARSERS =====
 function parseCsvLine(line){
@@ -554,11 +555,18 @@ async function load(){
   usedFallback=true;
   DATA=parseFallback(FALLBACK_CSV);
  }
- // 2. Try live tracker sheet
+ // 2. Try Progress tab first (gid=1732890800), then fall back to tracker sheet
  try{
-  const resp2=await fetch(TRACKER_URL);
-  if(resp2.ok){const t2=await resp2.text();PROG=parseTrackerGviz(t2);}
- }catch(e){PROG=[];}
+  const resp2=await fetch(PROGRESS_TAB_URL);
+  if(!resp2.ok)throw new Error('HTTP '+resp2.status);
+  const t2=await resp2.text();PROG=parseTrackerGviz(t2);
+  if(!PROG.length)throw new Error('empty');
+ }catch(e){
+  try{
+   const resp3=await fetch(TRACKER_URL);
+   if(resp3.ok){const t3=await resp3.text();PROG=parseTrackerGviz(t3);}
+  }catch(e2){PROG=[];}
+ }
  // 3. Build owner map; fall back to data.csv Member column when tracker unavailable
  buildOwners();
  if(!Object.keys(OWNER).length){
