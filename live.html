@@ -237,7 +237,7 @@ const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
 const PSOPS=[{id:'vip',name:'VIP / tPro',c:['vip_ar','vip_en']},{id:'def',name:'Default',c:['def_ar','def_en']},{id:'tkt',name:'TKT',c:['tkt_ar','tkt_en']}];
 const PCELLS=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'];
-const statusOf=v=>{const s=(v||'').toLowerCase();return (s.includes('done')||s.includes('found')||s.includes('complete'))?'Done':(s.includes('progress')||s.includes('pro...'))?'In Progress':'Not started';};
+const statusOf=v=>{const s=(v||'').toLowerCase();return(s.includes('done')||s.includes('found')||s.includes('complete'))?'Done':s.includes('progress')?'In Progress':'Not started';};
 // % of a member's status cells (from the tracker sheet) that are Done
 const memberDone=m=>{const rr=PROG.filter(r=>r.member===m);let d=0,t=0;rr.forEach(r=>PCELLS.forEach(k=>{t++;if(statusOf(r[k])==='Done')d++;}));return{pct:pct(d,t),done:d,total:t,articles:rr.length};};
 
@@ -467,13 +467,54 @@ function build(){
 }
 
 const FALLBACK_CSV='Journey,Article,Member,Default_AR,Default_EN,Default_DropOff_AR,Default_DropOff_EN,TPRO_AR,TPRO_EN,TPRO_DropOff_AR,TPRO_DropOff_EN,Ticketing_AR,Ticketing_EN,Ticketing_DropOff_AR,Ticketing_DropOff_EN\nPost Delivery Process,Missing Item(s) Complaints,Amal,1,1,0,0,1,1,0,0,1,0,0,0\nPost Delivery Process,Wrong Item(s) Complaints,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Wrong Order Complaints,Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Bad Quality (Order/Item),Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Expired & Nearly Expired tMart & NFV (Order/Item),Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Bad Smell – Bad Taste (Item/Order),Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Temperature Issues (Items-Full Order),Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Food Portion & Packaging Issues (Order/Item),Amal,1,1,0,0,1,1,0,0,1,1,0,0\nPost Delivery Process,Dented or Bruised (Order/Item),Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,"Spilled, Damaged, or Broken (Item/Order)",Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,tMart Fresh & Ultra Fresh in UAE & KW,Amal,1,1,0,0,1,1,0,0,1,1,0,0\nPost Delivery Process,FOBI Full Order/ Item (s) & Food Poisoning,Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Combo Meal Process tMP & tGO,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Special Instructions Not Followed,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Flowers,Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Pharmacies & Cosmetics,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Electronics,Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Menu Discrepancy All Verticals,Amal,1,1,1,1,1,0,1,1,1,1,0,0\nPost Delivery Process,tGo Re-Delivery Complaints,Amal,1,1,0,0,1,1,0,0,0,0,0,0\nPost Delivery Process,Wrong Weight,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nLive Orders,Order status successful,Anoud,1,1,1,1,1,1,1,1,1,1,1,1\nLive Orders,Marked as Delivered,Anoud,1,1,1,1,1,1,1,1,1,1,1,1\nLive Orders,Number Modification,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Delivery Instructions,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Special Instructions,Anoud,1,1,0,0,1,1,0,0,0,0,0,0\nLive Orders,Modify Order,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Modify Delivery Time,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Address Modification,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Unavailable Menu Item,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Item Availability,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Money Issue,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Refund Query/Follow-UP,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Double Deduction,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Incomplete Talabat Credit,Dalia,0,0,0,0,0,0,0,0,0,0,0,0\nAcross Journey,Missing/Incorrect Invoice,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Incomplete Orders,Dalia,1,1,0,0,1,1,0,0,1,1,0,0';
-// ===== LIVE DATA CONFIGURATION =====
-// To enable live sync: open each Google Sheet → Share → change to "Anyone with the link" → Viewer.
-const COVERAGE_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR9nNH_ANIHGheVn00BvJteokSxXeZme3ZrSzWS_A22KmJKl0kTTr-XdxEBM8Jcos8fkaYubook5cat/pub?output=csv';
-const TRACKER_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR9nNH_ANIHGheVn00BvJteokSxXeZme3ZrSzWS_A22KmJKl0kTTr-XdxEBM8Jcos8fkaYubook5cat/pub?gid=1732890800&single=true&output=csv';
-const PROGRESS_TAB_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR9nNH_ANIHGheVn00BvJteokSxXeZme3ZrSzWS_A22KmJKl0kTTr-XdxEBM8Jcos8fkaYubook5cat/pub?gid=1732890800&single=true&output=csv';
+// ===== CONFIGURATION =====
+// Paste your Google Apps Script deployment URL here (see README for setup steps):
+const SCRIPT_URL = 'https://script.google.com/a/macros/talabat.com/s/AKfycbyWAevSxBucT9wWrrh7gdOcjlh9NDmHw2HLjEt5w5n-yB657Bzt8DqKn5AG08GfFdJ-Cg/exec';
 
-// ===== CSV PARSERS =====
+// ===== DATA PARSERS (work on raw 2D arrays from Apps Script) =====
+
+// Parse coverage sheet rows (same column layout as before)
+function parseCoverageRows(rows){
+ const data=[];let lastJ='';
+ for(const cells of rows){
+  while(cells.length<17)cells.push('');
+  const j0=String(cells[0]||'').trim();
+  let j=j0||lastJ;if(j0)lastJ=j0;
+  let art=String(cells[1]||'').trim();
+  if(!art||art==='Article'||art==='Article Name'||/^-+$/.test(art)||art.toLowerCase()==='kb link')continue;
+  if(j.startsWith('Live'))j='Live Orders';
+  else if(j.indexOf('Post Delivery')>=0)j='Post Delivery Process';
+  else if(j.indexOf('Across')>=0)j='Across Journey';
+  const f=i=>cells[i]?1:0;
+  let name=art.replace(/^LC \|/,'').trim();if(name.startsWith('|'))name=name.slice(1).trim();
+  const row={journey:j,article:name||art,lc_ar:f(3),lc_en:f(4),lc_do_ar:f(5),lc_do_en:f(6),vip_ar:f(8),vip_en:f(9),vip_do_ar:f(10),vip_do_en:f(11),tkt_ar:f(13),tkt_en:f(14),tkt_do_ar:f(15),tkt_do_en:f(16)};
+  if(Object.entries(row).slice(2).some(([,v])=>v))data.push(row);
+ }
+ return data;
+}
+
+// Parse Progress tab rows
+// Columns: A=Article | B=Name | C=5 Steps | D=VIP_AR | E=VIP_EN | F=Default_AR | G=Default_EN | H=TKT_AR | I=TKT_EN | J=Start | K=End
+function parseProgressRows(rows){
+ const out=[];
+ for(const cells of rows){
+  while(cells.length<11)cells.push('');
+  const c0=String(cells[0]||'').trim();
+  if(!c0||/^(article|name|vip|tpro|default|tkt|arabic|english|5 steps|start|end|day)/i.test(c0)||/^-+$/.test(c0))continue;
+  const cl=i=>String(cells[i]||'').trim();
+  out.push({
+   article:c0,member:cl(1)||'—',
+   vip_ar:cl(3),vip_en:cl(4),
+   vip_start:cl(9),vip_end:cl(10),
+   def_ar:cl(5),def_en:cl(6),
+   def_start:cl(9),def_end:cl(10),
+   tkt_ar:cl(7),tkt_en:cl(8)
+  });
+ }
+ return out;
+}
+
+// Fallback: parse embedded data.csv string (used when script URL not configured)
 function parseCsvLine(line){
  const out=[];let cur='',inQ=false;
  for(let i=0;i<line.length;i++){
@@ -485,29 +526,6 @@ function parseCsvLine(line){
  out.push(cur);return out;
 }
 function parseCsv(text){return text.split('\n').filter(l=>l.trim()).map(parseCsvLine);}
-
-// Parse live coverage sheet (gviz CSV)
-// Columns: Journey(0)|Article(1)|LC_KB(2)|LC_AR(3)|LC_EN(4)|LC_DO_AR(5)|LC_DO_EN(6)|VIP_KB(7)|VIP_AR(8)|VIP_EN(9)|VIP_DO_AR(10)|VIP_DO_EN(11)|TKT_KB(12)|TKT_AR(13)|TKT_EN(14)|TKT_DO_AR(15)|TKT_DO_EN(16)
-function parseCoverageGviz(text){
- const rows=parseCsv(text);const data=[];let lastJ='';
- for(const cells of rows){
-  while(cells.length<17)cells.push('');
-  const j0=(cells[0]||'').replace(/"/g,'').trim();
-  let j=j0||lastJ;if(j0)lastJ=j0;
-  let art=(cells[1]||'').replace(/"/g,'').trim();
-  if(!art||art==='Article'||art==='Article Name'||/^-+$/.test(art)||art.toLowerCase()==='kb link')continue;
-  if(j.startsWith('Live'))j='Live Orders';
-  else if(j.indexOf('Post Delivery')>=0)j='Post Delivery Process';
-  else if(j.indexOf('Across')>=0)j='Across Journey';
-  const f=i=>cells[i]&&cells[i].replace(/"/g,'').trim()?1:0;
-  let name=art.replace(/^LC \|/,'').trim();if(name.startsWith('|'))name=name.slice(1).trim();
-  const row={journey:j,article:name||art,lc_ar:f(3),lc_en:f(4),lc_do_ar:f(5),lc_do_en:f(6),vip_ar:f(8),vip_en:f(9),vip_do_ar:f(10),vip_do_en:f(11),tkt_ar:f(13),tkt_en:f(14),tkt_do_ar:f(15),tkt_do_en:f(16)};
-  if(Object.entries(row).slice(2).some(([,v])=>v))data.push(row);
- }
- return data;
-}
-
-// Parse data.csv fallback: Journey,Article,Member,Default_AR,Default_EN,Default_DropOff_AR,Default_DropOff_EN,TPRO_AR,TPRO_EN,TPRO_DropOff_AR,TPRO_DropOff_EN,Ticketing_AR,Ticketing_EN,Ticketing_DropOff_AR,Ticketing_DropOff_EN
 function parseFallback(text){
  const rows=parseCsv(text).slice(1);
  return rows.filter(r=>r.length>=15&&r[1]).map(r=>({
@@ -518,86 +536,43 @@ function parseFallback(text){
  }));
 }
 
-// Parse live tracker sheet (gviz CSV)
-// Columns: Article(0)|Member(1)|VIP_AR(2)|VIP_EN(3)|VIP_Start(4)|VIP_End(5)|Default_AR(6)|Default_EN(7)|Default_Start(8)|Default_End(9)|TKT_AR(10)|TKT_EN(11)
-function parseTrackerGviz(text){
- const rows=parseCsv(text);const out=[];
- for(const cells of rows){
-  while(cells.length<12)cells.push('');
-  let art=(cells[0]||'').replace(/"/g,'').trim();
-  if(!art||/^-+$/.test(art)||art.toLowerCase()==='article')continue;
-  let name=art.replace(/^LC \|/,'').trim();if(name.startsWith('|'))name=name.slice(1).trim();
-  (name||art).split(/\s+(?:and|AND)\s+/).forEach(n=>{
-   out.push({
-    article:n.trim(),
-    member:(cells[1]||'').replace(/"/g,'').trim()||'—',
-    vip_ar:(cells[2]||'').replace(/"/g,'').trim(),vip_en:(cells[3]||'').replace(/"/g,'').trim(),
-    vip_start:(cells[4]||'').replace(/"/g,'').trim(),vip_end:(cells[5]||'').replace(/"/g,'').trim(),
-    def_ar:(cells[6]||'').replace(/"/g,'').trim(),def_en:(cells[7]||'').replace(/"/g,'').trim(),
-    def_start:(cells[8]||'').replace(/"/g,'').trim(),def_end:(cells[9]||'').replace(/"/g,'').trim(),
-    tkt_ar:(cells[10]||'').replace(/"/g,'').trim(),tkt_en:(cells[11]||'').replace(/"/g,'').trim()
-   });
-  });
- }
- return out;
-}
-
-// Parser for the Progress tab (custom column layout):
-// A(0)=Article | B(1)=Name | C(2)=5 Steps | D(3)=VIP_AR | E(4)=VIP_EN | F(5)=Default_AR | G(6)=Default_EN | H(7)=TKT_AR | I(8)=TKT_EN | J(9)=Start Date | K(10)=End Date
-function parseProgressTab(text){
- const rows=parseCsv(text);const out=[];
- for(const cells of rows){
-  while(cells.length<11)cells.push('');
-  const c0=(cells[0]||'').replace(/"/g,'').trim();
-  // Skip header rows and empty rows
-  if(!c0||/^(article|name|vip|tpro|default|tkt|arabic|english|5 steps|start|end|day)/i.test(c0)||/^-+$/.test(c0))continue;
-  const cl=i=>(cells[i]||'').replace(/"/g,'').trim();
-  out.push({
-   article:c0,
-   member:cl(1)||'—',
-   vip_ar:cl(3),vip_en:cl(4),
-   vip_start:cl(9),vip_end:cl(10),
-   def_ar:cl(5),def_en:cl(6),
-   def_start:cl(9),def_end:cl(10),
-   tkt_ar:cl(7),tkt_en:cl(8)
-  });
- }
- return out;
-}
 async function load(){
  let usedFallback=false;
- // 1. Try live coverage sheet
- try{
-  const resp=await fetch(COVERAGE_URL);
-  if(!resp.ok)throw new Error('HTTP '+resp.status);
-  const text=await resp.text();
-  DATA=parseCoverageGviz(text);
-  if(!DATA.length)throw new Error('No rows parsed');
- }catch(e){
+
+ if(SCRIPT_URL&&SCRIPT_URL!=='PASTE_YOUR_SCRIPT_URL_HERE'){
+  try{
+   const resp=await fetch(SCRIPT_URL);
+   if(!resp.ok)throw new Error('HTTP '+resp.status);
+   const json=await resp.json();
+   const names=Object.keys(json);
+   // Coverage = any sheet that is NOT named Progress
+   const covName=names.find(n=>!n.toLowerCase().includes('progress'))||names[0];
+   const progName=names.find(n=>n.toLowerCase().includes('progress'));
+   if(json[covName])DATA=parseCoverageRows(json[covName]);
+   if(!DATA.length)throw new Error('No coverage rows parsed');
+   if(progName&&json[progName])PROG=parseProgressRows(json[progName]);
+  }catch(e){
+   usedFallback=true;
+   DATA=parseFallback(FALLBACK_CSV);
+   PROG=[];
+   $('status').innerHTML='<div style="color:#dc2626;padding:20px">Could not load live data: '+e.message+'<br><small>Showing snapshot instead.</small></div>';
+  }
+ }else{
   usedFallback=true;
   DATA=parseFallback(FALLBACK_CSV);
+  PROG=[];
  }
- // 2. Try Progress tab first (gid=1732890800), then fall back to tracker sheet
- try{
-  const resp2=await fetch(PROGRESS_TAB_URL);
-  if(!resp2.ok)throw new Error('HTTP '+resp2.status);
-  const t2=await resp2.text();PROG=parseProgressTab(t2);
-  if(!PROG.length)throw new Error('empty');
- }catch(e){
-  try{
-   const resp3=await fetch(TRACKER_URL);
-   if(resp3.ok){const t3=await resp3.text();PROG=parseTrackerGviz(t3);}
-  }catch(e2){PROG=[];}
- }
- // 3. Build owner map; fall back to data.csv Member column when tracker unavailable
+
  buildOwners();
  if(!Object.keys(OWNER).length){
   parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member)OWNER[k]=r.member;});
  }
- // 4. Show dashboard
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
- if(usedFallback){const ts=$('ts');if(ts)ts.insertAdjacentText('afterend',' · Snapshot data (share sheets publicly to enable live sync)');}
+ if(usedFallback){
+  const ts=$('ts');
+  if(ts)ts.insertAdjacentText('afterend',' · Snapshot data — paste your Apps Script URL in live.html to enable live sync');
+ }
  build();
 }
 load();
