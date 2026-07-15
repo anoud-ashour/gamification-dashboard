@@ -309,6 +309,13 @@ function buildRows(){
     ar:r[s.ar],en:r[s.en],do_ar:r[s.do_ar],do_en:r[s.do_en]});
   });
  });
+ PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1&&r.article&&r.article!=='—';}).forEach(function(r){
+  var uAr=isStatusValue(r.vip_ar)?(statusOf(r.vip_ar)==='Done'?1:0):0;
+  var uEn=isStatusValue(r.vip_en)?(statusOf(r.vip_en)==='Done'?1:0):0;
+  ROWS.push({article:r.article,journey:'Universal',member:r.member||ownerOf(r.article),
+   sopId:'uni',sopName:'Universal',cls:'',_badgeHtml:sopPill('Universal','#10b981'),
+   ar:uAr,en:uEn,do_ar:0,do_en:0});
+ });
 }
 const sopCov=s=>{let g=0;DATA.forEach(r=>{g+=r[s.ar]+r[s.en];});return pct(g,DATA.length*2);};
 const cell=v=>`<span class="cell ${v?'yes':'no'}">${v?'✓':'✕'}</span>`;
@@ -338,6 +345,19 @@ function buildOverview(){
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+'%'}}}}});
 }
 
+function leaveBadge(s){
+ var lsl=(s||'').toLowerCase();
+ if(lsl.indexOf('annual')>-1)return '<span style="padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700;background:#e0e7ff;color:#6366f1">Annual Leave</span>';
+ if(lsl.indexOf('casual')>-1)return '<span style="padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700;background:#fef3c7;color:#d97706">Casual Leave</span>';
+ if(lsl.indexOf('no show')>-1||lsl.indexOf('noshow')>-1)return '<span style="padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700;background:#fee2e2;color:#dc2626">No Show</span>';
+ if(lsl.indexOf('sick')>-1)return '<span style="padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700;background:#fef3c7;color:#f59e0b">Sick Leave</span>';
+ return null;
+}
+function filterDynTab(id,q){
+ var tbl=document.getElementById('dyntbl-'+id);if(!tbl)return;
+ q=(q||'').toLowerCase().trim();
+ tbl.querySelectorAll('tbody tr').forEach(function(tr){tr.style.display=(!q||tr.textContent.toLowerCase().indexOf(q)>-1)?'':'none';});
+}
 function buildDynamicTabs(){
  var nav=$('sheet-tab-nav'),secs=$('dyn-sections');
  if(!nav||!secs)return;
@@ -356,7 +376,7 @@ function buildDynamicTabs(){
   else{
    var headers=rows[0];
    var dataRows=rows.slice(1).filter(function(r){return r.some(function(c){return String(c).trim();});});
-   var html='<div class="card"><h3>'+tab.name+'</h3><div class="tbl-wrap"><table style="width:100%"><thead><tr>';
+   var html='<div class="card"><h3>'+tab.name+'</h3><div class="controls" style="margin-bottom:10px"><input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px"></div><div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%"><thead><tr>';
    headers.forEach(function(h){html+='<th class="l" style="padding:10px 14px;font-size:11px">'+String(h||'')+'</th>';});
    html+='</tr></thead><tbody>';
    dataRows.forEach(function(row){
@@ -366,7 +386,7 @@ function buildDynamicTabs(){
      var display;
      if(ci===1&&s&&!isStatusValue(s)){var col=MEMCOLS[s]||'#9ca3af';var tcol=MEMCOLS[s]?'#fff':'#7c6f63';var mm=s.replace(/'/g,'');display='<span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+col+';color:'+tcol+';cursor:pointer">'+s+'</span>';}
      else if(isStatusValue(s)){display=pstBadge(s);}
-     else{display=s||'—';}
+     else{var lb=leaveBadge(s);display=lb||(s||'—');}
      html+='<td style="padding:10px 14px;font-size:13px">'+display+'</td>';
     });
     html+='</tr>';
@@ -380,9 +400,8 @@ function buildDynamicTabs(){
 function buildWorkload(){
  var wl=$('workload-list'),al=$('avail-list');if(!wl||!al)return;
  var now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
- var members=[...new Set(PROG.map(function(r){return r.member;}).filter(function(m){return m&&m!=='—';}))].sort();
+ var _mset=new Set(Object.keys(MEMCOLS));PROG.forEach(function(r){if(r.member&&r.member!=='—')_mset.add(r.member);});var members=Array.from(_mset).sort();
  wl.innerHTML='';al.innerHTML='';
- if(!members.length){wl.innerHTML='<div class="empty">No tracker data yet.</div>';al.innerHTML='<div class="empty">No tracker data yet.</div>';return;}
  members.forEach(function(m){
   var arts=PROG.filter(function(r){return r.member===m;});
   // Leave status
@@ -396,7 +415,8 @@ function buildWorkload(){
    var dd=Math.round((+new Date(e.getFullYear(),e.getMonth(),e.getDate())-+today)/86400000);
    if(dd<0)hasOverdue=true;else if(dd<=1)hasDueSoon=true;
   });
-  var ws=hasOverdue?{label:'At risk',color:'#dc2626',bg:'#fee2e2'}:hasDueSoon?{label:'Active',color:'#d97706',bg:'#fef3c7'}:{label:'On track',color:'#16a34a',bg:'#dcfce7'};
+  var lslw=leave.toLowerCase();var isInactiveW=lslw.indexOf('annual')>-1||lslw.indexOf('casual')>-1||lslw.indexOf('no show')>-1||lslw.indexOf('noshow')>-1||lslw.indexOf('sick')>-1;
+  var ws=isInactiveW?{label:'Inactive',color:'#6366f1',bg:'#e0e7ff'}:(!arts.length)?{label:'Available',color:'#059669',bg:'#d1fae5'}:hasOverdue?{label:'At Risk',color:'#dc2626',bg:'#fee2e2'}:{label:'On Track',color:'#16a34a',bg:'#dcfce7'};
   // Availability status
   var lsl=leave.toLowerCase();
   var av=lsl.includes('annual')?{label:'Annual Leave',color:'#6366f1',bg:'#e0e7ff'}:lsl.includes('casual')?{label:'Casual Leave',color:'#d97706',bg:'#fef3c7'}:(lsl.includes('no show')||lsl.includes('noshow'))?{label:'No Show',color:'#dc2626',bg:'#fee2e2'}:lsl.includes('sick')?{label:'Sick Leave',color:'#f59e0b',bg:'#fef3c7'}:{label:'Present',color:'#16a34a',bg:'#dcfce7'};
@@ -455,7 +475,7 @@ function renderTable(){
   const tr=document.createElement('tr');
   tr.title=r.article+' \u2014 '+r.member+' \u00b7 '+r.sopName+': AR '+(r.ar?'\u2713':'\u2715')+' / EN '+(r.en?'\u2713':'\u2715');
   tr.innerHTML=`<td class="article">${r.article}</td><td class="jrn">${r.journey}</td><td class="l"><span class="mem clk" onclick="$('search').value='${(r.member||'').replace(/'/g,'')}';renderTable()" style="background:${MEMCOLS[r.member]||'#e7ddcf'};color:${MEMCOLS[r.member]?'#fff':'#7c6f63'}">${r.member}</span></td>`+
-   (showSop?`<td class="l"><span class="badge ${r.cls}">${r.sopName}</span></td>`:``)+
+   (showSop?`<td class="l">${r._badgeHtml||('<span class="badge '+r.cls+'">'+r.sopName+'</span>')}</td>`:``)+
    `<td>${cell(r.ar)}</td><td>${cell(r.en)}</td><td>${cell(r.do_ar)}</td><td>${cell(r.do_en)}</td>
     <td class="pct" style="color:${sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626')}">${sp}%</td>`;
   tb.appendChild(tr);shown++;
