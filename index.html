@@ -887,7 +887,7 @@ async function load(){
   if(respJ.ok){
    const json=await respJ.json();
    SHEET_TABS=json.tabs||[];
-   const trTab=SHEET_TABS.find(function(t){return t.name==='Test 1';})||SHEET_TABS[0];
+   const trTab=SHEET_TABS.find(function(t){return t.name.trim().toLowerCase().startsWith('test');})||SHEET_TABS[0];
    if(trTab&&trTab.rows&&trTab.rows.length){
     const csv=trTab.rows.map(function(r){return r.map(function(c){var s=String(c==null?'':c);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('\n');
     PROG=parseProgressCsv(csv);
