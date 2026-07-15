@@ -108,10 +108,10 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 
 <div id="app" class="hide">
 <div class="kpis">
-<div class="kpi big"><div class="v" id="k-def">–</div><div class="l">Default (Live Chat)</div></div>
-<div class="kpi big"><div class="v" id="k-tpro">–</div><div class="l">TPRO (tPro/VIP)</div></div>
-<div class="kpi big"><div class="v" id="k-tkt">–</div><div class="l">Ticketing</div></div>
-<div class="kpi"><div class="v" id="k-art">–</div><div class="l">Articles Tracked</div></div>
+<div class="kpi big"><div class="v" id="k-default">–</div><div class="l">Default (Live Chat)</div><div id="k-default-cnt" style="font-size:11px;color:var(--muted);margin-top:2px">– articles</div></div>
+<div class="kpi big"><div class="v" id="k-tpro">–</div><div class="l">TPRO (tPro/VIP)</div><div id="k-tpro-cnt" style="font-size:11px;color:var(--muted);margin-top:2px">– articles</div></div>
+<div class="kpi big"><div class="v" id="k-tkt">–</div><div class="l">Ticketing</div><div id="k-tkt-cnt" style="font-size:11px;color:var(--muted);margin-top:2px">– articles</div></div>
+<div class="kpi big"><div class="v" id="k-uni" style="color:#10b981">–</div><div class="l">Universal</div><div id="k-uni-cnt" style="font-size:11px;color:var(--muted);margin-top:2px">– articles</div></div>
 </div>
 
 <div class="tabs">
@@ -188,10 +188,6 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <thead><tr><th class="l">Article</th><th>SOP</th><th class="l">Assignee</th><th>Effort</th><th>Status</th><th>Due</th></tr></thead>
 <tbody id="soptbl-body"></tbody></table></div>
 </div>
-<div class="card" style="margin-bottom:16px">
-<h3>✅ Completion % by Member</h3>
-<div id="memPct" class="kpis" style="grid-template-columns:repeat(3,1fr)"></div>
-</div>
 <div class="card">
 <h3>Production Status — by Article</h3>
 <div class="controls"><input type="text" id="psearch" placeholder="🔍 Search by article or member…"></div>
@@ -204,7 +200,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 <div class="tbl-wrap"><table id="ptbl"><thead><tr>
 <th class="l">Article</th><th class="l">Member</th>
-<th>VIP AR</th><th>VIP EN</th><th>Default AR</th><th>Default EN</th><th>TKT AR</th><th>TKT EN</th>
+<th>VIP AR</th><th>VIP EN</th><th>Universal AR</th><th>Universal EN</th><th>TKT AR</th><th>TKT EN</th>
 <th class="l">Updated</th>
 </tr></thead><tbody></tbody></table></div>
 </div>
@@ -320,8 +316,10 @@ const cell=v=>`<span class="cell ${v?'yes':'no'}">${v?'✓':'✕'}</span>`;
 function buildOverview(){
  ['sop','jr','dr','lang'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  const noLeg={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
- charts.sop=new Chart($('chSop'),{type:'bar',data:{labels:SOPS.map(s=>s.name),
-  datasets:[{data:SOPS.map(sopCov),backgroundColor:[OR,PU,BR],borderRadius:6}]},
+ var _uniRov=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
+ var _uniCov=0,_uniDov=0;_uniRov.forEach(function(r){PCELLS.forEach(function(k){var v=r[k];if(isStatusValue(v)){_uniCov++;if(statusOf(v)==='Done')_uniDov++;}});});
+ charts.sop=new Chart($('chSop'),{type:'bar',data:{labels:[...SOPS.map(s=>s.name),'Universal'],
+  datasets:[{data:[...SOPS.map(sopCov),pct(_uniDov,_uniCov)],backgroundColor:[OR,PU,BR,'#10b981'],borderRadius:6}]},
   options:{...noLeg,scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'}}}}});
  const js=[...new Set(DATA.map(r=>r.journey))];
  const core=['lc_ar','lc_en','vip_ar','vip_en','tkt_ar','tkt_en'];
@@ -363,10 +361,12 @@ function buildDynamicTabs(){
    html+='</tr></thead><tbody>';
    dataRows.forEach(function(row){
     html+='<tr>';
-    row.forEach(function(cell){
+    row.forEach(function(cell,ci){
      var s=String(cell==null?'':cell);
-     var st=statusOf(s);
-     var display=(st!=='Not started'&&s)?pstBadge(s):(s||'—');
+     var display;
+     if(ci===1&&s&&!isStatusValue(s)){var col=MEMCOLS[s]||'#9ca3af';var tcol=MEMCOLS[s]?'#fff':'#7c6f63';var mm=s.replace(/'/g,'');display='<span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+col+';color:'+tcol+';cursor:pointer">'+s+'</span>';}
+     else if(isStatusValue(s)){display=pstBadge(s);}
+     else{display=s||'—';}
      html+='<td style="padding:10px 14px;font-size:13px">'+display+'</td>';
     });
     html+='</tr>';
@@ -491,7 +491,7 @@ function renderProgress(){
   const upd=r.def_end||r.vip_end||r.def_start||r.vip_start||'';
   const al=alertOf(r),idle=idleOf(r,7);const cls=al==='overdue'?'overdue':(idle?'idle':'');
   const mm=(r.member||'').replace(/'/g,'');
-  const tip=r.article+' — '+r.member+'\nVIP '+statusOf(r.vip_ar)+'/'+statusOf(r.vip_en)+' · Default '+statusOf(r.def_ar)+'/'+statusOf(r.def_en)+' · TKT '+statusOf(r.tkt_ar)+'/'+statusOf(r.tkt_en)+'\nStart '+(r.def_start||r.vip_start||'—')+' → End '+(upd||'—');
+  const tip=r.article+' — '+r.member+'\nVIP '+statusOf(r.vip_ar)+'/'+statusOf(r.vip_en)+' · Universal '+statusOf(r.def_ar)+'/'+statusOf(r.def_en)+' · TKT '+statusOf(r.tkt_ar)+'/'+statusOf(r.tkt_en)+'\nStart '+(r.def_start||r.vip_start||'—')+' → End '+(upd||'—');
   const tr=document.createElement('tr');if(cls)tr.className=cls;tr.title=tip;
   const sc=(v)=>`<td class="clk" onclick="filterByStatus('${statusOf(v)}')">${pstBadge(v)}</td>`;
   tr.innerHTML=`<td class="article">${al==='overdue'?'⚠ ':''}${r.article}</td><td class="l"><span class="mem clk" onclick="filterByMember('${mm}')" style="background:${MEMCOLS[r.member]||'#e7ddcf'};color:${MEMCOLS[r.member]?'#fff':'#7c6f63'}">${r.member}</span></td>`+
@@ -641,10 +641,6 @@ function buildProgress(){
   });
  }
  renderMbTable();renderSopTable();
- const mp=$('memPct');mp.innerHTML='';
- mem.map(m=>({m,...memberDone(m)})).sort((a,b)=>b.pct-a.pct).forEach(s=>{
-  mp.insertAdjacentHTML('beforeend',`<div class="kpi" style="border-left:6px solid ${MEMCOLS[s.m]||'#9ca3af'}"><div class="v" style="color:${MEMCOLS[s.m]||'#9ca3af'}">${s.pct}%</div><div class="l">${s.m} · ${s.done}/${s.total} done · ${s.articles} articles</div></div>`);
- });
  $('psearch').addEventListener('input',renderProgress);
  renderProgress();
 }
@@ -754,9 +750,10 @@ function build(){
  initOnce();
  // Reset per-tab built flags so each tab rebuilds with fresh data on next visit
  progressBuilt=false;membersBuilt=false;timelineBuilt=false;
- SOPS.forEach(s=>{countUp($('k-'+s.id),sopCov(s),'%');});
- var _allArts=new Set();DATA.forEach(r=>{if(r.article)_allArts.add(r.article.trim());});PROG.forEach(r=>{if(r.article&&r.article!=='—')_allArts.add(r.article.trim());});
- countUp($('k-art'),_allArts.size,'');
+ SOPS.forEach(function(s){countUp($('k-'+s.id),sopCov(s),'%');var cnt=DATA.filter(function(r){return r[s.ar]>0||r[s.en]>0;}).length;var cel=$('k-'+s.id+'-cnt');if(cel)cel.textContent=cnt+' article'+(cnt!==1?'s':'');});
+ var _uniR=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
+ var _uniC=0,_uniD=0;_uniR.forEach(function(r){PCELLS.forEach(function(k){var v=r[k];if(isStatusValue(v)){_uniC++;if(statusOf(v)==='Done')_uniD++;}});});
+ countUp($('k-uni'),pct(_uniD,_uniC),'%');var _uniCel=$('k-uni-cnt');if(_uniCel)_uniCel.textContent=_uniR.length+' article'+(_uniR.length!==1?'s':'');
  buildRows();
  buildOverview();
  const js=[...new Set(DATA.map(r=>r.journey))];
