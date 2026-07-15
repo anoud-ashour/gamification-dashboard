@@ -537,6 +537,7 @@ function isStatusValue(v){
  return s.indexOf('done')>-1||s.indexOf('progress')>-1||s.indexOf('review')>-1||s.indexOf('not started')>-1||s.indexOf('found')>-1||s.indexOf('complete')>-1;
 }
 function artSopBadges(r){
+ if(r._sop)return sopPill(r._sop.label,r._sop.color);
  var active=ALLSOPS.filter(function(s){return isStatusValue(r[s.arKey])||isStatusValue(r[s.enKey]);});
  if(!active.length)return '';
  return active.map(function(s){return sopPill(s.label,s.color);}).join(' ');
@@ -902,6 +903,12 @@ async function load(){
     if(tab.rows&&tab.rows.length){
      var csv=tab.rows.map(rowToCsv).join('\n');
      var tabProg=parseProgressCsv(csv);
+     var tn=tab.name.trim().toLowerCase().replace(/\s/g,'');
+     var sopOvr=null;
+     if(tn.indexOf('univers')>-1)sopOvr={label:'Universal',color:'#10b981'};
+     else if(tn.indexOf('vip')>-1)sopOvr={label:'VIP',color:'#8318d8'};
+     else if(tn.indexOf('tkt')>-1||tn.indexOf('ticket')>-1)sopOvr={label:'TKT',color:'#411514'};
+     tabProg=tabProg.map(function(r){var row=Object.assign({},r,{_tab:tab.name.trim()});if(sopOvr)row._sop=sopOvr;return row;});
      PROG=PROG.concat(tabProg);
     }
    });
