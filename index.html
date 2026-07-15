@@ -176,7 +176,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div id="mbf-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
 </div>
 <div class="tbl-wrap"><table id="mbtbl" style="width:100%">
-<thead><tr><th class="l">Article</th><th class="l">Assignee</th><th>Effort</th><th>Status</th><th>Due</th></tr></thead>
+<thead><tr><th class="l">Article</th><th>SOP</th><th class="l">Assignee</th><th>Effort</th><th>Status</th><th>Due</th></tr></thead>
 <tbody id="mbtbl-body"></tbody></table></div>
 </div>
 <div class="card" style="margin-bottom:16px">
@@ -526,6 +526,16 @@ function sopPill(label,color){
  return '<span style="padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700;background:'+color+'25;color:'+color+'">'+label+'</span>';
 }
 var mbfFilter='',sopfFilter='';
+var ALLSOPS=[
+ {arKey:'vip_ar',enKey:'vip_en',label:'VIP',color:'#8318d8',endK:'vip_end',startK:'vip_start'},
+ {arKey:'def_ar',enKey:'def_en',label:'Default',color:'#FF5900',endK:'def_end',startK:'def_start'},
+ {arKey:'tkt_ar',enKey:'tkt_en',label:'TKT',color:'#411514',endK:'',startK:''}
+];
+function artSopBadges(r){
+ var active=ALLSOPS.filter(function(s){return r[s.arKey]||r[s.enKey];});
+ if(!active.length)active=[ALLSOPS[0]];
+ return active.map(function(s){return sopPill(s.label,s.color);}).join(' ');
+}
 function renderMbTable(){
  var tbody=$('mbtbl-body');if(!tbody)return;tbody.innerHTML='';
  var src=PROG.length?PROG:FALLBACK_PROG;
@@ -547,6 +557,7 @@ function renderMbTable(){
   var dueStr=due?due.toLocaleDateString(undefined,{month:'short',day:'numeric'}):'—';
   tbody.insertAdjacentHTML('beforeend',
    '<tr><td style="font-weight:600;padding:12px 16px">'+r.article+'</td>'
+   +'<td style="padding:12px 16px">'+artSopBadges(r)+'</td>'
    +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:8px">'
    +'<div style="width:28px;height:28px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">'+ini+'</div>'
    +(r.member||'—')+'</div></td>'
@@ -554,41 +565,34 @@ function renderMbTable(){
    +'<td style="padding:12px 16px">'+artBadge(st)+'</td>'
    +'<td style="padding:12px 16px;color:var(--muted);font-size:13px">'+dueStr+'</td></tr>');
  });
- if(!tbody.children.length)tbody.insertAdjacentHTML('beforeend','<tr><td colspan="5" class="empty" style="padding:20px;text-align:center;color:var(--muted)">No articles match this filter.</td></tr>');
+ if(!tbody.children.length)tbody.insertAdjacentHTML('beforeend','<tr><td colspan="6" class="empty" style="padding:20px;text-align:center;color:var(--muted)">No articles match this filter.</td></tr>');
 }
 function renderSopTable(){
  var tbody=$('soptbl-body');if(!tbody)return;tbody.innerHTML='';
  var src=PROG.length?PROG:FALLBACK_PROG;
- var SOPTYPES=[
-  {key:'VIP',cells:['vip_ar','vip_en'],endK:'vip_end',startK:'vip_start',color:'#8318d8'},
-  {key:'Default',cells:['def_ar','def_en'],endK:'def_end',startK:'def_start',color:'#FF5900'},
-  {key:'TKT',cells:['tkt_ar','tkt_en'],endK:'',startK:'',color:'#411514'}
- ];
  var count=0;
  src.filter(function(r){return r.article&&r.article!=='—';}).forEach(function(r){
-  SOPTYPES.forEach(function(sop){
-   var cells=sop.cells.map(function(k){return r[k];}).filter(function(v){return v;});
-   if(!cells.length)return;
-   var overall=artStatusOverall(cells);
-   if(sopfFilter&&overall!==sopfFilter)return;
-   var done=cells.filter(function(v){return statusOf(v)==='Done';}).length;
-   var p=Math.round(done/cells.length*100);
-   var due=parseDate(r[sop.endK])||parseDate(r[sop.startK])||null;
-   var dueStr=due?due.toLocaleDateString(undefined,{month:'short',day:'numeric'}):'—';
-   var col=MEMCOLS[r.member]||'#9ca3af';
-   var parts=(r.member||'').trim().split(/\s+/);
-   var ini=parts.length>=2?(parts[0][0]+parts[1][0]).toUpperCase():(r.member||'??').slice(0,2).toUpperCase();
-   tbody.insertAdjacentHTML('beforeend',
-    '<tr><td style="font-weight:600;padding:12px 16px">'+r.article+'</td>'
-    +'<td style="padding:12px 16px">'+sopPill(sop.key,sop.color)+'</td>'
-    +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:8px">'
-    +'<div style="width:28px;height:28px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">'+ini+'</div>'
-    +(r.member||'—')+'</div></td>'
-    +'<td style="padding:12px 16px">'+effortBar(p)+'</td>'
-    +'<td style="padding:12px 16px">'+artBadge(overall)+'</td>'
-    +'<td style="padding:12px 16px;color:var(--muted);font-size:13px">'+dueStr+'</td></tr>');
-   count++;
-  });
+  var allCells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return v;});
+  var overall=artStatusOverall(allCells);
+  if(sopfFilter&&overall!==sopfFilter)return;
+  var done=allCells.filter(function(v){return statusOf(v)==='Done';}).length;
+  var p=allCells.length?Math.round(done/allCells.length*100):0;
+  var due=parseDate(r.vip_end)||parseDate(r.def_end)||null;
+  var dueStr=due?due.toLocaleDateString(undefined,{month:'short',day:'numeric'}):'—';
+  var col=MEMCOLS[r.member]||'#9ca3af';
+  var parts=(r.member||'').trim().split(/\s+/);
+  var ini=parts.length>=2?(parts[0][0]+parts[1][0]).toUpperCase():(r.member||'??').slice(0,2).toUpperCase();
+  var sopBadges=artSopBadges(r);
+  tbody.insertAdjacentHTML('beforeend',
+   '<tr><td style="font-weight:600;padding:12px 16px">'+r.article+'</td>'
+   +'<td style="padding:12px 16px">'+sopBadges+'</td>'
+   +'<td style="padding:12px 16px"><div style="display:flex;align-items:center;gap:8px">'
+   +'<div style="width:28px;height:28px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">'+ini+'</div>'
+   +(r.member||'—')+'</div></td>'
+   +'<td style="padding:12px 16px">'+effortBar(p)+'</td>'
+   +'<td style="padding:12px 16px">'+artBadge(overall)+'</td>'
+   +'<td style="padding:12px 16px;color:var(--muted);font-size:13px">'+dueStr+'</td></tr>');
+  count++;
  });
  if(!count)tbody.insertAdjacentHTML('beforeend','<tr><td colspan="6" class="empty" style="padding:20px;text-align:center;color:var(--muted)">No articles match this filter.</td></tr>');
 }
@@ -604,7 +608,6 @@ function buildProgress(){
  $('p-rev').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='On Review')&&!PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-not').textContent=PROG.filter(r=>PCELLS.every(k=>statusOf(r[k])==='Not started')).length;
  // Build filter buttons for Status by Member
- mbfFilter='';sopfFilter='';
  var mbBtnsEl=$('mbf-btns');
  if(mbBtnsEl){mbBtnsEl.innerHTML='';
   ['All','Done','In Progress','On Review'].forEach(function(label){
