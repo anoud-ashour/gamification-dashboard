@@ -123,6 +123,8 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="members">Members</button>
 <button class="tab" data-tab="progress">📋 Progress</button>
 <button class="tab" data-tab="timeline">📅 Timeline</button>
+<span style="width:1px;background:var(--border);margin:4px 6px;align-self:stretch;display:inline-block;opacity:0.5"></span>
+<div id="sheet-tab-nav" style="display:contents"></div>
 </div>
 
 <!-- Overview -->
@@ -230,6 +232,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 </div>
 
+<div id="dyn-sections"></div>
 <div class="sub" style="margin-top:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
 <span id="ts" style="color:var(--muted)"></span>
 <span id="countdown" style="color:var(--muted);font-size:11px"></span>
@@ -337,6 +340,43 @@ function buildOverview(){
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+'%'}}}}});
 }
 
+function buildDynamicTabs(){
+ var nav=$('sheet-tab-nav'),secs=$('dyn-sections');
+ if(!nav||!secs)return;
+ nav.innerHTML='';secs.innerHTML='';
+ if(!SHEET_TABS.length)return;
+ SHEET_TABS.forEach(function(tab){
+  var safeId='sheet-'+tab.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  var btn=document.createElement('button');
+  btn.className='tab';btn.dataset.tab=safeId;btn.textContent=tab.name;
+  btn.onclick=function(){setTab(safeId);};
+  nav.appendChild(btn);
+  var sec=document.createElement('div');
+  sec.id='sec-'+safeId;sec.className='tabsec hide dynamic-section';
+  var rows=tab.rows||[];
+  if(!rows.length){sec.innerHTML='<div class="card"><div class="empty" style="padding:40px;text-align:center">No data in this sheet.</div></div>';}
+  else{
+   var headers=rows[0];
+   var dataRows=rows.slice(1).filter(function(r){return r.some(function(c){return String(c).trim();});});
+   var html='<div class="card"><h3>'+tab.name+'</h3><div class="tbl-wrap"><table style="width:100%"><thead><tr>';
+   headers.forEach(function(h){html+='<th class="l" style="padding:10px 14px;font-size:11px">'+String(h||'')+'</th>';});
+   html+='</tr></thead><tbody>';
+   dataRows.forEach(function(row){
+    html+='<tr>';
+    row.forEach(function(cell){
+     var s=String(cell==null?'':cell);
+     var st=statusOf(s);
+     var display=(st!=='Not started'&&s)?pstBadge(s):(s||'—');
+     html+='<td style="padding:10px 14px;font-size:13px">'+display+'</td>';
+    });
+    html+='</tr>';
+   });
+   html+='</tbody></table></div></div>';
+   sec.innerHTML=html;
+  }
+  secs.appendChild(sec);
+ });
+}
 function buildWorkload(){
  var wl=$('workload-list'),al=$('avail-list');if(!wl||!al)return;
  var now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
@@ -609,6 +649,7 @@ function setTab(t){
  $('sec-progress').classList.toggle('hide',t!=='progress');
  $('sec-timeline').classList.toggle('hide',t!=='timeline');
  $('sec-table').classList.toggle('hide',!(t==='all'||t==='default'||t==='tpro'||t==='tkt'));
+ document.querySelectorAll('.dynamic-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
  if(t==='members')buildMembers();
  if(t==='progress')buildProgress();
  if(t==='timeline')buildTimeline();
@@ -720,6 +761,7 @@ function build(){
  else if(activeTab==='members')buildMembers();
  buildTimeline();
  buildWorkload();
+ buildDynamicTabs();
 }
 var _refreshTimer=null;
 function startCountdown(){
@@ -755,6 +797,8 @@ const FALLBACK_PROG=[
 const COVERAGE_URL='https://docs.google.com/spreadsheets/d/e/2PACX-1vR9nNH_ANIHGheVn00BvJteokSxXeZme3ZrSzWS_A22KmJKl0kTTr-XdxEBM8Jcos8fkaYubook5cat/pub?output=csv';
 // Live data from Apps Script → GitHub Gist (auto-synced every 2 hours)
 const PROGRESS_URL='https://gist.githubusercontent.com/anoud-ashour/53aab0ac0b530f36df46e175dde241f9/raw/tracker.csv';
+const DATA_JSON_URL='https://gist.githubusercontent.com/anoud-ashour/53aab0ac0b530f36df46e175dde241f9/raw/data.json';
+let SHEET_TABS=[];
 
 // ===== CSV PARSERS =====
 function parseCsvLine(line){
@@ -837,12 +881,25 @@ async function load(){
   usedFallback=true;
   DATA=parseFallback(FALLBACK_CSV);
  }
- // 2. Try live progress tab (only if URL is set — org policy may block public publishing)
- if(PROGRESS_URL){
+ // 2. Try data.json (all sheets — primary source)
+ try{
+  const respJ=await fetch(DATA_JSON_URL+'?t='+Date.now(),{cache:'no-store'});
+  if(respJ.ok){
+   const json=await respJ.json();
+   SHEET_TABS=json.tabs||[];
+   const trTab=SHEET_TABS.find(function(t){return t.name==='Test 1';})||SHEET_TABS[0];
+   if(trTab&&trTab.rows&&trTab.rows.length){
+    const csv=trTab.rows.map(function(r){return r.map(function(c){var s=String(c==null?'':c);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('\n');
+    PROG=parseProgressCsv(csv);
+   }
+  }
+ }catch(e){}
+ // Fall back to tracker.csv if JSON not yet available
+ if(!PROG.length&&PROGRESS_URL){
   try{
    const resp2=await fetch(PROGRESS_URL+'?t='+Date.now(),{cache:'no-store'});
    if(resp2.ok){const t2=await resp2.text();if(!t2.trim().startsWith('<')){PROG=parseProgressCsv(t2);}}
-  }catch(e){PROG=[];}
+  }catch(e){}
  }
  if(!PROG.length)PROG=FALLBACK_PROG;
  // 3. Build owner map; fall back to snapshot member column
