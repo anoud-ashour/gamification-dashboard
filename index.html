@@ -890,11 +890,16 @@ async function load(){
   if(respJ.ok){
    const json=await respJ.json();
    SHEET_TABS=json.tabs||[];
-   const trTab=SHEET_TABS.find(function(t){return t.name.trim().toLowerCase().startsWith('test');})||SHEET_TABS[0];
-   if(trTab&&trTab.rows&&trTab.rows.length){
-    const csv=trTab.rows.map(function(r){return r.map(function(c){var s=String(c==null?'':c);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');}).join('\n');
-    PROG=parseProgressCsv(csv);
-   }
+   // Merge ALL sheet tabs into PROG so every tab's articles appear in Progress stats
+   PROG=[];
+   var rowToCsv=function(r){return r.map(function(c){var s=String(c==null?'':c);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');};
+   SHEET_TABS.forEach(function(tab){
+    if(tab.rows&&tab.rows.length){
+     var csv=tab.rows.map(rowToCsv).join('\n');
+     var tabProg=parseProgressCsv(csv);
+     PROG=PROG.concat(tabProg);
+    }
+   });
   }
  }catch(e){}
  // Fall back to tracker.csv if JSON not yet available
