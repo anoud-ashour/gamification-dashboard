@@ -264,7 +264,7 @@ const MEMCOLS={'Amal':OR,'Anoud':PU,'Dalia':BR};
 // ---- Sheet 2: production status tracker ----
 const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
-const PSOPS=[{id:'vip',name:'VIP / tPro',c:['vip_ar','vip_en']},{id:'def',name:'Default',c:['def_ar','def_en']},{id:'tkt',name:'TKT',c:['tkt_ar','tkt_en']}];
+const PSOPS=[{id:'vip',name:'VIP / tPro',c:['vip_ar','vip_en']},{id:'def',name:'Universal',c:['def_ar','def_en']},{id:'tkt',name:'TKT',c:['tkt_ar','tkt_en']}];
 const PCELLS=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'];
 const statusOf=v=>{const s=(v||'').toLowerCase();return(s.includes('done')||s.includes('found')||s.includes('complete'))?'Done':s.includes('progress')?'In Progress':s.includes('review')?'On Review':'Not started';};
 // % of a member's status cells (from the tracker sheet) that are Done
@@ -528,7 +528,7 @@ function sopPill(label,color){
 var mbfFilter='',sopfFilter='';
 var ALLSOPS=[
  {arKey:'vip_ar',enKey:'vip_en',label:'VIP',color:'#8318d8',endK:'vip_end',startK:'vip_start'},
- {arKey:'def_ar',enKey:'def_en',label:'Default',color:'#FF5900',endK:'def_end',startK:'def_start'},
+ {arKey:'def_ar',enKey:'def_en',label:'Universal',color:'#10b981',endK:'def_end',startK:'def_start'},
  {arKey:'tkt_ar',enKey:'tkt_en',label:'TKT',color:'#411514',endK:'',startK:''}
 ];
 function isStatusValue(v){
@@ -754,7 +754,8 @@ function build(){
  // Reset per-tab built flags so each tab rebuilds with fresh data on next visit
  progressBuilt=false;membersBuilt=false;timelineBuilt=false;
  SOPS.forEach(s=>{countUp($('k-'+s.id),sopCov(s),'%');});
- countUp($('k-art'),DATA.length,'');
+ var _allArts=new Set();DATA.forEach(r=>{if(r.article)_allArts.add(r.article.trim());});PROG.forEach(r=>{if(r.article&&r.article!=='—')_allArts.add(r.article.trim());});
+ countUp($('k-art'),_allArts.size,'');
  buildRows();
  buildOverview();
  const js=[...new Set(DATA.map(r=>r.journey))];
