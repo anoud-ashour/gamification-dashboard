@@ -310,63 +310,32 @@ function buildOverview(){
  var uniR=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
  var uniC=0,uniD=0;uniR.forEach(function(r){PCELLS.forEach(function(k){var v=r[k];if(isStatusValue(v)){uniC++;if(statusOf(v)==='Done')uniD++;}});});
  var uniP=pct(uniD,uniC);
- var cs='background:var(--card);border-radius:16px;padding:24px 20px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .12s;box-shadow:0 1px 4px rgba(0,0,0,.06)';
- var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;padding:4px 0">';
+ var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
+ var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:4px 0">';
  lops.forEach(function(c){
-  html+='<div onclick="setTab(\''+c.tab+'\')" style="'+cs+'" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.12)\';this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.boxShadow=\'0 1px 4px rgba(0,0,0,.06)\';this.style.transform=\'\'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-   +'<div id="ovkpi-'+c.id+'" style="font-size:40px;font-weight:900;color:'+c.color+';line-height:1">0%</div>'
-   +'<span style="font-size:11px;color:var(--muted);opacity:.6;padding-top:4px">→</span></div>'
-   +'<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px">'+c.name+'</div>'
-   +'<div style="font-size:14px;font-weight:700;color:var(--dark);margin-top:8px">'+c.done+' / '+c.total+' done</div>'
-   +'<div style="height:5px;border-radius:3px;background:var(--border-light,#F4EDE3);margin-top:10px;overflow:hidden">'
-   +'<div style="width:'+c.p+'%;height:100%;background:'+c.color+';border-radius:3px"></div></div>'
-   +'<div style="font-size:10px;color:var(--muted);margin-top:8px">Click to view articles</div>'
+  html+='<div onclick="setTab(\''+c.tab+'\')" style="'+cs+';border-top:4px solid '+c.color+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">'
+   +'<div id="ovkpi-'+c.id+'" style="font-size:58px;font-weight:900;color:'+c.color+';line-height:1;letter-spacing:-2px">0%</div>'
+   +'<span style="font-size:20px;color:'+c.color+';opacity:.5;padding-top:8px">›</span></div>'
+   +'<div style="font-size:13px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;margin-top:10px">'+c.name+'</div>'
+   +'<div style="font-size:15px;font-weight:700;color:var(--muted);margin-top:6px">'+c.done+' / '+c.total+' done</div>'
+   +'<div style="height:6px;border-radius:4px;background:var(--border-light,#F4EDE3);margin-top:12px;overflow:hidden">'
+   +'<div style="width:'+c.p+'%;height:100%;background:'+c.color+';border-radius:4px"></div></div>'
    +'</div>';
  });
- html+='<div onclick="goToUni()" style="'+cs+'" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.12)\';this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.boxShadow=\'0 1px 4px rgba(0,0,0,.06)\';this.style.transform=\'\'">'
-  +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-  +'<div id="ovkpi-uni" style="font-size:40px;font-weight:900;color:#10b981;line-height:1">0%</div>'
-  +'<span style="font-size:11px;color:var(--muted);opacity:.6;padding-top:4px">→</span></div>'
-  +'<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px">Universal</div>'
-  +'<div style="font-size:13px;color:var(--muted);margin-top:8px">'+uniR.length+' article'+(uniR.length!==1?'s':'')+' tracked</div>'
-  +'<div style="height:5px;border-radius:3px;background:var(--border-light,#F4EDE3);margin-top:10px;overflow:hidden">'
-  +'<div style="width:'+uniP+'%;height:100%;background:#10b981;border-radius:3px"></div></div>'
-  +'<div style="font-size:10px;color:var(--muted);margin-top:8px">Click to view articles</div>'
+ html+='<div onclick="goToUni()" style="'+cs+';border-top:4px solid #10b981" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+  +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">'
+  +'<div id="ovkpi-uni" style="font-size:58px;font-weight:900;color:#10b981;line-height:1;letter-spacing:-2px">0%</div>'
+  +'<span style="font-size:20px;color:#10b981;opacity:.5;padding-top:8px">›</span></div>'
+  +'<div style="font-size:13px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;margin-top:10px">Universal</div>'
+  +'<div style="font-size:15px;font-weight:700;color:var(--muted);margin-top:6px">'+uniR.length+' article'+(uniR.length!==1?'s':'')+' tracked</div>'
+  +'<div style="height:6px;border-radius:4px;background:var(--border-light,#F4EDE3);margin-top:12px;overflow:hidden">'
+  +'<div style="width:'+uniP+'%;height:100%;background:#10b981;border-radius:4px"></div></div>'
   +'</div>';
- // Extra SHEET_TABS cards (Ongoing Update, etc.) — skip Universal which already has a card
- var extraColors=['#f59e0b','#3b82f6','#ec4899','#06b6d4','#8b5cf6','#14b8a6'];
- var extraTabs=SHEET_TABS.filter(function(t){return t.name.trim().toLowerCase().replace(/\s/g,'').indexOf('univers')===-1;});
- extraTabs.forEach(function(tab,idx){
-  var safeId='sheet-'+tab.name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  var tabRows=(tab.rows||[]).slice(1).filter(function(r){return r.some(function(c){return String(c==null?'':c).trim();});});
-  var artCount=tabRows.length;
-  var tC=0,tD=0;
-  tabRows.forEach(function(row){row.forEach(function(cell){var v=String(cell==null?'':cell);if(isStatusValue(v)){tC++;if(statusOf(v)==='Done')tD++;}});});
-  var tPct=pct(tD,tC);
-  var col=extraColors[idx%extraColors.length];
-  var eid='ovkpi-extra'+idx;
-  html+='<div onclick="setTab(\''+safeId+'\')" style="'+cs+'" onmouseover="this.style.boxShadow=\'0 6px 20px rgba(0,0,0,.12)\';this.style.transform=\'translateY(-3px)\'" onmouseout="this.style.boxShadow=\'0 1px 4px rgba(0,0,0,.06)\';this.style.transform=\'\'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-   +'<div id="'+eid+'" style="font-size:40px;font-weight:900;color:'+col+';line-height:1">'+(tC?'0%':artCount+'')+'</div>'
-   +'<span style="font-size:11px;color:var(--muted);opacity:.6;padding-top:4px">→</span></div>'
-   +'<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px">'+tab.name+'</div>'
-   +'<div style="font-size:13px;color:var(--muted);margin-top:8px">'+artCount+' article'+(artCount!==1?'s':'')+' tracked</div>'
-   +'<div style="height:5px;border-radius:3px;background:var(--border-light,#F4EDE3);margin-top:10px;overflow:hidden">'
-   +(tC?'<div style="width:'+tPct+'%;height:100%;background:'+col+';border-radius:3px"></div>':'')
-   +'</div>'
-   +'<div style="font-size:10px;color:var(--muted);margin-top:8px">Click to view articles</div>'
-   +'</div>';
- });
  html+='</div>';
  el.innerHTML=html;
  lops.forEach(function(c){countUp($('ovkpi-'+c.id),c.p,'%');});
  countUp($('ovkpi-uni'),uniP,'%');
- extraTabs.forEach(function(tab,idx){
-  var tabRows=(tab.rows||[]).slice(1).filter(function(r){return r.some(function(c){return String(c==null?'':c).trim();});});
-  var tC=0,tD=0;tabRows.forEach(function(row){row.forEach(function(cell){var v=String(cell==null?'':cell);if(isStatusValue(v)){tC++;if(statusOf(v)==='Done')tD++;}});});
-  if(tC)countUp($('ovkpi-extra'+idx),pct(tD,tC),'%');
- });
 }
 
 function leaveBadge(s){
