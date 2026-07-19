@@ -456,30 +456,98 @@ function buildMembers(){
 function renderTable(){
  const showSop=activeTab==='all';
  const th=$('thead-row');
- th.innerHTML=`<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>`+
-  (showSop?`<th class="l">LOP</th>`:``)+
-  `<th>Arabic</th><th>English</th><th>Drop-Off AR</th><th>Drop-Off EN</th><th>LOP %</th>`;
- $('tbl-title').textContent=showSop?'All LOPs — Article Coverage':(sopById(activeTab).name+' LOP — Article Coverage');
+ if(showSop){
+  th.innerHTML='<th class="l">Article</th><th class="l">Member</th>'
+   +'<th style="text-align:center;min-width:120px"><span style="color:#FF5900">&#11044;</span> Default</th>'
+   +'<th style="text-align:center;min-width:120px"><span style="color:#8318d8">&#11044;</span> TPRO</th>'
+   +'<th style="text-align:center;min-width:120px"><span style="color:#411514">&#11044;</span> Ticketing</th>'
+   +'<th style="text-align:center;min-width:100px"><span style="color:#10b981">&#11044;</span> Universal</th>'
+   +'<th style="min-width:120px">Coverage</th>';
+  $('tbl-title').textContent='All LOPs — Coverage Matrix';
+  renderAllLops();
+  return;
+ }
+ th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
+  +'<th>Arabic</th><th>English</th><th>Drop-Off AR</th><th>Drop-Off EN</th><th>LOP %</th>';
+ $('tbl-title').textContent=sopById(activeTab).name+' LOP — Article Coverage';
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
  ROWS.forEach(r=>{
-  if(!showSop&&r.sopId!==activeTab)return;
-  if(!showSop&&r.ar===0&&r.en===0)return;
+  if(r.sopId!==activeTab)return;
+  if(r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
   if(fs==='gaps'&&full)return;if(fs==='full'&&!full)return;
   const sp=pct(r.ar+r.en,2);
   const tr=document.createElement('tr');
-  tr.title=r.article+' \u2014 '+r.member+' \u00b7 '+r.sopName+': AR '+(r.ar?'\u2713':'\u2715')+' / EN '+(r.en?'\u2713':'\u2715');
-  tr.innerHTML=`<td class="article">${r.article}</td><td class="jrn">${r.journey}</td><td class="l"><span class="mem clk" onclick="$('search').value='${(r.member||'').replace(/'/g,'')}';renderTable()" style="background:${MEMCOLS[r.member]||'#e7ddcf'};color:${MEMCOLS[r.member]?'#fff':'#7c6f63'}">${r.member}</span></td>`+
-   (showSop?`<td class="l">${r._badgeHtml||('<span class="badge '+r.cls+'">'+r.sopName+'</span>')}</td>`:``)+
-   `<td>${cell(r.ar)}</td><td>${cell(r.en)}</td><td>${cell(r.do_ar)}</td><td>${cell(r.do_en)}</td>
-    <td class="pct" style="color:${sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626')}">${sp}%</td>`;
+  tr.title=r.article+' — '+r.member+' · '+r.sopName+': AR '+(r.ar?'✓':'✕')+' / EN '+(r.en?'✓':'✕');
+  const mm=(r.member||'').replace(/'/g,'');
+  tr.innerHTML='<td class="article">'+r.article+'</td><td class="jrn">'+r.journey+'</td>'
+   +'<td class="l"><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
+   +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td><td>'+cell(r.do_ar)+'</td><td>'+cell(r.do_en)+'</td>'
+   +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>';
   tb.appendChild(tr);shown++;
  });
- if(!shown){const cc=showSop?9:8;tb.innerHTML='<tr><td colspan="'+cc+'" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="8" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' rows';
+}
+function renderAllLops(){
+ var q=$('search').value.toLowerCase().trim();
+ var fj=$('fJourney').value,fs=$('fState').value;
+ var tb=$('tbl').querySelector('tbody');tb.innerHTML='';var shown=0;
+ var artMap={};
+ ROWS.forEach(function(r){
+  if(r.sopId==='uni')return;
+  var k=r.article.toLowerCase().trim();
+  if(!artMap[k])artMap[k]={article:r.article,journey:r.journey,member:r.member};
+  if(r.sopId==='default')artMap[k].def={ar:r.ar,en:r.en};
+  else if(r.sopId==='tpro')artMap[k].tpro={ar:r.ar,en:r.en};
+  else if(r.sopId==='tkt')artMap[k].tkt={ar:r.ar,en:r.en};
+ });
+ var uniArts=new Set();
+ PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1&&r.article&&r.article!=='—';}).forEach(function(r){uniArts.add(r.article.toLowerCase().trim());});
+ ROWS.filter(function(r){return r.sopId==='uni';}).forEach(function(r){uniArts.add(r.article.toLowerCase().trim());});
+ var lopBadge=function(l){
+  if(!l||(!l.ar&&!l.en))return '<span style="color:#cbd5e1;font-size:14px">—</span>';
+  if(l.ar&&l.en)return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700">✓ AR + EN</span>';
+  if(l.ar)return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700">&#9888; AR only</span>';
+  return '<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700">&#9888; EN only</span>';
+ };
+ Object.values(artMap).forEach(function(a){
+  if(q&&!(a.article.toLowerCase().indexOf(q)>-1||(a.member||'').toLowerCase().indexOf(q)>-1))return;
+  if(fj&&a.journey!==fj)return;
+  var def=a.def||{ar:0,en:0},tpro=a.tpro||{ar:0,en:0},tkt=a.tkt||{ar:0,en:0};
+  var hasUni=uniArts.has(a.article.toLowerCase().trim());
+  var lopCnt=((def.ar>0||def.en>0)?1:0)+((tpro.ar>0||tpro.en>0)?1:0)+((tkt.ar>0||tkt.en>0)?1:0)+(hasUni?1:0);
+  var fullCnt=((def.ar>0&&def.en>0)?1:0)+((tpro.ar>0&&tpro.en>0)?1:0)+((tkt.ar>0&&tkt.en>0)?1:0)+(hasUni?1:0);
+  if(fs==='full'&&(lopCnt===0||fullCnt<lopCnt))return;
+  if(fs==='gaps'&&lopCnt>0&&fullCnt===lopCnt)return;
+  var g=(def.ar+def.en)+(tpro.ar+tpro.en)+(tkt.ar+tkt.en)+(hasUni?2:0);
+  var t=((def.ar>0||def.en>0)?2:0)+((tpro.ar>0||tpro.en>0)?2:0)+((tkt.ar>0||tkt.en>0)?2:0)+(hasUni?2:0);
+  if(t===0)return;
+  var ovPct=pct(g,t);
+  var pctCol=ovPct===100?'#16a34a':ovPct>=60?'#f59e0b':'#dc2626';
+  var mm=(a.member||'').replace(/'/g,'');
+  var uniCell=hasUni
+   ?'<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;background:#d1fae5;color:#065f46;font-size:12px;font-weight:700">✓</span>'
+   :'<span style="color:#cbd5e1;font-size:14px">—</span>';
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td><div style="font-weight:700;color:var(--dark);font-size:13px">'+a.article+'</div>'
+   +'<div style="font-size:11px;color:#9ca3af;margin-top:2px">'+a.journey+'</div></td>'
+   +'<td><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[a.member]||'#e7ddcf')+';color:'+(MEMCOLS[a.member]?'#fff':'#7c6f63')+'">'+a.member+'</span></td>'
+   +'<td style="text-align:center">'+lopBadge(def)+'</td>'
+   +'<td style="text-align:center">'+lopBadge(tpro)+'</td>'
+   +'<td style="text-align:center">'+lopBadge(tkt)+'</td>'
+   +'<td style="text-align:center">'+uniCell+'</td>'
+   +'<td><div style="display:flex;align-items:center;gap:8px">'
+   +'<div style="width:70px;background:#f0ece6;border-radius:4px;height:7px;overflow:hidden;flex:none">'
+   +'<div style="width:'+ovPct+'%;height:100%;background:'+pctCol+';border-radius:4px"></div></div>'
+   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>';
+  tb.appendChild(tr);shown++;
+ });
+ if(!shown){tb.innerHTML='<tr><td colspan="7" class="empty">No articles match your search or filters.</td></tr>';}
+ $('rowcount').textContent=shown+' articles';
 }
 
 function parseProgress(md){
