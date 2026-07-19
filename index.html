@@ -874,20 +874,22 @@ let SHEET_TABS=[];
 const ARTICLE_MERGES=[
  {keys:['order status successful','marked as delivered','order never delivered'],
   name:'Order Status / Marked as Delivered'},
- {keys:['delivery instruction','special instruction'],
-  name:'Delivery Instructions / Special Instructions'},
+ {keys:['delivery instructions','special instructions'],
+  name:'Delivery Instructions / Special Instructions',exact:true},
  {keys:['modify delivery time','address modification'],
-  name:'Modify Delivery Time / Address Modification'},
+  name:'Modify Delivery Time / Address Modification',exact:true},
  {keys:['unavailable menu item','item availability'],
-  name:'Unavailable Menu Item / Item Availability'},
- {keys:['refund query','double deduction'],
-  name:'Refund Query / Double Deduction'},
+  name:'Unavailable Menu Item / Item Availability',exact:true},
+ {keys:['refund query follow up','double deduction'],
+  name:'Refund Query / Double Deduction',exact:true},
 ];
 function mergeArtName(n){
  var s=(n||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  for(var i=0;i<ARTICLE_MERGES.length;i++){
   var m=ARTICLE_MERGES[i];
-  for(var j=0;j<m.keys.length;j++){if(s.indexOf(m.keys[j])>-1)return m.name;}
+  for(var j=0;j<m.keys.length;j++){
+   if(m.exact?s===m.keys[j]:s.indexOf(m.keys[j])>-1)return m.name;
+  }
  }
  return n;
 }
