@@ -180,7 +180,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 <div class="tbl-wrap"><table id="ptbl"><thead><tr>
 <th class="l">Article</th><th class="l">Member</th>
-<th>VIP AR</th><th>VIP EN</th><th>LOP AR</th><th>LOP EN</th><th>TKT AR</th><th>TKT EN</th>
+<th>Arabic</th><th>English</th>
 <th class="l">Due</th><th class="l">Timeline</th>
 </tr></thead><tbody></tbody></table></div>
 </div>
@@ -581,14 +581,22 @@ function renderProgress(){
   const mm=(r.member||'').replace(/'/g,'');
   const tip=r.article+' — '+r.member+'\nVIP '+statusOf(r.vip_ar)+'/'+statusOf(r.vip_en)+' · LOP '+statusOf(r.def_ar)+'/'+statusOf(r.def_en)+' · TKT '+statusOf(r.tkt_ar)+'/'+statusOf(r.tkt_en)+'\nStart '+(r.def_start||r.vip_start||'—')+' → End '+(upd||'—');
   const tr=document.createElement('tr');if(cls)tr.className=cls;tr.title=tip;
-  const sc=(v)=>`<td class=”clk” onclick=”filterByStatus('${statusOf(v)}')”>${pstBadge(v)}</td>`;
-  const tlBadge=e?(exceeded?'<span style=”padding:2px 9px;border-radius:10px;background:#fee2e2;color:#dc2626;font-size:11px;font-weight:700”>Exceeded</span>':'<span style=”padding:2px 9px;border-radius:10px;background:#d1fae5;color:#065f46;font-size:11px;font-weight:700”>On Time</span>'):'—';
-  tr.innerHTML=`<td class=”article”${exceeded?' style=”color:#dc2626;font-weight:700”':''}>${exceeded?'⚠ ':al==='overdue'?'⚠ ':''}${r.article}</td><td class=”l”><span class=”mem clk” onclick=”filterByMember('${mm}')” style=”background:${MEMCOLS[r.member]||'#e7ddcf'};color:${MEMCOLS[r.member]?'#fff':'#7c6f63'}”>${r.member}</span></td>`+
-   sc(r.vip_ar)+sc(r.vip_en)+sc(r.def_ar)+sc(r.def_en)+sc(r.tkt_ar)+sc(r.tkt_en)+`<td class=”jrn”${exceeded?' style=”color:#dc2626”':''}>${upd}</td><td>${tlBadge}</td>`;
+  const tlBadge=e?(exceeded?'<span style="padding:2px 9px;border-radius:10px;background:#fee2e2;color:#dc2626;font-size:11px;font-weight:700">Exceeded</span>':'<span style="padding:2px 9px;border-radius:10px;background:#d1fae5;color:#065f46;font-size:11px;font-weight:700">On Time</span>'):'—';
+  const arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
+  const enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
+  const arStatus=arCells.length?artStatusOverall(arCells):'Not started';
+  const enStatus=enCells.length?artStatusOverall(enCells):'Not started';
+  tr.innerHTML='<td class="article"'+(exceeded?' style="color:#dc2626;font-weight:700"':'')+'>'+(exceeded?'⚠ ':al==='overdue'?'⚠ ':'')+r.article+'</td>'
+   +'<td class="l"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
+   +'<td>'+artBadge(arStatus)+'</td>'
+   +'<td>'+artBadge(enStatus)+'</td>'
+   +'<td class="jrn"'+(exceeded?' style="color:#dc2626"':'')+'>'+upd+'</td>'
+   +'<td>'+tlBadge+'</td>';
   tb.appendChild(tr);shown++;});
- if(!shown)tb.innerHTML='<tr><td colspan=”10” class=”empty”>No articles match'+(statusFilter?' status “'+statusFilter+'”':'')+'. '+(statusFilter?'<a href=”#” onclick=”filterByStatus(statusFilter);return false” style=”color:var(--orange)”>clear filter</a>':'')+'</td></tr>';
+ if(!shown)tb.innerHTML='<tr><td colspan="6" class="empty">No articles match'+(statusFilter?' status "'+statusFilter+'"':'')+'. '+(statusFilter?'<a href="#" onclick="filterByStatus(statusFilter);return false" style="color:var(--orange)">clear filter</a>':'')+'</td></tr>';
  $('prowcount').textContent=shown+' articles'+(statusFilter?' · status: '+statusFilter:'');
 }
+
 function artStatusOverall(cells){
  if(!cells.length)return 'Not started';
  var sts=cells.map(statusOf);
