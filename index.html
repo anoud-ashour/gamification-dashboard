@@ -119,7 +119,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div id="app" class="hide">
 <div class="tabs">
 <button class="tab active" data-tab="overview">Overview</button>
-<button class="tab" data-tab="all">All LOPs</button>
+<button class="tab" data-tab="all">All LOBs</button>
 <button class="tab" data-tab="default" style="display:none">Default</button>
 <button class="tab" data-tab="tpro" style="display:none">TPRO</button>
 <button class="tab" data-tab="tkt" style="display:none">Ticketing</button>
@@ -143,7 +143,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="sub" style="margin-bottom:14px">Assigned by journey stage: <b>Amal</b> → Post Delivery Process · <b>Anoud</b> → Live Orders · <b>Dalia</b> → Across Journey</div>
 <div class="tbl-wrap" style="max-height:none"><table id="mtbl"><thead><tr>
 <th class="l">#</th><th class="l">Member</th><th class="l">Journey Stage</th>
-<th>Articles</th><th>Fully Covered (all LOPs)</th><th>Avg Coverage</th><th>% Done (tracker)</th>
+<th>Articles</th><th>Fully Covered (all LOBs)</th><th>Avg Coverage</th><th>% Done (tracker)</th>
 </tr></thead><tbody></tbody></table></div>
 </div>
 <div class="card"><h3>Articles per Member</h3><div class="chart-box"><canvas id="chMemCount"></canvas></div></div>
@@ -171,11 +171,11 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 <div class="card" style="margin-bottom:16px">
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-<h3 style="margin:0">Status by LOP</h3>
+<h3 style="margin:0">Status by LOB</h3>
 <div id="sopf-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
 </div>
 <div class="tbl-wrap"><table id="soptbl" style="width:100%">
-<thead><tr><th class="l">Article</th><th>LOP</th><th class="l">Assignee</th><th>Effort</th><th>Status</th><th>Due</th></tr></thead>
+<thead><tr><th class="l">Article</th><th>LOB</th><th class="l">Assignee</th><th>Effort</th><th>Status</th><th>Due</th></tr></thead>
 <tbody id="soptbl-body"></tbody></table></div>
 </div>
 <div class="card">
@@ -203,7 +203,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="card">
 <h3 id="tbl-title">Articles</h3>
 <div class="controls">
-<input type="text" id="search" placeholder="🔍 Search by article, member name, or LOP…">
+<input type="text" id="search" placeholder="🔍 Search by article, member name, or LOB…">
 <select id="fJourney"><option value="">All journeys</option></select>
 <select id="fState"><option value="">All rows</option><option value="gaps">Only with gaps</option><option value="full">Only complete</option></select>
 </div>
@@ -485,13 +485,13 @@ function renderTable(){
    +'<th style="text-align:center;min-width:120px"><span style="color:var(--tkt-accent)">&#11044;</span> Ticketing</th>'
    +'<th style="text-align:center;min-width:100px"><span style="color:#10b981">&#11044;</span> Universal</th>'
    +'<th style="min-width:120px">Coverage</th>';
-  $('tbl-title').textContent='All LOPs — Coverage Matrix';
+  $('tbl-title').textContent='All LOBs — Coverage Matrix';
   renderAllLops();
   return;
  }
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
-  +'<th>Arabic</th><th>English</th><th>Drop-Off AR</th><th>Drop-Off EN</th><th>LOP %</th>';
- $('tbl-title').textContent=sopById(activeTab).name+' LOP — Article Coverage';
+  +'<th>Arabic</th><th>English</th><th>Drop-Off AR</th><th>Drop-Off EN</th><th>LOB %</th>';
+ $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
  ROWS.forEach(r=>{
@@ -601,7 +601,7 @@ function renderProgress(){
   const exceeded=e&&!isDone&&e<today;
   const al=alertOf(r),idle=idleOf(r,7);const cls=al==='overdue'?'overdue':(idle?'idle':'');
   const mm=(r.member||'').replace(/'/g,'');
-  const tip=r.article+' — '+r.member+'\nVIP '+statusOf(r.vip_ar)+'/'+statusOf(r.vip_en)+' · LOP '+statusOf(r.def_ar)+'/'+statusOf(r.def_en)+' · TKT '+statusOf(r.tkt_ar)+'/'+statusOf(r.tkt_en)+'\nStart '+(r.def_start||r.vip_start||'—')+' → End '+(upd||'—');
+  const tip=r.article+' — '+r.member+'\nVIP '+statusOf(r.vip_ar)+'/'+statusOf(r.vip_en)+' · LOB '+statusOf(r.def_ar)+'/'+statusOf(r.def_en)+' · TKT '+statusOf(r.tkt_ar)+'/'+statusOf(r.tkt_en)+'\nStart '+(r.def_start||r.vip_start||'—')+' → End '+(upd||'—');
   const tr=document.createElement('tr');if(cls)tr.className=cls;tr.title=tip;
   const tlBadge=e?(exceeded?'<span style="padding:2px 9px;border-radius:10px;background:#fee2e2;color:#dc2626;font-size:11px;font-weight:700">Exceeded</span>':'<span style="padding:2px 9px;border-radius:10px;background:#d1fae5;color:#065f46;font-size:11px;font-weight:700">On Time</span>'):'—';
   const arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
