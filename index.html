@@ -962,12 +962,19 @@ function parseProgressCsv(text){
 // Fallback: parse embedded data.csv snapshot
 function parseFallback(text){
  const rows=parseCsv(text).slice(1);
- return rows.filter(r=>r.length>=15&&r[1]).map(r=>({
-  journey:r[0].trim(),article:r[1].trim(),member:r[2].trim(),
-  lc_ar:+r[3],lc_en:+r[4],lc_do_ar:+r[5],lc_do_en:+r[6],
-  vip_ar:+r[7],vip_en:+r[8],vip_do_ar:+r[9],vip_do_en:+r[10],
-  tkt_ar:+r[11],tkt_en:+r[12],tkt_do_ar:+r[13],tkt_do_en:+r[14]
- }));
+ const covCols=['lc_ar','lc_en','lc_do_ar','lc_do_en','vip_ar','vip_en','vip_do_ar','vip_do_en','tkt_ar','tkt_en','tkt_do_ar','tkt_do_en'];
+ const merged={};
+ rows.filter(r=>r.length>=15&&r[1]).forEach(r=>{
+  const art=mergeArtName(r[1].trim());
+  const row={journey:r[0].trim(),article:art,member:r[2].trim(),
+   lc_ar:+r[3],lc_en:+r[4],lc_do_ar:+r[5],lc_do_en:+r[6],
+   vip_ar:+r[7],vip_en:+r[8],vip_do_ar:+r[9],vip_do_en:+r[10],
+   tkt_ar:+r[11],tkt_en:+r[12],tkt_do_ar:+r[13],tkt_do_en:+r[14]};
+  const k=art.toLowerCase().trim();
+  if(!merged[k]){merged[k]=row;}
+  else{covCols.forEach(f=>{merged[k][f]=Math.max(merged[k][f],row[f]);});}
+ });
+ return Object.values(merged);
 }
 
 async function load(){
