@@ -303,9 +303,9 @@ function buildOverview(){
  ['sop','jr','dr','lang'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  var el=$('sec-overview');if(!el)return;
  var lops=[
-  {id:'default',name:'Default (Live Chat)',color:OR,tab:'default',p:sopCov(SOPS[0]),done:DATA.filter(function(r){return r[SOPS[0].ar]>0&&r[SOPS[0].en]>0;}).length,total:DATA.length},
-  {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,tab:'tpro',p:sopCov(SOPS[1]),done:DATA.filter(function(r){return r[SOPS[1].ar]>0&&r[SOPS[1].en]>0;}).length,total:DATA.length},
-  {id:'tkt',name:'Ticketing',color:BR,tab:'tkt',p:sopCov(SOPS[2]),done:DATA.filter(function(r){return r[SOPS[2].ar]>0&&r[SOPS[2].en]>0;}).length,total:DATA.length},
+  {id:'default',name:'Default (Live Chat)',color:OR,tab:'default',p:sopCov(SOPS[0]),done:DATA.filter(function(r){return r[SOPS[0].ar]>0&&r[SOPS[0].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[0].ar]>0||r[SOPS[0].en]>0;}).length},
+  {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,tab:'tpro',p:sopCov(SOPS[1]),done:DATA.filter(function(r){return r[SOPS[1].ar]>0&&r[SOPS[1].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[1].ar]>0||r[SOPS[1].en]>0;}).length},
+  {id:'tkt',name:'Ticketing',color:BR,tab:'tkt',p:sopCov(SOPS[2]),done:DATA.filter(function(r){return r[SOPS[2].ar]>0&&r[SOPS[2].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[2].ar]>0||r[SOPS[2].en]>0;}).length},
  ];
  var uniR=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
  var uniC=0,uniD=0;uniR.forEach(function(r){PCELLS.forEach(function(k){var v=r[k];if(isStatusValue(v)){uniC++;if(statusOf(v)==='Done')uniD++;}});});
@@ -464,6 +464,7 @@ function renderTable(){
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
  ROWS.forEach(r=>{
   if(!showSop&&r.sopId!==activeTab)return;
+  if(!showSop&&r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
@@ -790,6 +791,7 @@ function parseCsv(text){return text.split('\n').filter(l=>l.trim()).map(parseCsv
 // Parse published coverage CSV
 function parseCoverageCsv(text){
  const rows=parseCsv(text);const data=[];let lastJ='';
+ const covKeys=['lc_ar','lc_en','lc_do_ar','lc_do_en','vip_ar','vip_en','vip_do_ar','vip_do_en','tkt_ar','tkt_en','tkt_do_ar','tkt_do_en'];
  for(const cells of rows){
   while(cells.length<17)cells.push('');
   const j0=(cells[0]||'').trim();
@@ -802,9 +804,16 @@ function parseCoverageCsv(text){
   const f=i=>(cells[i]||'').trim()?1:0;
   let name=art.replace(/^LC \|/,'').trim();if(name.startsWith('|'))name=name.slice(1).trim();
   const row={journey:j,article:name||art,lc_ar:f(3),lc_en:f(4),lc_do_ar:f(5),lc_do_en:f(6),vip_ar:f(8),vip_en:f(9),vip_do_ar:f(10),vip_do_en:f(11),tkt_ar:f(13),tkt_en:f(14),tkt_do_ar:f(15),tkt_do_en:f(16)};
-  if(Object.entries(row).slice(2).some(([,v])=>v))data.push(row);
+  if(covKeys.some(k=>row[k]))data.push(row);
  }
- return data;
+ // Deduplicate by article name — merge coverage fields (take max) so the same article never appears twice
+ const merged={};
+ data.forEach(function(row){
+  const k=row.article.toLowerCase().trim();
+  if(!merged[k]){merged[k]=Object.assign({},row);}
+  else{covKeys.forEach(function(f){merged[k][f]=Math.max(merged[k][f],row[f]);});}
+ });
+ return Object.values(merged);
 }
 
 // Parse Test 1 tracker CSV
