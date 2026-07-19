@@ -100,6 +100,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 .tl-bar{position:absolute;top:0;height:22px;border-radius:6px;min-width:4px;}
 .confetti{position:fixed;top:-12px;width:9px;height:15px;z-index:9999;pointer-events:none;border-radius:2px;}
 @keyframes fall{to{transform:translateY(106vh) rotate(600deg);}}
+@keyframes memIn{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .empty{padding:26px;text-align:center;color:var(--muted);font-size:13px;}
 </style></head>
 <body><div class="wrap">
@@ -140,8 +141,9 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 <div class="card" style="margin-bottom:16px">
 <h3 style="margin-bottom:6px">👥 Members — Article Contribution</h3>
-<div id="members-sub" style="margin-bottom:18px;font-size:13px;display:flex;flex-wrap:wrap;gap:10px;align-items:center"></div>
 <div id="mem-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px"></div>
+<!-- Member expand modal -->
+<div id="memModal" onclick="closeMemberModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)"></div>
 </div>
 <div class="card"><h3>Articles per Member</h3><div class="chart-box"><canvas id="chMemCount"></canvas></div></div>
 </div>
@@ -239,7 +241,7 @@ const SOPS=[
  {id:'tkt',name:'Ticketing',cls:'b-tkt',ar:'tkt_ar',en:'tkt_en',do_ar:'tkt_do_ar',do_en:'tkt_do_en'},
 ];
 const sopById=id=>SOPS.find(s=>s.id===id);
-let DATA=[],ROWS=[],charts={},activeTab='overview',membersBuilt=false;
+let DATA=[],ROWS=[],charts={},activeTab='overview',membersBuilt=false,MEM_STATS={};
 const OR='#FF5900',GR='#16a34a',AM='#f59e0b',GY='#cbd5e1',PU='#8318d8',BR='#411514',MN='#CFFF00';
 const MEMCOLS={'Amal':OR,'Anoud':PU,'Dalia':'var(--mem-dalia)'};
 // ---- Sheet 2: production status tracker ----
@@ -501,8 +503,12 @@ function buildMembers(){
    </div>`;
   }).join('');
   const fullC=s.full===s.count?'#16a34a':'#f59e0b';
+  MEM_STATS[s.m]=s;
   const div=document.createElement('div');
-  div.style.cssText='background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e7ddcf;box-shadow:0 2px 8px rgba(0,0,0,.05)';
+  div.style.cssText='background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e7ddcf;box-shadow:0 2px 8px rgba(0,0,0,.05);cursor:pointer;transition:transform .15s,box-shadow .15s';
+  div.onmouseenter=()=>{div.style.transform='translateY(-4px)';div.style.boxShadow='0 8px 28px rgba(0,0,0,.12)';};
+  div.onmouseleave=()=>{div.style.transform='';div.style.boxShadow='0 2px 8px rgba(0,0,0,.05)';};
+  div.onclick=()=>openMemberModal(s.m);
   div.innerHTML=`
    <div style="background:${col};padding:14px 18px;display:flex;align-items:center;gap:12px">
     <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;flex:none">${init}</div>
@@ -533,20 +539,89 @@ function buildMembers(){
  });
  const labels=stats.map(s=>s.m),cols=labels.map(m=>MEMCOLS[m]||'#9ca3af');
  charts.mc=new Chart($('chMemCount'),{type:'bar',data:{labels,datasets:[{data:stats.map(s=>s.count),backgroundColor:labels.map((_,i)=>cols[i%3]),borderRadius:6}]},options:{...noLeg,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
- // Dynamic subtitle: member → journey stage(s) from live data
- var subEl=$('members-sub');
- if(subEl){
-  var subParts=stats.filter(function(s){return s.m!=='Unassigned';}).map(function(s){
-   return '<span style="display:inline-flex;align-items:center;gap:6px;padding:2px 0">'+
-    '<span class="mem" style="background:'+(MEMCOLS[s.m]||'#9ca3af')+';color:#fff;font-size:11px;padding:2px 8px">'+(s.m)+'</span>'+
-    '<span style="color:#9ca3af">→</span>'+
-    '<span style="color:#374151;font-weight:600">'+(s.stage||'—')+'</span>'+
-   '</span>';
-  });
-  subEl.innerHTML=subParts.join('<span style="color:#e5e0d8;margin:0 8px">·</span>');
- }
  buildWorkload();
 }
+
+function openMemberModal(m){
+ const s=MEM_STATS[m];if(!s)return;
+ const col=MEMCOLS[m]||'#9ca3af';
+ const init=(m!=='Unassigned'?m.trim()[0]:'?').toUpperCase();
+ // LOB bars (larger)
+ const lobHtml=s.lobs.map(l=>{
+  const arC=l.ar>=80?'#16a34a':l.ar>=50?'#f59e0b':'#dc2626';
+  const enC=l.en>=80?'#16a34a':l.en>=50?'#f59e0b':'#dc2626';
+  return`<div style="margin-bottom:14px">
+   <div style="font-size:12px;font-weight:800;color:#374151;margin-bottom:6px">${l.name}</div>
+   <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+    <span style="font-size:10px;font-weight:800;color:${arC};width:20px;flex:none">AR</span>
+    <div style="flex:1;height:8px;background:#f1f5f9;border-radius:99px;overflow:hidden">
+     <div style="height:100%;width:${l.ar}%;background:${arC};border-radius:99px"></div>
+    </div>
+    <span style="font-size:13px;font-weight:900;color:${arC};width:38px;text-align:right;flex:none">${l.ar}%</span>
+   </div>
+   <div style="display:flex;align-items:center;gap:8px">
+    <span style="font-size:10px;font-weight:800;color:${enC};width:20px;flex:none">EN</span>
+    <div style="flex:1;height:8px;background:#f1f5f9;border-radius:99px;overflow:hidden">
+     <div style="height:100%;width:${l.en}%;background:${enC};border-radius:99px"></div>
+    </div>
+    <span style="font-size:13px;font-weight:900;color:${enC};width:38px;text-align:right;flex:none">${l.en}%</span>
+   </div>
+  </div>`;
+ }).join('');
+ // Article rows (from DATA for Default/TPRO/TKT; PROG for Universal)
+ const arts=DATA.filter(r=>ownerOf(r.article)===m);
+ const pSeen=new Set();
+ const pr=PROG.filter(r=>{
+  if(!r.article)return false;
+  const mn=mergeArtName(r.article);const k=nrm(mn);
+  if(pSeen.has(k))return false;
+  const ow=OWNER[k]||'Unassigned';if(ow!==m)return false;
+  pSeen.add(k);return true;
+ });
+ const lc=v=>`<span style="font-size:13px;color:${v?'#16a34a':'#dc2626'};font-weight:700">${v?'✓':'✕'}</span>`;
+ const artRows=arts.map(r=>{
+  const pRow=pr.find(p=>nrm(mergeArtName(p.article))===nrm(mergeArtName(r.article)));
+  const uAr=pRow?statusOf(pRow.def_ar)==='Done':false;
+  const uEn=pRow?statusOf(pRow.def_en)==='Done':false;
+  return`<tr>
+   <td style="padding:8px 10px;font-size:12px;font-weight:600;color:#374151;border-bottom:1px solid #f3f4f6;max-width:200px">${r.article}</td>
+   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.lc_ar)}&thinsp;${lc(r.lc_en)}</td>
+   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.vip_ar)}&thinsp;${lc(r.vip_en)}</td>
+   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.tkt_ar)}&thinsp;${lc(r.tkt_en)}</td>
+   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(uAr)}&thinsp;${lc(uEn)}</td>
+  </tr>`;
+ }).join('');
+ const modal=$('memModal');
+ modal.innerHTML=`<div style="background:#fff;border-radius:20px;overflow:hidden;max-width:600px;width:92%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:memIn .2s ease" onclick="event.stopPropagation()">
+  <div style="background:${col};padding:20px 22px;display:flex;align-items:center;gap:14px;flex:none">
+   <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:22px;flex:none">${init}</div>
+   <div style="flex:1">
+    <div style="color:#fff;font-weight:900;font-size:20px">${m}</div>
+    <div style="color:rgba(255,255,255,.75);font-size:12px;margin-top:2px">${s.count} articles &nbsp;·&nbsp; ${s.full} fully covered</div>
+   </div>
+   <button onclick="closeMemberModal()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:16px;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:22px">
+   <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:12px">Coverage by LOB</div>
+   ${lobHtml}
+   <div style="border-top:1px solid #f3f4f6;margin:16px 0"></div>
+   <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:10px">Articles (${arts.length})</div>
+   <table style="width:100%;border-collapse:collapse">
+    <thead><tr style="background:#f8f6f3">
+     <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Article</th>
+     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#FF5900;text-transform:uppercase">Default</th>
+     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#8318d8;text-transform:uppercase">TPRO</th>
+     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#411514;text-transform:uppercase">TKT</th>
+     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#10b981;text-transform:uppercase">Uni</th>
+    </tr></thead>
+    <tbody>${artRows}</tbody>
+   </table>
+  </div>
+ </div>`;
+ modal.style.display='flex';
+}
+function closeMemberModal(){var m=$('memModal');if(m)m.style.display='none';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMemberModal();});
 
 function renderTable(){
  const showSop=activeTab==='all';
