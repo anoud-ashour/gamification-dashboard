@@ -231,7 +231,7 @@ const memberOf=j=>MEMBER_BY_STAGE[j]||'Unassigned';
 // Real owner per article, read from the tracker sheet (source of truth). Combined rows are split.
 let OWNER={};
 const nrm=s=>(s||'').toLowerCase().replace(/^lc\s*\|\s*/,'').replace(/[|]/g,' ').replace(/\s+/g,' ').trim();
-function buildOwners(){OWNER={};PROG.forEach(r=>{if(!r.member||r.member==='—')return;r.article.split(/\s+(?:and)\s+/i).forEach(p=>{const k=nrm(p);if(k)OWNER[k]=r.member;});});}
+function buildOwners(){OWNER={};PROG.forEach(r=>{if(!r.member||r.member==='—')return;r.article.split(/\s+(?:and)\s+/i).forEach(p=>{const k=nrm(mergeArtName(p.trim()));if(k)OWNER[k]=r.member;});});}
 const ownerOf=a=>OWNER[nrm(a)]||'Unassigned';
 const SOPS=[
  {id:'default',name:'Default',cls:'b-def',ar:'lc_ar',en:'lc_en',do_ar:'lc_do_ar',do_en:'lc_do_en'},
@@ -442,61 +442,75 @@ function buildMembers(){
  ['mc','mv'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  const noLeg={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
  const core=['lc_ar','lc_en','vip_ar','vip_en','tkt_ar','tkt_en'];
+ const lobDef=[
+  {name:'Default',ar:'lc_ar',en:'lc_en'},
+  {name:'TPRO',ar:'vip_ar',en:'vip_en'},
+  {name:'Ticketing',ar:'tkt_ar',en:'tkt_en'},
+ ];
  const members=[...new Set(DATA.map(r=>ownerOf(r.article)))].sort((a,b)=>((a==='Unassigned')-(b==='Unassigned'))||a.localeCompare(b));
  const stats=members.map(m=>{
   const rr=DATA.filter(r=>ownerOf(r.article)===m);
   const stages=[...new Set(rr.map(r=>r.journey))];
-  const avg=rr.length?Math.round(rr.reduce((a,r)=>a+pct(core.reduce((x,k)=>x+r[k],0),6),0)/rr.length):0;
   const full=rr.filter(r=>core.every(k=>r[k])).length;
-  const fullyPct=rr.length?Math.round(full/rr.length*100):0;
-  return {m,stage:stages.join(', ')||'—',count:rr.length,full,avg,done:fullyPct};
- }).sort((a,b)=>b.done-a.done||b.count-a.count);
+  const lobs=lobDef.map(l=>({
+   name:l.name,
+   ar:rr.length?Math.round(rr.filter(r=>r[l.ar]).length/rr.length*100):0,
+   en:rr.length?Math.round(rr.filter(r=>r[l.en]).length/rr.length*100):0,
+   done:rr.filter(r=>r[l.ar]&&r[l.en]).length,
+  }));
+  return {m,stage:stages.join(', ')||'—',count:rr.length,full,lobs};
+ }).sort((a,b)=>b.full-a.full||b.count-a.count);
  const tb=$('mem-cards');tb.innerHTML='';
- stats.forEach((s)=>{
+ stats.forEach(s=>{
   const col=MEMCOLS[s.m]||'#9ca3af';
-  const covCol=s.avg===100?'#16a34a':(s.avg>=80?'#f59e0b':'#dc2626');
-  const doneCol=s.done===100?'#16a34a':(s.done>=50?'#f59e0b':'#dc2626');
   const init=(s.m!=='Unassigned'?s.m.trim()[0]:'?').toUpperCase();
+  const lobRows=s.lobs.map(l=>{
+   const arC=l.ar>=80?'#16a34a':l.ar>=50?'#f59e0b':'#dc2626';
+   const enC=l.en>=80?'#16a34a':l.en>=50?'#f59e0b':'#dc2626';
+   return `<div style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+     <span style="font-size:10px;font-weight:800;color:#6b7280;width:60px;flex:none">${l.name}</span>
+     <span style="font-size:9px;font-weight:800;color:${arC};width:18px;text-align:center;flex:none">AR</span>
+     <div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">
+      <div style="height:100%;width:${l.ar}%;background:${arC};border-radius:99px"></div>
+     </div>
+     <span style="font-size:10px;font-weight:800;color:${arC};width:32px;text-align:right;flex:none">${l.ar}%</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+     <span style="width:60px;flex:none"></span>
+     <span style="font-size:9px;font-weight:800;color:${enC};width:18px;text-align:center;flex:none">EN</span>
+     <div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">
+      <div style="height:100%;width:${l.en}%;background:${enC};border-radius:99px"></div>
+     </div>
+     <span style="font-size:10px;font-weight:800;color:${enC};width:32px;text-align:right;flex:none">${l.en}%</span>
+    </div>
+   </div>`;
+  }).join('');
+  const fullC=s.full===s.count?'#16a34a':'#f59e0b';
   const div=document.createElement('div');
   div.style.cssText='background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e7ddcf;box-shadow:0 2px 8px rgba(0,0,0,.05)';
-  div.innerHTML=`<div style="background:${col};padding:14px 18px;display:flex;align-items:center;gap:12px">
-   <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;flex:none">${init}</div>
-   <div style="overflow:hidden;flex:1">
-    <div style="color:#fff;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.m}</div>
-    <div style="color:rgba(255,255,255,.75);font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.stage||'—'}</div>
-   </div>
-   <div style="background:rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;text-align:center;flex:none">
-    <div style="color:#fff;font-weight:900;font-size:20px;line-height:1">${s.count}</div>
-    <div style="color:rgba(255,255,255,.75);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">articles</div>
-   </div>
-  </div>
-  <div style="padding:14px 18px">
-   <div style="margin-bottom:10px">
-    <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-     <span style="font-size:11px;color:#6b7280;font-weight:600">Avg Coverage</span>
-     <span style="font-size:12px;font-weight:800;color:${covCol}">${s.avg}%</span>
+  div.innerHTML=`
+   <div style="background:${col};padding:14px 18px;display:flex;align-items:center;gap:12px">
+    <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;flex:none">${init}</div>
+    <div style="overflow:hidden;flex:1">
+     <div style="color:#fff;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.m}</div>
+     <div style="color:rgba(255,255,255,.75);font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.stage||'—'}</div>
     </div>
-    <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden">
-     <div style="height:100%;width:${s.avg}%;background:${covCol};border-radius:99px"></div>
+    <div style="background:rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;text-align:center;flex:none">
+     <div style="color:#fff;font-weight:900;font-size:20px;line-height:1">${s.count}</div>
+     <div style="color:rgba(255,255,255,.75);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">articles</div>
     </div>
    </div>
-   <div style="margin-bottom:14px">
-    <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-     <span style="font-size:11px;color:#6b7280;font-weight:600">Fully Covered %</span>
-     <span style="font-size:12px;font-weight:800;color:${doneCol}">${s.done}%</span>
-    </div>
-    <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden">
-     <div style="height:100%;width:${s.done}%;background:${doneCol};border-radius:99px"></div>
-    </div>
-   </div>
-   <div style="padding-top:12px;border-top:1px solid #f3f4f6;display:flex">
-    <div style="text-align:center;flex:1">
-     <div style="font-size:20px;font-weight:900;color:#411514">${s.full}</div>
-     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.3px">Fully Covered</div>
-    </div>
-    <div style="width:1px;background:#f3f4f6"></div>
-    <div style="text-align:center;flex:1">
-     <div style="font-size:20px;font-weight:900;color:#411514">${s.count-s.full}</div>
+   <div style="padding:14px 18px">
+    ${lobRows}
+    <div style="padding-top:10px;border-top:1px solid #f3f4f6;display:flex">
+     <div style="text-align:center;flex:1">
+      <div style="font-size:20px;font-weight:900;color:${fullC}">${s.full}</div>
+      <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.3px">Fully Covered</div>
+     </div>
+     <div style="width:1px;background:#f3f4f6"></div>
+     <div style="text-align:center;flex:1">
+      <div style="font-size:20px;font-weight:900;color:${s.count-s.full>0?'#f59e0b':'#9ca3af'}">${s.count-s.full}</div>
      <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.3px">In Progress</div>
     </div>
    </div>
@@ -899,12 +913,24 @@ async function handleRefresh(){
 }
 
 const FALLBACK_CSV='Journey,Article,Member,Default_AR,Default_EN,Default_DropOff_AR,Default_DropOff_EN,TPRO_AR,TPRO_EN,TPRO_DropOff_AR,TPRO_DropOff_EN,Ticketing_AR,Ticketing_EN,Ticketing_DropOff_AR,Ticketing_DropOff_EN\nPost Delivery Process,Missing Item(s) Complaints,Amal,1,1,0,0,1,1,0,0,1,1,0,0\nPost Delivery Process,Wrong Item(s) Complaints,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Wrong Order Complaints,Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Bad Quality (Order/Item),Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Expired & Nearly Expired tMart & NFV (Order/Item),Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Bad Smell – Bad Taste (Item/Order),Amal,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Temperature Issues (Items-Full Order),Amal,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Food Portion & Packaging Issues (Order/Item),Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nPost Delivery Process,Dented or Bruised (Order/Item),Anoud,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,"Spilled, Damaged, or Broken (Item/Order)",Anoud,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,tMart Fresh & Ultra Fresh in UAE & KW,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nPost Delivery Process,FOBI Full Order/ Item (s) & Food Poisoning,Anoud,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Combo Meal Process tMP & tGO,Anoud,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Special Instructions Not Followed,Anoud,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Flowers,Dalia,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Pharmacies & Cosmetics,Dalia,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Electronics,Dalia,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,Menu Discrepancy All Verticals,Dalia,1,1,1,1,1,1,1,1,1,1,0,0\nPost Delivery Process,tGo Re-Delivery Complaints,Dalia,1,1,1,1,1,1,1,1,1,1,1,1\nPost Delivery Process,Wrong Weight,Dalia,1,1,1,1,1,1,1,1,1,1,1,1\nLive Orders,Order status successful,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nLive Orders,Marked as Delivered,Amal,1,1,1,1,1,1,1,1,1,1,1,1\nLive Orders,Number Modification,Amal,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Delivery Instructions,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Special Instructions,Anoud,1,1,0,0,1,1,0,0,0,0,0,0\nLive Orders,Modify Order,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Modify Delivery Time,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Address Modification,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Unavailable Menu Item,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nLive Orders,Item Availability,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Money Issue,Amal,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Refund Query/Follow-UP,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Double Deduction,Anoud,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Incomplete Talabat Credit,Anoud,1,1,1,1,1,1,1,1,1,1,1,1\nAcross Journey,Missing/Incorrect Invoice,Dalia,1,1,0,0,1,1,0,0,1,1,0,0\nAcross Journey,Incomplete Orders,Dalia,1,1,0,0,1,1,0,0,1,1,0,0';
-// ===== PROGRESS SNAPSHOT (synced from Test 1 via Claude Code MCP — 2026-07-13) =====
+// ===== PROGRESS SNAPSHOT (synced from live tracker via Claude Code MCP — 2026-07-19) =====
 const FALLBACK_PROG=[
-{article:'Missing Item(s) Complaints',member:'Amal',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'14 Jul',vip_end:'14 Jul',def_ar:'',def_en:'',def_start:'',def_end:'',tkt_ar:'',tkt_en:''},
-{article:'Food Portion & Packaging Issues (Order/Item)',member:'Dalia',leave_status:'',vip_ar:'In Progress',vip_en:'In Progress',vip_start:'13 Jul',vip_end:'16 Jul',def_ar:'',def_en:'',def_start:'',def_end:'',tkt_ar:'',tkt_en:''},
-{article:'tMart Fresh & Ultra Fresh in UAE & KW',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'13 Jul',vip_end:'15 Jul',def_ar:'',def_en:'',def_start:'',def_end:'',tkt_ar:'',tkt_en:''},
-{article:'Number Modification',member:'Amal',leave_status:'',vip_ar:'Not Started',vip_en:'Not Started',vip_start:'12 Jul',vip_end:'12 Jul',def_ar:'',def_en:'',def_start:'',def_end:'',tkt_ar:'',tkt_en:''}
+{article:'Missing Item(s) Complaints',member:'Amal',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Food Portion & Packaging Issues (Order/Item)',member:'Dalia',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'6 Jul',vip_end:'6 Jul',def_ar:'Done',def_en:'Done',def_start:'6 Jul',def_end:'6 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'tMart Fresh & Ultra Fresh in UAE & KW',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Number Modification',member:'Amal',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Delivery Instructions',member:'Dalia',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'6 Jul',vip_end:'6 Jul',def_ar:'Done',def_en:'Done',def_start:'6 Jul',def_end:'6 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Special Instructions',member:'Dalia',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'6 Jul',vip_end:'6 Jul',def_ar:'Done',def_en:'Done',def_start:'6 Jul',def_end:'6 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Modify Order',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'29 Jun',vip_end:'29 Jun',def_ar:'Done',def_en:'Done',def_start:'29 Jun',def_end:'29 Jun',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Modify Delivery Time',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Address Modification',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Unavailable Menu Item',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'',vip_end:'',def_ar:'Done',def_en:'Done',def_start:'',def_end:'',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Item Availability',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'',vip_end:'',def_ar:'Done',def_en:'Done',def_start:'',def_end:'',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Money Issue',member:'Amal',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Refund Query/Follow-UP',member:'Dalia',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'6 Jul',vip_end:'6 Jul',def_ar:'Done',def_en:'Done',def_start:'6 Jul',def_end:'6 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Double Deduction',member:'Dalia',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'6 Jul',vip_end:'6 Jul',def_ar:'Done',def_en:'Done',def_start:'6 Jul',def_end:'6 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Missing/Incorrect Invoice',member:'Anoud',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
+{article:'Incomplete Orders',member:'Amal',leave_status:'',vip_ar:'Done',vip_en:'Done',vip_start:'5 Jul',vip_end:'5 Jul',def_ar:'Done',def_en:'Done',def_start:'5 Jul',def_end:'5 Jul',tkt_ar:'Done',tkt_en:'Done'},
 ];
 
 // ===== LIVE DATA — Published Google Sheet CSV URLs =====
@@ -1069,7 +1095,7 @@ async function load(){
  if(!PROG.length)PROG=FALLBACK_PROG;
  // 3. Build owner map; supplement with FALLBACK_CSV for any article not in PROG
  buildOwners();
- parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member)OWNER[k]=r.member;});
+ parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
  build();
