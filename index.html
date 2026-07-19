@@ -884,7 +884,7 @@ const ARTICLE_MERGES=[
   name:'Refund Query / Double Deduction',exact:true},
 ];
 function mergeArtName(n){
- var s=(n||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+ var s=(n||'').replace(/^LC\s*\|\s*/i,'').trim().toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  for(var i=0;i<ARTICLE_MERGES.length;i++){
   var m=ARTICLE_MERGES[i];
   for(var j=0;j<m.keys.length;j++){
