@@ -295,7 +295,7 @@ function buildRows(){
    ar:uAr,en:uEn,do_ar:0,do_en:0});
  });
 }
-const sopCov=s=>{let g=0;DATA.forEach(r=>{g+=r[s.ar]+r[s.en];});return pct(g,DATA.length*2);};
+const sopCov=s=>{let g=0,t=0;DATA.forEach(r=>{if(r[s.ar]>0||r[s.en]>0){g+=r[s.ar]+r[s.en];t+=2;}});return pct(g,t);};
 const cell=v=>`<span class="cell ${v?'yes':'no'}">${v?'✓':'✕'}</span>`;
 
 function goToUni(){var t=SHEET_TABS.find(function(x){return x.name.trim().toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});if(t){var id='sheet-'+t.name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');setTab(id);}}
