@@ -458,6 +458,20 @@ function buildMembers(){
    en:rr.length?Math.round(rr.filter(r=>r[l.en]).length/rr.length*100):0,
    done:rr.filter(r=>r[l.ar]&&r[l.en]).length,
   }));
+  // Universal LOB — from progress tracker def_ar/def_en, deduplicated by merged article name
+  const pSeen=new Set();
+  const pr=PROG.filter(r=>{
+   if(!r.article)return false;
+   const mn=mergeArtName(r.article);const k=nrm(mn);
+   if(pSeen.has(k))return false;
+   const ow=OWNER[k]||'Unassigned';if(ow!==m)return false;
+   pSeen.add(k);return true;
+  });
+  lobs.push({name:'Universal',
+   ar:pr.length?Math.round(pr.filter(r=>statusOf(r.def_ar)==='Done').length/pr.length*100):0,
+   en:pr.length?Math.round(pr.filter(r=>statusOf(r.def_en)==='Done').length/pr.length*100):0,
+   done:pr.filter(r=>statusOf(r.def_ar)==='Done'&&statusOf(r.def_en)==='Done').length,
+  });
   return {m,stage:stages.join(', ')||'—',count:rr.length,full,lobs};
  }).sort((a,b)=>b.full-a.full||b.count-a.count);
  const tb=$('mem-cards');tb.innerHTML='';
