@@ -139,12 +139,9 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="card"><h3>🗓 Coordinator Availability</h3><div id="avail-list" style="margin-top:8px"></div></div>
 </div>
 <div class="card" style="margin-bottom:16px">
-<h3>👥 Members — Article Contribution</h3>
-<div class="sub" style="margin-bottom:14px">Assigned by journey stage: <b>Amal</b> → Post Delivery Process · <b>Anoud</b> → Live Orders · <b>Dalia</b> → Across Journey</div>
-<div class="tbl-wrap" style="max-height:none"><table id="mtbl"><thead><tr>
-<th class="l">#</th><th class="l">Member</th><th class="l">Journey Stage</th>
-<th>Articles</th><th>Fully Covered (all LOBs)</th><th>Avg Coverage</th><th>% Done (tracker)</th>
-</tr></thead><tbody></tbody></table></div>
+<h3 style="margin-bottom:6px">👥 Members — Article Contribution</h3>
+<div id="members-sub" style="margin-bottom:18px;font-size:13px;display:flex;flex-wrap:wrap;gap:10px;align-items:center"></div>
+<div id="mem-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px"></div>
 </div>
 <div class="card"><h3>Articles per Member</h3><div class="chart-box"><canvas id="chMemCount"></canvas></div></div>
 </div>
@@ -453,11 +450,58 @@ function buildMembers(){
   const full=rr.filter(r=>core.every(k=>r[k])).length;
   return {m,stage:stages.join(', ')||'—',count:rr.length,full,avg,done:memberDone(m).pct};
  }).sort((a,b)=>b.done-a.done||b.count-a.count);
- const tb=$('mtbl').querySelector('tbody');tb.innerHTML='';
- stats.forEach((s,i)=>{const tr=document.createElement('tr');
-  tr.innerHTML=`<td class="l" style="font-weight:800;color:var(--orange)">${i+1}</td><td class="l"><span class="mem" style="background:${MEMCOLS[s.m]||'#9ca3af'};color:#fff">${s.m}</span></td><td class="jrn">${s.stage}</td>
-   <td>${s.count}</td><td>${s.full}</td><td class="pct" style="color:${s.avg===100?'#16a34a':(s.avg>=80?'#f59e0b':'#dc2626')}">${s.avg}%</td><td class="pct" style="color:${s.done===100?'#16a34a':(s.done>=50?'#f59e0b':'#dc2626')}">${s.done}%</td>`;
-  tb.appendChild(tr);});
+ const tb=$('mem-cards');tb.innerHTML='';
+ stats.forEach((s)=>{
+  const col=MEMCOLS[s.m]||'#9ca3af';
+  const covCol=s.avg===100?'#16a34a':(s.avg>=80?'#f59e0b':'#dc2626');
+  const doneCol=s.done===100?'#16a34a':(s.done>=50?'#f59e0b':'#dc2626');
+  const init=(s.m!=='Unassigned'?s.m.trim()[0]:'?').toUpperCase();
+  const div=document.createElement('div');
+  div.style.cssText='background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e7ddcf;box-shadow:0 2px 8px rgba(0,0,0,.05)';
+  div.innerHTML=`<div style="background:${col};padding:14px 18px;display:flex;align-items:center;gap:12px">
+   <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;flex:none">${init}</div>
+   <div style="overflow:hidden;flex:1">
+    <div style="color:#fff;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.m}</div>
+    <div style="color:rgba(255,255,255,.75);font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.stage||'—'}</div>
+   </div>
+   <div style="background:rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;text-align:center;flex:none">
+    <div style="color:#fff;font-weight:900;font-size:20px;line-height:1">${s.count}</div>
+    <div style="color:rgba(255,255,255,.75);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">articles</div>
+   </div>
+  </div>
+  <div style="padding:14px 18px">
+   <div style="margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+     <span style="font-size:11px;color:#6b7280;font-weight:600">Avg Coverage</span>
+     <span style="font-size:12px;font-weight:800;color:${covCol}">${s.avg}%</span>
+    </div>
+    <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden">
+     <div style="height:100%;width:${s.avg}%;background:${covCol};border-radius:99px"></div>
+    </div>
+   </div>
+   <div style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+     <span style="font-size:11px;color:#6b7280;font-weight:600">% Done (Tracker)</span>
+     <span style="font-size:12px;font-weight:800;color:${doneCol}">${s.done}%</span>
+    </div>
+    <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden">
+     <div style="height:100%;width:${s.done}%;background:${doneCol};border-radius:99px"></div>
+    </div>
+   </div>
+   <div style="padding-top:12px;border-top:1px solid #f3f4f6;display:flex">
+    <div style="text-align:center;flex:1">
+     <div style="font-size:20px;font-weight:900;color:#411514">${s.full}</div>
+     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.3px">Fully Covered</div>
+    </div>
+    <div style="width:1px;background:#f3f4f6"></div>
+    <div style="text-align:center;flex:1">
+     <div style="font-size:20px;font-weight:900;color:#411514">${s.count-s.full}</div>
+     <div style="font-size:10px;color:#9ca3af;font-weight:700;text-transform:uppercase;letter-spacing:.3px">In Progress</div>
+    </div>
+   </div>
+  </div>`;
+  tb.appendChild(div);
+ });
  const labels=stats.map(s=>s.m),cols=labels.map(m=>MEMCOLS[m]||'#9ca3af');
  charts.mc=new Chart($('chMemCount'),{type:'bar',data:{labels,datasets:[{data:stats.map(s=>s.count),backgroundColor:labels.map((_,i)=>cols[i%3]),borderRadius:6}]},options:{...noLeg,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
  // Dynamic subtitle: member → journey stage(s) from live data
