@@ -313,23 +313,27 @@ function buildOverview(){
  var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
  var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:4px 0">';
  lops.forEach(function(c){
-  html+='<div onclick="setTab(\''+c.tab+'\')" style="'+cs+';border-top:4px solid '+c.color+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">'
-   +'<div id="ovkpi-'+c.id+'" style="font-size:58px;font-weight:900;color:'+c.color+';line-height:1;letter-spacing:-2px">0%</div>'
-   +'<span style="font-size:20px;color:'+c.color+';opacity:.5;padding-top:8px">›</span></div>'
-   +'<div style="font-size:13px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;margin-top:10px">'+c.name+'</div>'
-   +'<div style="font-size:15px;font-weight:700;color:var(--muted);margin-top:6px">'+c.done+' / '+c.total+' done</div>'
-   +'<div style="height:6px;border-radius:4px;background:var(--border-light,#F4EDE3);margin-top:12px;overflow:hidden">'
+  html+='<div onclick="setTab(\''+c.tab+'\')" style="'+cs+';border-left:5px solid '+c.color+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:26px;font-weight:900;color:var(--dark);line-height:1.2">'+c.name+'</div>'
+   +'<span style="font-size:18px;color:'+c.color+';opacity:.6;flex:none;padding-top:2px">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
+   +'<div id="ovkpi-'+c.id+'" style="font-size:36px;font-weight:900;color:'+c.color+';line-height:1;letter-spacing:-1px">0%</div>'
+   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
+   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+c.done+' / '+c.total+' done</div>'
+   +'<div style="height:6px;border-radius:4px;background:var(--border-light,#F4EDE3);margin-top:14px;overflow:hidden">'
    +'<div style="width:'+c.p+'%;height:100%;background:'+c.color+';border-radius:4px"></div></div>'
    +'</div>';
  });
- html+='<div onclick="goToUni()" style="'+cs+';border-top:4px solid #10b981" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
-  +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">'
-  +'<div id="ovkpi-uni" style="font-size:58px;font-weight:900;color:#10b981;line-height:1;letter-spacing:-2px">0%</div>'
-  +'<span style="font-size:20px;color:#10b981;opacity:.5;padding-top:8px">›</span></div>'
-  +'<div style="font-size:13px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;margin-top:10px">Universal</div>'
-  +'<div style="font-size:15px;font-weight:700;color:var(--muted);margin-top:6px">'+uniR.length+' article'+(uniR.length!==1?'s':'')+' tracked</div>'
-  +'<div style="height:6px;border-radius:4px;background:var(--border-light,#F4EDE3);margin-top:12px;overflow:hidden">'
+ html+='<div onclick="goToUni()" style="'+cs+';border-left:5px solid #10b981" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+  +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+  +'<div style="font-size:26px;font-weight:900;color:var(--dark);line-height:1.2">Universal</div>'
+  +'<span style="font-size:18px;color:#10b981;opacity:.6;flex:none;padding-top:2px">›</span></div>'
+  +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
+  +'<div id="ovkpi-uni" style="font-size:36px;font-weight:900;color:#10b981;line-height:1;letter-spacing:-1px">0%</div>'
+  +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
+  +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+uniR.length+' article'+(uniR.length!==1?'s':'')+' tracked</div>'
+  +'<div style="height:6px;border-radius:4px;background:var(--border-light,#F4EDE3);margin-top:14px;overflow:hidden">'
   +'<div style="width:'+uniP+'%;height:100%;background:#10b981;border-radius:4px"></div></div>'
   +'</div>';
  html+='</div>';
