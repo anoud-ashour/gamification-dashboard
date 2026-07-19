@@ -870,6 +870,28 @@ const PROGRESS_URL='https://gist.githubusercontent.com/anoud-ashour/53aab0ac0b53
 const DATA_JSON_URL='https://gist.githubusercontent.com/anoud-ashour/53aab0ac0b530f36df46e175dde241f9/raw/data.json';
 let SHEET_TABS=[];
 
+// Article merge map — pairs that are the same article under different names in the sheet
+const ARTICLE_MERGES=[
+ {keys:['order status successful','marked as delivered','order never delivered'],
+  name:'Order Status / Marked as Delivered'},
+ {keys:['delivery instruction','special instruction'],
+  name:'Delivery Instructions / Special Instructions'},
+ {keys:['modify delivery time','address modification'],
+  name:'Modify Delivery Time / Address Modification'},
+ {keys:['unavailable menu item','item availability'],
+  name:'Unavailable Menu Item / Item Availability'},
+ {keys:['refund query','double deduction'],
+  name:'Refund Query / Double Deduction'},
+];
+function mergeArtName(n){
+ var s=(n||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+ for(var i=0;i<ARTICLE_MERGES.length;i++){
+  var m=ARTICLE_MERGES[i];
+  for(var j=0;j<m.keys.length;j++){if(s.indexOf(m.keys[j])>-1)return m.name;}
+ }
+ return n;
+}
+
 // ===== CSV PARSERS =====
 function parseCsvLine(line){
  const out=[];let cur='',inQ=false;
@@ -898,7 +920,7 @@ function parseCoverageCsv(text){
   else if(j.indexOf('Across')>=0)j='Across Journey';
   const f=i=>(cells[i]||'').trim()?1:0;
   let name=art.replace(/^LC \|/,'').trim();if(name.startsWith('|'))name=name.slice(1).trim();
-  const row={journey:j,article:name||art,lc_ar:f(3),lc_en:f(4),lc_do_ar:f(5),lc_do_en:f(6),vip_ar:f(8),vip_en:f(9),vip_do_ar:f(10),vip_do_en:f(11),tkt_ar:f(13),tkt_en:f(14),tkt_do_ar:f(15),tkt_do_en:f(16)};
+  const row={journey:j,article:mergeArtName(name||art),lc_ar:f(3),lc_en:f(4),lc_do_ar:f(5),lc_do_en:f(6),vip_ar:f(8),vip_en:f(9),vip_do_ar:f(10),vip_do_en:f(11),tkt_ar:f(13),tkt_en:f(14),tkt_do_ar:f(15),tkt_do_en:f(16)};
   if(covKeys.some(k=>row[k]))data.push(row);
  }
  // Deduplicate by article name — merge coverage fields (take max) so the same article never appears twice
@@ -917,7 +939,7 @@ function parseProgressCsv(text){
  const rows=parseCsv(text);const out=[];
  for(const r of rows){
   while(r.length<13)r.push('');
-  const raw=(r[0]||'').trim();
+  const raw=mergeArtName((r[0]||'').trim());
   if(!raw||/^(article|artical|name|member|vip|tpro|default|tkt|arabic|english|start|end|notes)/i.test(raw)||/^-+$/.test(raw))continue;
   const cl=i=>(r[i]||'').trim();
   // Strip "LC | " prefix and split combined rows like "A AND B" or "A and B"
