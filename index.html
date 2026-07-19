@@ -448,7 +448,8 @@ function buildMembers(){
   const stages=[...new Set(rr.map(r=>r.journey))];
   const avg=rr.length?Math.round(rr.reduce((a,r)=>a+pct(core.reduce((x,k)=>x+r[k],0),6),0)/rr.length):0;
   const full=rr.filter(r=>core.every(k=>r[k])).length;
-  return {m,stage:stages.join(', ')||'—',count:rr.length,full,avg,done:memberDone(m).pct};
+  const fullyPct=rr.length?Math.round(full/rr.length*100):0;
+  return {m,stage:stages.join(', ')||'—',count:rr.length,full,avg,done:fullyPct};
  }).sort((a,b)=>b.done-a.done||b.count-a.count);
  const tb=$('mem-cards');tb.innerHTML='';
  stats.forEach((s)=>{
@@ -481,7 +482,7 @@ function buildMembers(){
    </div>
    <div style="margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-     <span style="font-size:11px;color:#6b7280;font-weight:600">% Done (Tracker)</span>
+     <span style="font-size:11px;color:#6b7280;font-weight:600">Fully Covered %</span>
      <span style="font-size:12px;font-weight:800;color:${doneCol}">${s.done}%</span>
     </div>
     <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden">
@@ -1066,11 +1067,9 @@ async function load(){
   }catch(e){}
  }
  if(!PROG.length)PROG=FALLBACK_PROG;
- // 3. Build owner map; fall back to snapshot member column
+ // 3. Build owner map; supplement with FALLBACK_CSV for any article not in PROG
  buildOwners();
- if(!Object.keys(OWNER).length){
-  parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member)OWNER[k]=r.member;});
- }
+ parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
  build();
