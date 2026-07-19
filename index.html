@@ -450,6 +450,18 @@ function buildMembers(){
   tb.appendChild(tr);});
  const labels=stats.map(s=>s.m),cols=labels.map(m=>MEMCOLS[m]||'#9ca3af');
  charts.mc=new Chart($('chMemCount'),{type:'bar',data:{labels,datasets:[{data:stats.map(s=>s.count),backgroundColor:labels.map((_,i)=>cols[i%3]),borderRadius:6}]},options:{...noLeg,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+ // Dynamic subtitle: member → journey stage(s) from live data
+ var subEl=$('members-sub');
+ if(subEl){
+  var subParts=stats.filter(function(s){return s.m!=='Unassigned';}).map(function(s){
+   return '<span style="display:inline-flex;align-items:center;gap:6px;padding:2px 0">'+
+    '<span class="mem" style="background:'+(MEMCOLS[s.m]||'#9ca3af')+';color:#fff;font-size:11px;padding:2px 8px">'+(s.m)+'</span>'+
+    '<span style="color:#9ca3af">→</span>'+
+    '<span style="color:#374151;font-weight:600">'+(s.stage||'—')+'</span>'+
+   '</span>';
+  });
+  subEl.innerHTML=subParts.join('<span style="color:#e5e0d8;margin:0 8px">·</span>');
+ }
  buildWorkload();
 }
 
