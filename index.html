@@ -110,13 +110,12 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="tabs">
 <button class="tab active" data-tab="overview">Overview</button>
 <button class="tab" data-tab="all">All LOPs</button>
-<button class="tab" data-tab="default">Default</button>
-<button class="tab" data-tab="tpro">TPRO</button>
-<button class="tab" data-tab="tkt">Ticketing</button>
+<button class="tab" data-tab="default" style="display:none">Default</button>
+<button class="tab" data-tab="tpro" style="display:none">TPRO</button>
+<button class="tab" data-tab="tkt" style="display:none">Ticketing</button>
 <button class="tab" data-tab="members">Members</button>
 <button class="tab" data-tab="progress">📋 Progress</button>
-<span style="width:1px;background:var(--border);margin:4px 6px;align-self:stretch;display:inline-block;opacity:0.5"></span>
-<div id="sheet-tab-nav" style="display:contents"></div>
+<div id="sheet-tab-nav" style="display:none"></div>
 </div>
 
 <!-- Overview -->
@@ -190,6 +189,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <!-- Table tabs (all / default / tpro / tkt) -->
 
 <div id="sec-table" class="tabsec hide">
+<div style="margin-bottom:10px"><button onclick="setTab('overview')" style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:700;cursor:pointer;padding:0">← Back to Overview</button></div>
 <div class="card">
 <h3 id="tbl-title">Articles</h3>
 <div class="controls">
@@ -363,17 +363,18 @@ function buildDynamicTabs(){
  SHEET_TABS.forEach(function(tab){
   var safeId='sheet-'+tab.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   var btn=document.createElement('button');
-  btn.className='tab';btn.dataset.tab=safeId;btn.textContent=tab.name;
+  btn.className='tab';btn.dataset.tab=safeId;btn.textContent=tab.name;btn.style.display='none';
   btn.onclick=function(){setTab(safeId);};
   nav.appendChild(btn);
   var sec=document.createElement('div');
   sec.id='sec-'+safeId;sec.className='tabsec hide dynamic-section';
   var rows=tab.rows||[];
-  if(!rows.length){sec.innerHTML='<div class="card"><div class="empty" style="padding:40px;text-align:center">No data in this sheet.</div></div>';}
+  var backBtn='<div style="margin-bottom:10px"><button onclick="setTab(\'overview\')" style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:700;cursor:pointer;padding:0">← Back to Overview</button></div>';
+  if(!rows.length){sec.innerHTML=backBtn+'<div class="card"><div class="empty" style="padding:40px;text-align:center">No data in this sheet.</div></div>';}
   else{
    var headers=rows[0];
    var dataRows=rows.slice(1).filter(function(r){return r.some(function(c){return String(c).trim();});});
-   var html='<div class="card"><h3>'+tab.name+'</h3><div class="controls" style="margin-bottom:10px"><input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px"></div><div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%"><thead><tr>';
+   var html=backBtn+'<div class="card"><h3>'+tab.name+'</h3><div class="controls" style="margin-bottom:10px"><input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px"></div><div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%"><thead><tr>';
    headers.forEach(function(h){html+='<th class="l" style="padding:10px 14px;font-size:11px">'+String(h||'')+'</th>';});
    html+='</tr></thead><tbody>';
    dataRows.forEach(function(row){
