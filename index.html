@@ -485,10 +485,12 @@ function buildMembers(){
   const lobRows=s.lobs.map(l=>{
    if(l.name==='Universal'){
     const items=(s.pr||[]).map(r=>{
-     const arD=statusOf(r.def_ar)==='Done',enD=statusOf(r.def_en)==='Done';
-     const ip=isStatusValue(r.def_ar)||isStatusValue(r.def_en);
-     const icon=(arD&&enD)?'✓':ip?'?':'—';
-     const ic=(arD&&enD)?'#16a34a':ip?'#f59e0b':'#9ca3af';
+     // Use all PCELLS so column-offset issues in live CSV don't break status detection
+     const active=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(r[k]));
+     const isDone=active.length>0&&active.every(k=>statusOf(r[k])==='Done');
+     const hasProgress=active.some(k=>statusOf(r[k])!=='Not started');
+     const icon=isDone?'✓':hasProgress?'?':'—';
+     const ic=isDone?'#16a34a':hasProgress?'#f59e0b':'#9ca3af';
      const name=r.article.length>30?r.article.slice(0,28)+'…':r.article;
      return'<div style="display:flex;align-items:center;gap:5px;padding:2px 0">'
       +'<span style="font-size:11px;font-weight:900;color:'+ic+';width:14px;flex:none;text-align:center">'+icon+'</span>'
@@ -595,8 +597,9 @@ function openMemberModal(m){
  const lc=v=>`<span style="font-size:13px;color:${v?'#16a34a':'#dc2626'};font-weight:700">${v?'✓':'✕'}</span>`;
  const artRows=arts.map(r=>{
   const pRow=pr.find(p=>nrm(mergeArtName(p.article))===nrm(mergeArtName(r.article)));
-  const uAr=pRow?statusOf(pRow.def_ar)==='Done':false;
-  const uEn=pRow?statusOf(pRow.def_en)==='Done':false;
+  const pActive=pRow?['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(pRow[k])):[];
+  const pDone=pActive.length>0&&pActive.every(k=>statusOf(pRow[k])==='Done');
+  const uAr=pDone,uEn=pDone;
   return`<tr>
    <td style="padding:8px 10px;font-size:12px;font-weight:600;color:#374151;border-bottom:1px solid #f3f4f6;max-width:200px">${r.article}</td>
    <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.lc_ar)}&thinsp;${lc(r.lc_en)}</td>
