@@ -476,33 +476,47 @@ function buildMembers(){
   // count = coverage-sheet articles + any PROG-only articles not yet in coverage sheet
   const dataKeys=new Set(rr.map(r=>nrm(mergeArtName(r.article))));
   const uniOnly=pr.filter(r=>!dataKeys.has(nrm(mergeArtName(r.article)))).length;
-  return {m,stage:stages.join(', ')||'—',count:rr.length+uniOnly,full,lobs};
+  return {m,stage:stages.join(', ')||'—',count:rr.length+uniOnly,full,lobs,pr};
  }).sort((a,b)=>b.full-a.full||b.count-a.count);
  const tb=$('mem-cards');tb.innerHTML='';
  stats.forEach(s=>{
   const col=MEMCOLS[s.m]||'#9ca3af';
   const init=(s.m!=='Unassigned'?s.m.trim()[0]:'?').toUpperCase();
   const lobRows=s.lobs.map(l=>{
+   if(l.name==='Universal'){
+    const items=(s.pr||[]).map(r=>{
+     const arD=statusOf(r.def_ar)==='Done',enD=statusOf(r.def_en)==='Done';
+     const ip=isStatusValue(r.def_ar)||isStatusValue(r.def_en);
+     const icon=(arD&&enD)?'✓':ip?'?':'—';
+     const ic=(arD&&enD)?'#16a34a':ip?'#f59e0b':'#9ca3af';
+     const name=r.article.length>30?r.article.slice(0,28)+'…':r.article;
+     return'<div style="display:flex;align-items:center;gap:5px;padding:2px 0">'
+      +'<span style="font-size:11px;font-weight:900;color:'+ic+';width:14px;flex:none;text-align:center">'+icon+'</span>'
+      +'<span style="font-size:10px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">'+name+'</span>'
+      +'</div>';
+    }).join('')||'<div style="font-size:10px;color:#9ca3af;font-style:italic;padding:2px 0">No articles yet</div>';
+    return'<div style="margin-bottom:10px">'
+     +'<div style="font-size:10px;font-weight:800;color:#6b7280;margin-bottom:5px">Universal</div>'
+     +'<div style="padding-left:2px">'+items+'</div>'
+     +'</div>';
+   }
    const arC=l.ar>=80?'#16a34a':l.ar>=50?'#f59e0b':'#dc2626';
    const enC=l.en>=80?'#16a34a':l.en>=50?'#f59e0b':'#dc2626';
-   return `<div style="margin-bottom:10px">
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-     <span style="font-size:10px;font-weight:800;color:#6b7280;width:60px;flex:none">${l.name}</span>
-     <span style="font-size:9px;font-weight:800;color:${arC};width:18px;text-align:center;flex:none">AR</span>
-     <div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">
-      <div style="height:100%;width:${l.ar}%;background:${arC};border-radius:99px"></div>
-     </div>
-     <span style="font-size:10px;font-weight:800;color:${arC};width:32px;text-align:right;flex:none">${l.ar}%</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px">
-     <span style="width:60px;flex:none"></span>
-     <span style="font-size:9px;font-weight:800;color:${enC};width:18px;text-align:center;flex:none">EN</span>
-     <div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">
-      <div style="height:100%;width:${l.en}%;background:${enC};border-radius:99px"></div>
-     </div>
-     <span style="font-size:10px;font-weight:800;color:${enC};width:32px;text-align:right;flex:none">${l.en}%</span>
-    </div>
-   </div>`;
+   return '<div style="margin-bottom:10px">'
+    +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'
+    +'<span style="font-size:10px;font-weight:800;color:#6b7280;width:60px;flex:none">'+l.name+'</span>'
+    +'<span style="font-size:9px;font-weight:800;color:'+arC+';width:18px;text-align:center;flex:none">AR</span>'
+    +'<div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">'
+    +'<div style="height:100%;width:'+l.ar+'%;background:'+arC+';border-radius:99px"></div></div>'
+    +'<span style="font-size:10px;font-weight:800;color:'+arC+';width:32px;text-align:right;flex:none">'+l.ar+'%</span>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:6px">'
+    +'<span style="width:60px;flex:none"></span>'
+    +'<span style="font-size:9px;font-weight:800;color:'+enC+';width:18px;text-align:center;flex:none">EN</span>'
+    +'<div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">'
+    +'<div style="height:100%;width:'+l.en+'%;background:'+enC+';border-radius:99px"></div></div>'
+    +'<span style="font-size:10px;font-weight:800;color:'+enC+';width:32px;text-align:right;flex:none">'+l.en+'%</span>'
+    +'</div></div>';
   }).join('');
   const fullC=s.full===s.count?'#16a34a':'#f59e0b';
   MEM_STATS[s.m]=s;
