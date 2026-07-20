@@ -151,7 +151,6 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div id="sec-progress" class="tabsec hide">
 <div class="kpis">
 <div class="kpi big"><div class="v" id="p-done">–</div><div class="l">Overall Done</div></div>
-<div class="kpi"><div class="v" id="p-full" style="color:#8318d8">–</div><div class="l">Articles Fully Done</div></div>
 <div class="kpi"><div class="v" id="p-prog" style="color:#FF5900">–</div><div class="l">In Progress</div></div>
 <div class="kpi"><div class="v" id="p-rev" style="color:#3b82f6">–</div><div class="l">On Review</div></div>
 <div class="kpi"><div class="v" id="p-not" style="color:var(--tkt-accent)">–</div><div class="l">Not Started</div></div>
@@ -936,7 +935,6 @@ function buildProgress(){
  if(!PROG.length){const d=document.createElement('div');d.className='sub prog-empty-msg';d.textContent='No status rows found in the tracker sheet.';$('sec-progress').querySelector('.card').prepend(d);}
  let done=0,tot=0;PROG.forEach(r=>PCELLS.forEach(k=>{tot++;if(statusOf(r[k])==='Done')done++;}));
  $('p-done').textContent=pct(done,tot)+'%';
- $('p-full').textContent=PROG.filter(r=>PCELLS.every(k=>statusOf(r[k])==='Done')).length;
  $('p-prog').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-rev').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='On Review')&&!PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-not').textContent=PROG.filter(r=>PCELLS.every(k=>statusOf(r[k])==='Not started')).length;
