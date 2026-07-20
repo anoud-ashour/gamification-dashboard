@@ -145,7 +145,6 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <!-- Member expand modal -->
 <div id="memModal" onclick="closeMemberModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)"></div>
 </div>
-<div class="card"><h3>Articles per Member</h3><div class="chart-box"><canvas id="chMemCount"></canvas></div></div>
 </div>
 
 <!-- Progress (Sheet 2 — production status) -->
@@ -474,7 +473,10 @@ function buildMembers(){
    en:pr.length?Math.round(pr.filter(r=>statusOf(r.def_en)==='Done').length/pr.length*100):0,
    done:pr.filter(r=>statusOf(r.def_ar)==='Done'&&statusOf(r.def_en)==='Done').length,
   });
-  return {m,stage:stages.join(', ')||'—',count:rr.length,full,lobs};
+  // count = coverage-sheet articles + any PROG-only articles not yet in coverage sheet
+  const dataKeys=new Set(rr.map(r=>nrm(mergeArtName(r.article))));
+  const uniOnly=pr.filter(r=>!dataKeys.has(nrm(mergeArtName(r.article)))).length;
+  return {m,stage:stages.join(', ')||'—',count:rr.length+uniOnly,full,lobs};
  }).sort((a,b)=>b.full-a.full||b.count-a.count);
  const tb=$('mem-cards');tb.innerHTML='';
  stats.forEach(s=>{
@@ -537,8 +539,6 @@ function buildMembers(){
   </div>`;
   tb.appendChild(div);
  });
- const labels=stats.map(s=>s.m),cols=labels.map(m=>MEMCOLS[m]||'#9ca3af');
- charts.mc=new Chart($('chMemCount'),{type:'bar',data:{labels,datasets:[{data:stats.map(s=>s.count),backgroundColor:labels.map((_,i)=>cols[i%3]),borderRadius:6}]},options:{...noLeg,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
  buildWorkload();
 }
 
