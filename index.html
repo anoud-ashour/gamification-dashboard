@@ -380,12 +380,21 @@ function buildDynamicTabs(){
   var backBtn='<div style="margin-bottom:10px"><button onclick="setTab(\'overview\')" style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:700;cursor:pointer;padding:0">← Back to Overview</button></div>';
   if(!rows.length){sec.innerHTML=backBtn+'<div class="card"><div class="empty" style="padding:40px;text-align:center">No data in this sheet.</div></div>';}
   else{
+   var isUniTab=tab.name.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;
    var headers=rows[0];
    var dataRows=rows.slice(1).filter(function(r){return r.some(function(c){return String(c).trim();});});
+   // Clean header map for Universal tabs (fixes typos and raw sheet caps)
+   var hMap={'artical name':'Article','article name':'Article','memebr name':'Member','member name':'Member','start date':'Start Date','end date':'End Date','arabic':'Arabic','english':'English','status':'Status','universal':'Universal'};
    var html=backBtn+'<div class="card"><h3>'+tab.name+'</h3><div class="controls" style="margin-bottom:10px"><input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px"></div><div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%"><thead><tr>';
-   headers.forEach(function(h){html+='<th class="l" style="padding:10px 14px;font-size:11px">'+String(h||'')+'</th>';});
+   headers.forEach(function(h){var raw=String(h||'');var label=isUniTab?(hMap[raw.toLowerCase().trim()]||raw):raw;html+='<th class="l" style="padding:10px 14px;font-size:11px">'+label+'</th>';});
    html+='</tr></thead><tbody>';
    dataRows.forEach(function(row){
+    // Skip sub-header rows (article column is "—", empty, or a label word)
+    var art=String(row[0]||'').trim();
+    if(!art||art==='—'||/^(article|artical|name)$/i.test(art))return;
+    // Hide fully-done rows
+    var sCells=row.filter(function(c){return isStatusValue(String(c==null?'':c));});
+    if(sCells.length>0&&sCells.every(function(c){return statusOf(String(c==null?'':c))==='Done';}))return;
     html+='<tr>';
     row.forEach(function(cell,ci){
      var s=String(cell==null?'':cell);
@@ -838,6 +847,7 @@ function renderMbTable(){
  rows.sort(function(a,b){return(a.member||'').localeCompare(b.member||'');});
  rows.forEach(function(r){
   var cells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
+   if(cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';}))return;
   var done=cells.filter(function(v){return statusOf(v)==='Done';}).length;
   var p=cells.length?Math.round(done/cells.length*100):0;
   var st=artStatusOverall(cells);
@@ -864,6 +874,7 @@ function renderSopTable(){
  src.filter(function(r){return r.article&&r.article!=='—';}).forEach(function(r){
   var allCells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
   var overall=artStatusOverall(allCells);
+   if(allCells.length>0&&allCells.every(function(v){return statusOf(v)==='Done';}))return;
   if(sopfFilter&&overall!==sopfFilter)return;
   var done=allCells.filter(function(v){return statusOf(v)==='Done';}).length;
   var p=allCells.length?Math.round(done/allCells.length*100):0;
