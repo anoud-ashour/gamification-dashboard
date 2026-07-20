@@ -154,6 +154,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="kpi"><div class="v" id="p-prog" style="color:#FF5900">–</div><div class="l">In Progress</div></div>
 <div class="kpi"><div class="v" id="p-rev" style="color:#3b82f6">–</div><div class="l">On Review</div></div>
 <div class="kpi"><div class="v" id="p-not" style="color:var(--tkt-accent)">–</div><div class="l">Not Started</div></div>
+<div class="kpi"><div class="v" id="p-pend" style="color:#d97706">–</div><div class="l">Pending Modification</div></div>
 </div>
 <div id="palerts" class="alerts"></div>
 <div id="pdigest" class="sub" style="margin:0 0 14px"></div>
@@ -247,7 +248,7 @@ const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
 const PSOPS=[{id:'vip',name:'VIP / tPro',c:['vip_ar','vip_en']},{id:'def',name:'Universal',c:['def_ar','def_en']},{id:'tkt',name:'TKT',c:['tkt_ar','tkt_en']}];
 const PCELLS=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'];
-const statusOf=v=>{const s=(v||'').toLowerCase();return(s.includes('done')||s.includes('found')||s.includes('complete'))?'Done':s.includes('progress')?'In Progress':s.includes('review')?'On Review':'Not started';};
+const statusOf=v=>{const s=(v||'').toLowerCase();return(s.includes('done')||s.includes('found')||s.includes('complete'))?'Done':s.includes('pending')?'Pending Modification':s.includes('progress')?'In Progress':s.includes('review')?'On Review':'Not started';};
 // % of a member's status cells (from the tracker sheet) that are Done
 const memberDone=m=>{const rr=PROG.filter(r=>r.member===m);let d=0,t=0;rr.forEach(r=>PCELLS.forEach(k=>{t++;if(statusOf(r[k])==='Done')d++;}));return{pct:pct(d,t),done:d,total:t,articles:rr.length};};
 
@@ -791,7 +792,7 @@ function parseProgress(md){
    tkt_ar:clean(cells[10]),tkt_en:clean(cells[11])});}
  return out;
 }
-const pstBadge=v=>{const s=statusOf(v);const c=s==='Done'?'background:#CFFF00;color:#411514':(s==='In Progress'?'background:#FF5900;color:#fff':(s==='On Review'?'background:#3b82f6;color:#fff':'background:#F4EDE3;color:#411514;border:1px solid #e7ddcf'));return `<span class="badge" style="${c}">${s==='Not started'?'—':s}</span>`;};
+const pstBadge=v=>{const s=statusOf(v);const c=s==='Done'?'background:#CFFF00;color:#411514':(s==='In Progress'?'background:#FF5900;color:#fff':(s==='On Review'?'background:#3b82f6;color:#fff':(s==='Pending Modification'?'background:#fef3c7;color:#d97706;border:1px solid #fcd34d':'background:#F4EDE3;color:#411514;border:1px solid #e7ddcf')));return `<span class="badge" style="${c}">${s==='Not started'?'—':s}</span>`;};
 function renderProgress(){
  const q=$('psearch').value.toLowerCase().trim();
  const tb=$('ptbl').querySelector('tbody');tb.innerHTML='';let shown=0;
@@ -938,10 +939,11 @@ function buildProgress(){
  $('p-prog').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-rev').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='On Review')&&!PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-not').textContent=PROG.filter(r=>PCELLS.every(k=>statusOf(r[k])==='Not started')).length;
+ if($('p-pend'))$('p-pend').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='Pending Modification')).length;
  // Build filter buttons for Status by Member
  var mbBtnsEl=$('mbf-btns');
  if(mbBtnsEl){mbBtnsEl.innerHTML='';
-  ['All','In Progress','On Review'].forEach(function(label){
+  ['All','In Progress','On Review','Pending Modification'].forEach(function(label){
    var val=label==='All'?'':label;
    var btn=document.createElement('button');
    btn.className='fbtn'+(mbfFilter===val?' active':'');
@@ -955,7 +957,7 @@ function buildProgress(){
  // Build filter buttons for Status by SOP
  var sopBtnsEl=$('sopf-btns');
  if(sopBtnsEl){sopBtnsEl.innerHTML='';
-  ['All','In Progress','On Review'].forEach(function(label){
+  ['All','In Progress','On Review','Pending Modification'].forEach(function(label){
    var val=label==='All'?'':label;
    var btn=document.createElement('button');
    btn.className='fbtn'+(sopfFilter===val?' active':'');
