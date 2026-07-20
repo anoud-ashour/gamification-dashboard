@@ -523,44 +523,26 @@ function buildMembers(){
  stats.forEach(s=>{
   const col=MEMCOLS[s.m]||'#9ca3af';
   const init=(s.m!=='Unassigned'?s.m.trim()[0]:'?').toUpperCase();
-  const lobRows=s.lobs.map(l=>{
-   if(l.name==='Universal'){
-    const items=(s.pr||[]).map(r=>{
-     // Use all PCELLS so column-offset issues in live CSV don't break status detection
-     const active=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(r[k]));
-     const isDone=active.length>0&&active.every(k=>statusOf(r[k])==='Done');
-     const hasProgress=active.some(k=>statusOf(r[k])!=='Not started');
-     const icon=isDone?'✓':hasProgress?'?':'—';
-     const ic=isDone?'#16a34a':hasProgress?'#f59e0b':'#9ca3af';
-     const name=r.article.length>30?r.article.slice(0,28)+'…':r.article;
-     return'<div style="display:flex;align-items:center;gap:5px;padding:2px 0">'
-      +'<span style="font-size:11px;font-weight:900;color:'+ic+';width:14px;flex:none;text-align:center">'+icon+'</span>'
-      +'<span style="font-size:10px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">'+name+'</span>'
-      +'</div>';
-    }).join('')||'<div style="font-size:10px;color:#9ca3af;font-style:italic;padding:2px 0">No articles yet</div>';
-    return'<div style="margin-bottom:10px">'
-     +'<div style="font-size:10px;font-weight:800;color:#6b7280;margin-bottom:5px">Universal</div>'
-     +'<div style="padding-left:2px">'+items+'</div>'
-     +'</div>';
-   }
-   const arC=l.ar>=80?'#16a34a':l.ar>=50?'#f59e0b':'#dc2626';
-   const enC=l.en>=80?'#16a34a':l.en>=50?'#f59e0b':'#dc2626';
-   return '<div style="margin-bottom:10px">'
-    +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'
-    +'<span style="font-size:10px;font-weight:800;color:#6b7280;width:60px;flex:none">'+l.name+'</span>'
-    +'<span style="font-size:9px;font-weight:800;color:'+arC+';width:18px;text-align:center;flex:none">AR</span>'
-    +'<div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">'
-    +'<div style="height:100%;width:'+l.ar+'%;background:'+arC+';border-radius:99px"></div></div>'
-    +'<span style="font-size:10px;font-weight:800;color:'+arC+';width:32px;text-align:right;flex:none">'+l.ar+'%</span>'
-    +'</div>'
-    +'<div style="display:flex;align-items:center;gap:6px">'
-    +'<span style="width:60px;flex:none"></span>'
-    +'<span style="font-size:9px;font-weight:800;color:'+enC+';width:18px;text-align:center;flex:none">EN</span>'
-    +'<div style="flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden">'
-    +'<div style="height:100%;width:'+l.en+'%;background:'+enC+';border-radius:99px"></div></div>'
-    +'<span style="font-size:10px;font-weight:800;color:'+enC+';width:32px;text-align:right;flex:none">'+l.en+'%</span>'
-    +'</div></div>';
+  const progInProg=(s.pr||[]).filter(r=>{
+   const active=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(r[k]));
+   return active.length===0||!active.every(k=>statusOf(r[k])==='Done');
+  });
+  const artRows=progInProg.map(r=>{
+   const start=r.def_start||r.vip_start||'';
+   const end=r.def_end||r.vip_end||'';
+   const tl=(start||end)?(start&&end?start+' → '+end:start||end):'';
+   const nm=r.article.length>26?r.article.slice(0,24)+'…':r.article;
+   return'<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f9fafb">'
+    +'<span style="font-size:11px;font-weight:600;color:#374151;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nm+'</span>'
+    +(tl?'<span style="font-size:9px;color:#9ca3af;flex:none;margin-left:6px;white-space:nowrap">'+tl+'</span>':'')
+    +'</div>';
   }).join('');
+  const bodyContent=progInProg.length>0
+   ?'<div style="margin-bottom:10px">'
+    +'<div style="font-size:9px;font-weight:800;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Articles In Progress</div>'
+    +artRows
+    +'</div>'
+   :'<div style="font-size:11px;color:#9ca3af;padding:6px 0;text-align:center">All articles complete ✓</div>';
   const fullC=s.full===s.count?'#16a34a':'#f59e0b';
   MEM_STATS[s.m]=s;
   const div=document.createElement('div');
@@ -573,7 +555,6 @@ function buildMembers(){
     <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;flex:none">${init}</div>
     <div style="overflow:hidden;flex:1">
      <div style="color:#fff;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.m}</div>
-     <div style="color:rgba(255,255,255,.75);font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.stage||'—'}</div>
     </div>
     <div style="background:rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;text-align:center;flex:none">
      <div style="color:#fff;font-weight:900;font-size:20px;line-height:1">${s.count}</div>
@@ -581,7 +562,7 @@ function buildMembers(){
     </div>
    </div>
    <div style="padding:14px 18px">
-    ${lobRows}
+    ${bodyContent}
     <div style="padding-top:10px;border-top:1px solid #f3f4f6;display:flex">
      <div style="text-align:center;flex:1">
       <div style="font-size:20px;font-weight:900;color:${fullC}">${s.full}</div>
