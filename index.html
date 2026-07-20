@@ -584,52 +584,55 @@ function openMemberModal(m){
  const s=MEM_STATS[m];if(!s)return;
  const col=MEMCOLS[m]||'#9ca3af';
  const init=(m!=='Unassigned'?m.trim()[0]:'?').toUpperCase();
- // LOB bars (larger)
- const lobHtml=s.lobs.map(l=>{
-  const arC=l.ar>=80?'#16a34a':l.ar>=50?'#f59e0b':'#dc2626';
-  const enC=l.en>=80?'#16a34a':l.en>=50?'#f59e0b':'#dc2626';
-  return`<div style="margin-bottom:14px">
-   <div style="font-size:12px;font-weight:800;color:#374151;margin-bottom:6px">${l.name}</div>
-   <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
-    <span style="font-size:10px;font-weight:800;color:${arC};width:20px;flex:none">AR</span>
-    <div style="flex:1;height:8px;background:#f1f5f9;border-radius:99px;overflow:hidden">
-     <div style="height:100%;width:${l.ar}%;background:${arC};border-radius:99px"></div>
-    </div>
-    <span style="font-size:13px;font-weight:900;color:${arC};width:38px;text-align:right;flex:none">${l.ar}%</span>
-   </div>
-   <div style="display:flex;align-items:center;gap:8px">
-    <span style="font-size:10px;font-weight:800;color:${enC};width:20px;flex:none">EN</span>
-    <div style="flex:1;height:8px;background:#f1f5f9;border-radius:99px;overflow:hidden">
-     <div style="height:100%;width:${l.en}%;background:${enC};border-radius:99px"></div>
-    </div>
-    <span style="font-size:13px;font-weight:900;color:${enC};width:38px;text-align:right;flex:none">${l.en}%</span>
-   </div>
-  </div>`;
- }).join('');
- // Article rows (from DATA for Default/TPRO/TKT; PROG for Universal)
- const arts=DATA.filter(r=>ownerOf(r.article)===m);
- const pSeen=new Set();
- const pr=PROG.filter(r=>{
-  if(!r.article)return false;
-  const mn=mergeArtName(r.article);const k=nrm(mn);
-  if(pSeen.has(k))return false;
-  const ow=OWNER[k]||'Unassigned';if(ow!==m)return false;
-  pSeen.add(k);return true;
+ const pr=s.pr||[];
+ const inProg=pr.filter(r=>{
+  const active=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(r[k]));
+  return active.length===0||!active.every(k=>statusOf(r[k])==='Done');
  });
- const lc=v=>`<span style="font-size:13px;color:${v?'#16a34a':'#dc2626'};font-weight:700">${v?'✓':'✕'}</span>`;
- const artRows=arts.map(r=>{
-  const pRow=pr.find(p=>nrm(mergeArtName(p.article))===nrm(mergeArtName(r.article)));
-  const pActive=pRow?['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(pRow[k])):[];
-  const pDone=pActive.length>0&&pActive.every(k=>statusOf(pRow[k])==='Done');
-  const uAr=pDone,uEn=pDone;
-  return`<tr>
-   <td style="padding:8px 10px;font-size:12px;font-weight:600;color:#374151;border-bottom:1px solid #f3f4f6;max-width:200px">${r.article}</td>
-   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.lc_ar)}&thinsp;${lc(r.lc_en)}</td>
-   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.vip_ar)}&thinsp;${lc(r.vip_en)}</td>
-   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(r.tkt_ar)}&thinsp;${lc(r.tkt_en)}</td>
-   <td style="padding:8px 6px;text-align:center;border-bottom:1px solid #f3f4f6;white-space:nowrap">${lc(uAr)}&thinsp;${lc(uEn)}</td>
-  </tr>`;
- }).join('');
+ const doneArts=pr.filter(r=>{
+  const active=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(r[k]));
+  return active.length>0&&active.every(k=>statusOf(r[k])==='Done');
+ });
+ const getOverallStatus=r=>{
+  const active=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(k=>isStatusValue(r[k]));
+  if(active.length===0)return'Not started';
+  if(active.every(k=>statusOf(r[k])==='Done'))return'Done';
+  if(active.some(k=>statusOf(r[k])==='In Progress'))return'In Progress';
+  if(active.some(k=>statusOf(r[k])==='Pending Modification'))return'Pending Modification';
+  if(active.some(k=>statusOf(r[k])==='On Review'))return'On Review';
+  return'Not started';
+ };
+ const stColor=st=>st==='Done'?'#16a34a':st==='In Progress'?'#f59e0b':st==='Pending Modification'?'#d97706':st==='On Review'?'#3b82f6':'#9ca3af';
+ const inProgHtml=inProg.length>0
+  ?inProg.map(r=>{
+   const start=r.def_start||r.vip_start||'';
+   const end=r.def_end||r.vip_end||'';
+   const tl=start&&end?start+' → '+end:(start||end||'');
+   const st=getOverallStatus(r);const sc=stColor(st);
+   return'<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f3f4f6;gap:10px">'
+    +'<div style="flex:1;min-width:0">'
+    +'<div style="font-size:13px;font-weight:600;color:#374151;line-height:1.4">'+r.article+'</div>'
+    +(tl?'<div style="font-size:10px;color:#9ca3af;margin-top:3px">'+tl+'</div>':'')
+    +'</div>'
+    +'<span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;background:'+sc+'22;color:'+sc+';flex:none;white-space:nowrap">'+st+'</span>'
+    +'</div>';
+  }).join('')
+  :'<div style="font-size:13px;color:#9ca3af;padding:10px 0">No articles in progress</div>';
+ const doneHtml=doneArts.length>0
+  ?'<details style="margin-top:18px"><summary style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;cursor:pointer;list-style:none;margin-bottom:10px">&#9654; Fully Covered ('+doneArts.length+')</summary>'
+   +doneArts.map(r=>{
+    const start=r.def_start||r.vip_start||'';
+    const end=r.def_end||r.vip_end||'';
+    const tl=start&&end?start+' → '+end:(start||end||'');
+    return'<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f9fafb;gap:10px">'
+     +'<div style="flex:1;min-width:0">'
+     +'<div style="font-size:13px;font-weight:500;color:#6b7280">'+r.article+'</div>'
+     +(tl?'<div style="font-size:10px;color:#d1d5db;margin-top:2px">'+tl+'</div>':'')
+     +'</div>'
+     +'<span style="font-size:15px;color:#16a34a;font-weight:900;flex:none">✓</span>'
+     +'</div>';
+   }).join('')+'</details>'
+  :'';
  const modal=$('memModal');
  modal.innerHTML=`<div style="background:#fff;border-radius:20px;overflow:hidden;max-width:600px;width:92%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:memIn .2s ease" onclick="event.stopPropagation()">
   <div style="background:${col};padding:20px 22px;display:flex;align-items:center;gap:14px;flex:none">
@@ -641,20 +644,9 @@ function openMemberModal(m){
    <button onclick="closeMemberModal()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:16px;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center">✕</button>
   </div>
   <div style="overflow-y:auto;flex:1;padding:22px">
-   <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:12px">Coverage by LOB</div>
-   ${lobHtml}
-   <div style="border-top:1px solid #f3f4f6;margin:16px 0"></div>
-   <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:10px">Articles (${arts.length})</div>
-   <table style="width:100%;border-collapse:collapse">
-    <thead><tr style="background:#f8f6f3">
-     <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Article</th>
-     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#FF5900;text-transform:uppercase">Default</th>
-     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#8318d8;text-transform:uppercase">TPRO</th>
-     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#411514;text-transform:uppercase">TKT</th>
-     <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:800;color:#10b981;text-transform:uppercase">Uni</th>
-    </tr></thead>
-    <tbody>${artRows}</tbody>
-   </table>
+   <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#9ca3af;margin-bottom:10px">In Progress (${inProg.length})</div>
+   ${inProgHtml}
+   ${doneHtml}
   </div>
  </div>`;
  modal.style.display='flex';
