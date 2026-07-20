@@ -763,6 +763,7 @@ function renderProgress(){
   const e=endDate(r);
   const activeCells=PCELLS.filter(k=>isStatusValue(r[k]));
   const isDone=activeCells.length>0&&activeCells.every(k=>statusOf(r[k])==='Done');
+  if(isDone)return; // hide fully-done articles — they show ✓ on member cards instead
   const exceeded=e&&!isDone&&e<today;
   const al=alertOf(r),idle=idleOf(r,7);const cls=al==='overdue'?'overdue':(idle?'idle':'');
   const mm=(r.member||'').replace(/'/g,'');
