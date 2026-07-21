@@ -1007,32 +1007,30 @@ function buildUpdateProjects(){
   ];
  }
  var total=doRows.length;
- var lobs=[
-  {id:'vip',name:'VIP / tPro',color:PU,cssCol:'var(--purple)',arKey:'vip_ar',enKey:'vip_en'},
-  {id:'def',name:'Default',color:OR,cssCol:'var(--orange)',arKey:'def_ar',enKey:'def_en'},
-  {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',arKey:'tkt_ar',enKey:'tkt_en'},
- ];
- lobs.forEach(function(l){
-  l.done=doRows.filter(function(r){return statusOf(r[l.arKey])==='Done'&&statusOf(r[l.enKey])==='Done';}).length;
-  l.p=pct(l.done,total||1);
- });
- // 3 stat cards (non-clickable, like overview)
- var cs='background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.07)';
- var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 22px">';
- lobs.forEach(function(l){
-  html+='<div style="'+cs+';border-left:5px solid '+l.color+'">'
-   +'<div style="font-size:18px;font-weight:900;color:var(--dark);margin-bottom:10px">'+l.name+'</div>'
-   +'<div style="display:flex;align-items:baseline;gap:8px">'
-   +'<div id="do-kpi-'+l.id+'" style="font-size:32px;font-weight:900;color:'+l.cssCol+';line-height:1;letter-spacing:-1px">0%</div>'
-   +'<div style="font-size:12px;color:var(--muted);font-weight:600">coverage</div></div>'
-   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px">'+l.done+' / '+total+' done</div>'
-   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
-   +'<div style="width:'+l.p+'%;height:100%;background:'+l.cssCol+';border-radius:3px"></div></div>'
-   +'</div>';
- });
- html+='</div>';
- // Combined table — all 3 LOBs in one view, no clicking required
- html+='<div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
+ // Count how many articles are fully done across ALL 6 columns
+ var totalDone=doRows.filter(function(r){
+  return statusOf(r.vip_ar)==='Done'&&statusOf(r.vip_en)==='Done'
+   &&statusOf(r.def_ar)==='Done'&&statusOf(r.def_en)==='Done'
+   &&statusOf(r.tkt_ar)==='Done'&&statusOf(r.tkt_en)==='Done';
+ }).length;
+ var overallPct=pct(totalDone,total||1);
+ // One clickable card
+ var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 22px">'
+  +'<div id="do-main-card" onclick="toggleDoTable()" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid var(--orange);box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:340px" '
+  +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
+  +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+  +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+  +'<div style="font-size:18px;font-weight:900;color:var(--dark)">Drop Off Update</div>'
+  +'<span id="do-toggle-icon" style="font-size:20px;color:var(--orange);font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
+  +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
+  +'<div id="do-kpi-main" style="font-size:32px;font-weight:900;color:var(--orange);line-height:1;letter-spacing:-1px">0%</div>'
+  +'<div style="font-size:12px;color:var(--muted);font-weight:600">overall coverage</div></div>'
+  +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px">'+totalDone+' / '+total+' articles fully done</div>'
+  +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
+  +'<div style="width:'+overallPct+'%;height:100%;background:var(--orange);border-radius:3px"></div></div>'
+  +'</div></div>';
+ // Table (hidden by default, toggled on click)
+ html+='<div id="do-table-wrap" style="display:none"><div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
  html+='<thead>'
   +'<tr>'
   +'<th rowspan="2" style="background:#FF5900;color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800">Article Name</th>'
@@ -1062,9 +1060,15 @@ function buildUpdateProjects(){
    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.tkt_en)+'</td>'
    +'</tr>';
  });
- html+='</tbody></table></div></div>';
+ html+='</tbody></table></div></div></div>';
  el.innerHTML=html;
- lobs.forEach(function(l){countUp($('do-kpi-'+l.id),l.p,'%');});
+ countUp($('do-kpi-main'),overallPct,'%');
+}
+function toggleDoTable(){
+ var wrap=$('do-table-wrap');var icon=$('do-toggle-icon');if(!wrap)return;
+ var open=wrap.style.display==='none';
+ wrap.style.display=open?'block':'none';
+ if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
 
 function setTab(t){
