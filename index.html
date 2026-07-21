@@ -127,6 +127,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="members">Members</button>
 <button class="tab" data-tab="progress">📋 Progress</button>
 <button class="tab" data-tab="updates">Update Projects</button>
+<button class="tab" data-tab="minigames">🎮 Mini Games</button>
 <div id="sheet-tab-nav" style="display:none"></div>
 </div>
 
@@ -198,6 +199,11 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <!-- Update Projects tab -->
 <div id="sec-updates" class="tabsec hide">
 <div id="upt-dropoff"></div>
+</div>
+
+<!-- Mini Games tab -->
+<div id="sec-minigames" class="tabsec hide">
+<div id="minigames-content"></div>
 </div>
 
 <!-- Table tabs (all / default / tpro / tkt) -->
@@ -1173,6 +1179,83 @@ function closeGameLinkModal(){
  $('glm-overlay').style.display='none';
  $('glm-modal').style.display='none';
 }
+function buildMiniGames(){
+ var el=$('minigames-content');if(!el)return;
+ var mgTab=(typeof SHEET_TABS!=='undefined'?SHEET_TABS:[]).find(function(t){
+  return (t.name||'').toLowerCase().replace(/[\s\-_]/g,'').indexOf('mini')>-1;
+ });
+ if(!mgTab||!mgTab.rows||!mgTab.rows.length){
+  el.innerHTML='<div class="card"><div class="empty" style="padding:40px;text-align:center">Mini Games sheet tab not found or empty.</div></div>';
+  return;
+ }
+ var headers=(mgTab.rows[0]||[]).map(function(h){return (h||'').toString().trim();});
+ var dataRows=mgTab.rows.slice(1).filter(function(r){return r.some(function(c){return String(c||'').trim();});});
+ // Detect which columns hold URLs
+ var isUrl=function(v){return /^https?:\/\//i.test((v||'').toString().trim());};
+ // Find article col (col 0 assumed), then AR/EN link cols by header name or by URL content
+ var arCol=-1,enCol=-1;
+ headers.forEach(function(h,i){
+  var hl=h.toLowerCase();
+  if(i===0)return;
+  if(arCol<0&&(hl.indexOf('ar')>-1||hl.indexOf('arabic')>-1||hl.indexOf('عربي')>-1))arCol=i;
+  else if(enCol<0&&(hl.indexOf('en')>-1||hl.indexOf('english')>-1||hl.indexOf('انجليزي')>-1))enCol=i;
+ });
+ // If header detection failed, fall back to scanning data for URL columns
+ if(arCol<0||enCol<0){
+  var urlCols=[];
+  headers.forEach(function(h,i){if(i===0)return;
+   var hasUrl=dataRows.some(function(r){return isUrl(r[i]);});
+   if(hasUrl)urlCols.push(i);
+  });
+  if(arCol<0&&urlCols.length>0)arCol=urlCols[0];
+  if(enCol<0&&urlCols.length>1)enCol=urlCols[1];
+ }
+ // Build search + cards
+ var html='<div style="margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
+  +'<input id="mg-search" type="text" placeholder="🔍 Search article…" oninput="filterMiniGames(this.value)" '
+  +'style="padding:9px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;width:280px" '
+  +'onfocus="this.style.borderColor=\'var(--orange)\'" onblur="this.style.borderColor=\'var(--border)\'">'
+  +'<span id="mg-count" style="font-size:12px;font-weight:700;color:var(--muted)"></span>'
+  +'</div>';
+ html+='<div id="mg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">';
+ var cardCount=0;
+ dataRows.forEach(function(r,i){
+  var art=(r[0]||'').toString().trim();if(!art)return;
+  var arUrl=arCol>-1?(r[arCol]||'').toString().trim():'';
+  var enUrl=enCol>-1?(r[enCol]||'').toString().trim():'';
+  if(!arUrl&&!enUrl)return;
+  cardCount++;
+  var num=String(i+1).padStart(2,'0');
+  html+='<div class="mg-card" data-art="'+art.toLowerCase()+'" style="background:var(--card);border-radius:18px;padding:20px 18px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.07);display:flex;flex-direction:column;gap:14px">'
+   +'<div style="display:flex;align-items:flex-start;gap:10px">'
+   +'<span style="font-size:11px;font-weight:800;color:var(--orange);background:#fff3e0;border-radius:6px;padding:2px 7px;flex:none;margin-top:2px">#'+num+'</span>'
+   +'<div style="font-size:13px;font-weight:800;color:var(--dark);line-height:1.4">'+art+'</div>'
+   +'</div>'
+   +'<div style="display:flex;gap:8px">';
+  if(arUrl){
+   html+='<a href="'+arUrl+'" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;background:var(--orange);color:#fff;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none">'
+    +'🎮 Arabic</a>';
+  } else {
+   html+='<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:9px 12px;background:#f3f4f6;color:#9ca3af;border-radius:10px;font-size:13px;font-weight:700">No AR link</div>';
+  }
+  if(enUrl){
+   html+='<a href="'+enUrl+'" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;background:'+PU+';color:#fff;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none">'
+    +'🎮 English</a>';
+  } else {
+   html+='<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:9px 12px;background:#f3f4f6;color:#9ca3af;border-radius:10px;font-size:13px;font-weight:700">No EN link</div>';
+  }
+  html+='</div></div>';
+ });
+ html+='</div>';
+ el.innerHTML=html;
+ var mg=$('mg-count');if(mg)mg.textContent=cardCount+' games';
+}
+function filterMiniGames(q){
+ q=q.toLowerCase().trim();
+ document.querySelectorAll('.mg-card').forEach(function(c){
+  c.style.display=(!q||c.dataset.art.indexOf(q)>-1)?'':'none';
+ });
+}
 function setTab(t){
  activeTab=t;
  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
@@ -1180,11 +1263,13 @@ function setTab(t){
  $('sec-members').classList.toggle('hide',t!=='members');
  $('sec-progress').classList.toggle('hide',t!=='progress');
  $('sec-updates').classList.toggle('hide',t!=='updates');
+ $('sec-minigames').classList.toggle('hide',t!=='minigames');
  $('sec-table').classList.toggle('hide',!(t==='all'||t==='default'||t==='tpro'||t==='tkt'));
  document.querySelectorAll('.dynamic-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
  if(t==='members')buildMembers();
  if(t==='progress')buildProgress();
  if(t==='updates')buildUpdateProjects();
+ if(t==='minigames')buildMiniGames();
  if(t==='all'||t==='default'||t==='tpro'||t==='tkt')renderTable();
 }
 
