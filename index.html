@@ -1169,7 +1169,7 @@ function saveGameLink(){
  else renderTable();
 }
 function clearGameLink(){
- if(_mgEditKey){delete GAME_LINKS[_mgEditKey];localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));var inpEn=$('glm-url-en');if(inpEn&&inpEn.parentElement)inpEn.parentElement.style.display='';closeGameLinkModal();buildMiniGames();_mgEditKey='';return;}
+ if(_mgEditKey){delete GAME_LINKS[_mgEditKey];localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));var enSec=$('glm-en-section');if(enSec)enSec.style.display='';closeGameLinkModal();buildMiniGames();_mgEditKey='';return;}
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
@@ -1180,6 +1180,7 @@ function clearGameLink(){
 function closeGameLinkModal(){
  $('glm-overlay').style.display='none';
  $('glm-modal').style.display='none';
+ if(_mgEditKey){var enSec=$('glm-en-section');if(enSec)enSec.style.display='';_mgEditKey='';}
 }
 var MG_CATS=[
  {name:'Cancelation Reasons and Contact Drivers',games:6},
@@ -1240,11 +1241,9 @@ function mgEditLink(key){
  _mgEditKey=key;
  var label=key.replace(/mglink::/,'').replace(/::/g,' → game ');
  var nameEl=$('glm-article-name');if(nameEl)nameEl.textContent=label;
- var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
- // Reuse single-input modal — hide EN field, use AR for the single URL
+ var inpAr=$('glm-url-ar');
  if(inpAr)inpAr.value=GAME_LINKS[key]||'';
- if(inpEn){inpEn.value='';inpEn.parentElement.style.display='none';}
- var arLabel=inpAr&&inpAr.previousElementSibling;if(arLabel)arLabel.textContent='Game Link';
+ var enSec=$('glm-en-section');if(enSec)enSec.style.display='none';
  $('glm-overlay').style.display='block';$('glm-modal').style.display='block';
  setTimeout(function(){if(inpAr)inpAr.focus();},50);
 }
@@ -1253,9 +1252,8 @@ function saveMgLink(){
  if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
  if(url)GAME_LINKS[_mgEditKey]=url; else delete GAME_LINKS[_mgEditKey];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
- // Restore EN field visibility
- var inpEn=$('glm-url-en');if(inpEn&&inpEn.parentElement)inpEn.parentElement.style.display='';
- var arLabel=$('glm-url-ar')&&$('glm-url-ar').previousElementSibling;if(arLabel)arLabel.textContent='Arabic Game Link';
+ var enSec=$('glm-en-section');if(enSec)enSec.style.display='';
+ _mgEditKey='';
  closeGameLinkModal();
  buildMiniGames();
 }
@@ -1563,8 +1561,10 @@ setInterval(handleRefresh,5*60*1000);
  <div id="glm-article-name" style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:18px;line-height:1.4"></div>
  <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Arabic Game Link</div>
  <input id="glm-url-ar" type="url" placeholder="Paste Arabic game URL…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:14px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
+ <div id="glm-en-section">
  <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">English Game Link</div>
  <input id="glm-url-en" type="url" placeholder="Paste English game URL…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:18px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
+ </div>
  <div style="display:flex;gap:8px">
   <button onclick="saveGameLink()" style="flex:1;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Save Links</button>
   <button onclick="clearGameLink()" style="padding:10px 16px;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Remove Both</button>
