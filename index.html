@@ -1219,8 +1219,14 @@ function buildMiniGames(){
   +'</div></div>';
  // Expandable content
  html+='<div id="mg-table-wrap" style="display:none">'
-  +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
+  +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px">'
+  +(editLinksMode?'<button onclick="exportMgLinks()" style="padding:7px 16px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer">📋 Export Links</button>':'')
   +'<button onclick="toggleMgEditMode()" style="padding:7px 16px;border-radius:8px;border:1.5px solid '+PU+';background:'+(editLinksMode?PU:'none')+';color:'+(editLinksMode?'#fff':PU)+';font-size:12px;font-weight:800;cursor:pointer">'+(editLinksMode?'✓ Done':'✏️ Edit Links')+'</button>'
+  +'</div>'
+  +'<div id="mg-export-box" style="display:none;margin-bottom:16px;background:#f0fdf4;border:1.5px solid #16a34a;border-radius:12px;padding:14px">'
+  +'<div style="font-size:11px;font-weight:800;color:#16a34a;margin-bottom:8px;text-transform:uppercase">Copy this and send to update the dashboard:</div>'
+  +'<textarea id="mg-export-txt" style="width:100%;box-sizing:border-box;height:80px;font-size:11px;font-family:monospace;border:none;background:transparent;resize:none;outline:none;color:#166534" readonly></textarea>'
+  +'<button onclick="copyMgExport()" style="padding:5px 14px;border-radius:7px;background:#16a34a;color:#fff;border:none;font-size:12px;font-weight:800;cursor:pointer">Copy to Clipboard</button>'
   +'</div>';
  // Category cards grid
  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
@@ -1306,11 +1312,17 @@ function saveMgLink(){
  closeGameLinkModal();
  buildMiniGames();
 }
-function filterMiniGames(q){
- q=(q||'').toLowerCase().trim();
- document.querySelectorAll('.mg-card').forEach(function(c){
-  c.style.display=(!q||(c.dataset.art||'').indexOf(q)>-1)?'':'none';
- });
+function exportMgLinks(){
+ var box=$('mg-export-box');var txt=$('mg-export-txt');if(!box||!txt)return;
+ var mgOnly={};
+ Object.keys(GAME_LINKS).forEach(function(k){if(k.indexOf('mglink::')===0)mgOnly[k]=GAME_LINKS[k];});
+ txt.value=JSON.stringify(mgOnly,null,2);
+ box.style.display=box.style.display==='none'?'block':'none';
+}
+function copyMgExport(){
+ var txt=$('mg-export-txt');if(!txt)return;
+ txt.select();document.execCommand('copy');
+ var btn=txt.nextElementSibling;if(btn){btn.textContent='✓ Copied!';setTimeout(function(){btn.textContent='Copy to Clipboard';},2000);}
 }
 function filterMiniGames(q){
  q=(q||'').toLowerCase().trim();
