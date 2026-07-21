@@ -1079,9 +1079,10 @@ function toggleDoTable(){
  if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
 
-var _glmKey='';
+var _glmKey='';var _glmLob='';
 function glCell(gkey,lang){
- var url=GAME_LINKS[gkey+'::'+lang]||'';
+ var lob=activeTab;
+ var url=GAME_LINKS[gkey+'::'+lob+'::'+lang]||'';
  var ek=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
  if(url){
   return '<td style="text-align:center"><a href="'+url+'" target="_blank" title="Open '+lang.toUpperCase()+' game" style="font-size:16px;text-decoration:none">🎮</a>'
@@ -1097,12 +1098,12 @@ function toggleEditLinksMode(){
  renderTable();
 }
 function editGameLink(artKey){
- _glmKey=artKey;
+ _glmKey=artKey;_glmLob=activeTab;
  var nameEl=$('glm-article-name');
  if(nameEl)nameEl.textContent=artKey;
  var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
- if(inpAr)inpAr.value=GAME_LINKS[artKey+'::ar']||'';
- if(inpEn)inpEn.value=GAME_LINKS[artKey+'::en']||'';
+ if(inpAr)inpAr.value=GAME_LINKS[artKey+'::'+_glmLob+'::ar']||'';
+ if(inpEn)inpEn.value=GAME_LINKS[artKey+'::'+_glmLob+'::en']||'';
  $('glm-overlay').style.display='block';
  $('glm-modal').style.display='block';
  setTimeout(function(){if(inpAr)inpAr.focus();},50);
@@ -1112,15 +1113,15 @@ function saveGameLink(){
  var en=($('glm-url-en').value||'').trim();
  if(ar&&!/^https?:\/\//i.test(ar))ar='https://'+ar;
  if(en&&!/^https?:\/\//i.test(en))en='https://'+en;
- if(ar)GAME_LINKS[_glmKey+'::ar']=ar; else delete GAME_LINKS[_glmKey+'::ar'];
- if(en)GAME_LINKS[_glmKey+'::en']=en; else delete GAME_LINKS[_glmKey+'::en'];
+ if(ar)GAME_LINKS[_glmKey+'::'+_glmLob+'::ar']=ar; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
+ if(en)GAME_LINKS[_glmKey+'::'+_glmLob+'::en']=en; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  closeGameLinkModal();
  renderTable();
 }
 function clearGameLink(){
- delete GAME_LINKS[_glmKey+'::ar'];
- delete GAME_LINKS[_glmKey+'::en'];
+ delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
+ delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  closeGameLinkModal();
  renderTable();
