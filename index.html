@@ -126,6 +126,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="tkt" style="display:none">Ticketing</button>
 <button class="tab" data-tab="members">Members</button>
 <button class="tab" data-tab="progress">📋 Progress</button>
+<button class="tab" data-tab="updates">Update Projects</button>
 <div id="sheet-tab-nav" style="display:none"></div>
 </div>
 
@@ -192,6 +193,14 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <th class="l">Due</th><th class="l">Timeline</th>
 </tr></thead><tbody></tbody></table></div>
 </div>
+</div>
+
+<!-- Update Projects tab -->
+<div id="sec-updates" class="tabsec hide">
+<div style="margin-bottom:18px;display:flex;align-items:center;gap:0;border-bottom:2px solid var(--border)">
+<button id="upt-dropoff-btn" onclick="setUpdateSubTab('dropoff')" style="padding:10px 22px;background:none;border:none;border-bottom:3px solid var(--orange);font-size:14px;font-weight:800;color:var(--orange);cursor:pointer;margin-bottom:-2px">Drop Off Update</button>
+</div>
+<div id="upt-dropoff"></div>
 </div>
 
 <!-- Table tabs (all / default / tpro / tkt) -->
@@ -672,7 +681,7 @@ function renderTable(){
   return;
  }
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
-  +'<th>Arabic</th><th>English</th><th>Drop-Off AR</th><th>Drop-Off EN</th><th>LOB %</th>';
+  +'<th>Arabic</th><th>English</th><th>LOB %</th>';
  $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
@@ -689,11 +698,11 @@ function renderTable(){
   const mm=(r.member||'').replace(/'/g,'');
   tr.innerHTML='<td class="article">'+r.article+'</td><td class="jrn">'+r.journey+'</td>'
    +'<td class="l"><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
-   +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td><td>'+cell(r.do_ar)+'</td><td>'+cell(r.do_en)+'</td>'
+   +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>';
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="8" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="6" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' rows';
 }
 function renderAllLops(){
@@ -949,16 +958,89 @@ function buildProgress(){
  renderProgress();
 }
 
+function setUpdateSubTab(sub){
+ // currently only one sub-tab; keep hook for future tabs
+ $('upt-'+sub).style.display='';
+}
+function buildUpdateProjects(){
+ var el=$('upt-dropoff');if(!el)return;
+ var lobs=[
+  {id:'default',name:'Default (Live Chat)',color:OR,cssCol:'var(--orange)',arKey:'lc_do_ar',enKey:'lc_do_en',cArKey:'lc_ar',cEnKey:'lc_en'},
+  {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,cssCol:'var(--purple)',arKey:'vip_do_ar',enKey:'vip_do_en',cArKey:'vip_ar',cEnKey:'vip_en'},
+  {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',arKey:'tkt_do_ar',enKey:'tkt_do_en',cArKey:'tkt_ar',cEnKey:'tkt_en'},
+ ];
+ lobs.forEach(function(l){
+  var lobRows=DATA.filter(function(r){return r[l.cArKey]>0||r[l.cEnKey]>0;});
+  l.total=lobRows.length;
+  l.done=lobRows.filter(function(r){return r[l.arKey]>0&&r[l.enKey]>0;}).length;
+  l.arOnly=lobRows.filter(function(r){return r[l.arKey]>0&&!r[l.enKey];}).length;
+  l.p=pct(l.done,l.total);
+  l.rows=lobRows;
+ });
+ var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:default;box-shadow:0 2px 8px rgba(0,0,0,.07)';
+ var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:4px 0 20px">';
+ lobs.forEach(function(l){
+  html+='<div style="'+cs+';border-left:5px solid '+l.color+'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:20px;font-weight:900;color:var(--dark);line-height:1.2">'+l.name+'</div>'
+   +'<span style="font-size:18px;color:'+l.cssCol+';opacity:.6">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
+   +'<div id="do-kpi-'+l.id+'" style="font-size:36px;font-weight:900;color:'+l.cssCol+';line-height:1;letter-spacing:-1px">0%</div>'
+   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
+   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+l.done+' / '+l.total+' done</div>'
+   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
+   +'<div style="width:'+l.p+'%;height:100%;background:'+l.cssCol+';border-radius:4px"></div></div>'
+   +'</div>';
+ });
+ html+='</div>';
+ // Detail table — all articles across all 3 LOBs
+ html+='<div class="card">';
+ html+='<h3 style="margin-bottom:14px">Drop-Off Coverage — All Articles</h3>';
+ html+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
+ html+='<thead><tr style="background:#f8f6f3">'
+  +'<th class="l" style="padding:8px 10px">Article</th>'
+  +'<th class="l" style="padding:8px 10px">Member</th>'
+  +'<th style="text-align:center;padding:8px 6px;color:#FF5900">Default AR</th>'
+  +'<th style="text-align:center;padding:8px 6px;color:#FF5900">Default EN</th>'
+  +'<th style="text-align:center;padding:8px 6px;color:#8318d8">TPRO AR</th>'
+  +'<th style="text-align:center;padding:8px 6px;color:#8318d8">TPRO EN</th>'
+  +'<th style="text-align:center;padding:8px 6px;color:#411514">TKT AR</th>'
+  +'<th style="text-align:center;padding:8px 6px;color:#411514">TKT EN</th>'
+  +'</tr></thead><tbody>';
+ var seen=new Set();
+ DATA.forEach(function(r){
+  if(!r.article)return;
+  var k=r.article.toLowerCase().trim();
+  if(seen.has(k))return;seen.add(k);
+  var m=ownerOf(r.article);
+  html+='<tr>'
+   +'<td style="padding:8px 10px;font-size:12px;font-weight:600;color:var(--dark);border-bottom:1px solid var(--border)">'+r.article+'</td>'
+   +'<td style="padding:8px 10px;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+(MEMCOLS[m]||'#e7ddcf')+';color:'+(MEMCOLS[m]?'#fff':'#7c6f63')+'">'+m+'</span></td>'
+   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.lc_do_ar)+'</td>'
+   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.lc_do_en)+'</td>'
+   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.vip_do_ar)+'</td>'
+   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.vip_do_en)+'</td>'
+   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.tkt_do_ar)+'</td>'
+   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.tkt_do_en)+'</td>'
+   +'</tr>';
+ });
+ html+='</tbody></table></div></div>';
+ el.innerHTML=html;
+ lobs.forEach(function(l){countUp($('do-kpi-'+l.id),l.p,'%');});
+}
+
 function setTab(t){
  activeTab=t;
  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
  $('sec-overview').classList.toggle('hide',t!=='overview');
  $('sec-members').classList.toggle('hide',t!=='members');
  $('sec-progress').classList.toggle('hide',t!=='progress');
+ $('sec-updates').classList.toggle('hide',t!=='updates');
  $('sec-table').classList.toggle('hide',!(t==='all'||t==='default'||t==='tpro'||t==='tkt'));
  document.querySelectorAll('.dynamic-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
  if(t==='members')buildMembers();
  if(t==='progress')buildProgress();
+ if(t==='updates')buildUpdateProjects();
  if(t==='all'||t==='default'||t==='tpro'||t==='tkt')renderTable();
 }
 
@@ -1015,6 +1097,7 @@ function build(){
  // Rebuild active tab with fresh data
  if(activeTab==='progress')buildProgress();
  else if(activeTab==='members')buildMembers();
+ else if(activeTab==='updates')buildUpdateProjects();
  buildWorkload();
  buildDynamicTabs();
 }
