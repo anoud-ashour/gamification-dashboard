@@ -1194,50 +1194,106 @@ var MG_CATS=[
  {name:'documentation tutorial game',games:1},
 ];
 function mgKey(cat,num){return 'mglink::'+cat.toLowerCase().replace(/[^a-z0-9]/g,'-')+'::'+num;}
+var MG_COLORS=['#FF5900','#8318d8','#0891b2','#16a34a','#d97706'];
+var MG_ICONS=['🚫','💬','📸','📄','🎓'];
 function buildMiniGames(){
  var el=$('minigames-content');if(!el)return;
  var totalGames=MG_CATS.reduce(function(s,c){return s+c.games;},0);
  var linkedCount=0;
  MG_CATS.forEach(function(c){for(var i=1;i<=c.games;i++){if(GAME_LINKS[mgKey(c.name,i)])linkedCount++;}});
- var elLabel=editLinksMode?'✓ Done Editing':'🎮 Edit Links';
- var elBg=editLinksMode?PU:'none';var elCol=editLinksMode?'#fff':PU;
- var html='<div class="card">'
-  +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">'
+ var pct100=Math.round((linkedCount/totalGames)*100);
+ var elLabel=editLinksMode?'✓ Done':'✏️ Edit Links';
+ var elBg=editLinksMode?'#16a34a':'rgba(255,255,255,.18)';
+ // Hero
+ var html='<div style="background:linear-gradient(135deg,#1a0533 0%,#3b0764 50%,#1e1b4b 100%);border-radius:24px;padding:36px 32px 28px;margin-bottom:24px;position:relative;overflow:hidden">'
+  +'<div style="position:absolute;top:-30px;right:-30px;font-size:120px;opacity:.07;pointer-events:none">🎮</div>'
+  +'<div style="position:absolute;bottom:-20px;left:20px;font-size:80px;opacity:.05;pointer-events:none">🕹️</div>'
+  +'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">'
   +'<div>'
-  +'<h3 style="margin:0 0 2px">CS Mini Games</h3>'
-  +'<div style="font-size:12px;color:var(--muted);font-weight:600">'+linkedCount+' / '+totalGames+' links added</div>'
+  +'<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#a78bfa;margin-bottom:8px">Gamification Hub</div>'
+  +'<div style="font-size:32px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:6px">🎮 CS Mini Games</div>'
+  +'<div style="font-size:14px;color:#c4b5fd;font-weight:500">Test your knowledge with interactive games</div>'
   +'</div>'
-  +'<button onclick="toggleMgEditMode()" style="padding:7px 16px;border-radius:8px;border:1.5px solid '+PU+';background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer">'+elLabel+'</button>'
+  +'<button onclick="toggleMgEditMode()" style="padding:10px 20px;border-radius:12px;border:none;background:'+elBg+';backdrop-filter:blur(10px);color:#fff;font-size:13px;font-weight:800;cursor:pointer;border:1.5px solid rgba(255,255,255,.2)">'+elLabel+'</button>'
   +'</div>'
-  +'<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;max-width:560px">'
-  +'<thead><tr>'
-  +'<th style="background:'+BR+';color:#fff;padding:10px 16px;text-align:left;font-size:12px;font-weight:800;width:55%">Game Objective</th>'
-  +'<th style="background:'+BR+';color:#fff;padding:10px 16px;text-align:center;font-size:12px;font-weight:800">Game Link</th>'
-  +'</tr></thead><tbody>';
- MG_CATS.forEach(function(cat){
+  // Stats row
+  +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px">'
+  +'<div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)">'
+  +'<div id="mg-stat-total" style="font-size:28px;font-weight:900;color:#fff;line-height:1">0</div>'
+  +'<div style="font-size:11px;font-weight:700;color:#a78bfa;margin-top:3px;text-transform:uppercase;letter-spacing:.5px">Total Games</div>'
+  +'</div>'
+  +'<div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)">'
+  +'<div style="font-size:28px;font-weight:900;color:#fff;line-height:1">'+MG_CATS.length+'</div>'
+  +'<div style="font-size:11px;font-weight:700;color:#a78bfa;margin-top:3px;text-transform:uppercase;letter-spacing:.5px">Categories</div>'
+  +'</div>'
+  +'<div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)">'
+  +'<div id="mg-stat-linked" style="font-size:28px;font-weight:900;color:'+(linkedCount===totalGames?'#4ade80':'#fbbf24')+';line-height:1">0</div>'
+  +'<div style="font-size:11px;font-weight:700;color:#a78bfa;margin-top:3px;text-transform:uppercase;letter-spacing:.5px">Links Added</div>'
+  +'</div>'
+  +'</div>'
+  // Overall progress
+  +'<div style="margin-top:16px">'
+  +'<div style="display:flex;justify-content:space-between;margin-bottom:6px">'
+  +'<span style="font-size:11px;color:#c4b5fd;font-weight:700">Overall Progress</span>'
+  +'<span style="font-size:11px;color:#fff;font-weight:800">'+linkedCount+' / '+totalGames+' linked</span>'
+  +'</div>'
+  +'<div style="height:8px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden">'
+  +'<div style="width:'+pct100+'%;height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);border-radius:6px;transition:width .6s ease"></div>'
+  +'</div>'
+  +'</div>'
+  +'</div>';
+ // Category cards grid
+ html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
+ MG_CATS.forEach(function(cat,ci){
+  var col=MG_COLORS[ci%MG_COLORS.length];
+  var icon=MG_ICONS[ci%MG_ICONS.length];
+  var catLinked=0;
+  for(var i=1;i<=cat.games;i++){if(GAME_LINKS[mgKey(cat.name,i)])catLinked++;}
+  var catPct=Math.round((catLinked/cat.games)*100);
+  var colLight=col+'22';
+  html+='<div style="background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)">'
+   // Card header
+   +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+   +'<div style="width:38px;height:38px;border-radius:10px;background:'+colLight+';display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
+   +'<div style="flex:1;min-width:0">'
+   +'<div style="font-size:13px;font-weight:800;color:var(--dark);line-height:1.3">'+cat.name+'</div>'
+   +'<div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:1px">'+catLinked+' / '+cat.games+' linked</div>'
+   +'</div>'
+   +'</div>'
+   // Progress bar
+   +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
+   +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px;transition:width .5s ease"></div>'
+   +'</div>'
+   // Game pills
+   +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
   for(var i=1;i<=cat.games;i++){
    var key=mgKey(cat.name,i);
    var url=GAME_LINKS[key]||'';
    var safeKey=key.replace(/'/g,"\\'");
-   var linkCell='';
+   var label=cat.games===1?'Game Link':'Game '+i;
    if(url){
-    linkCell='<a href="'+url+'" target="_blank" style="color:#1d4ed8;font-weight:700;text-decoration:underline;font-size:13px">Game '+i+'</a>';
-    if(editLinksMode)linkCell+=' <span onclick="mgEditLink(\''+safeKey+'\')" style="font-size:10px;color:var(--orange);cursor:pointer;font-weight:800">[edit]</span>';
+    html+='<a href="'+url+'" target="_blank" '
+     +'style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:'+col+';color:#fff;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;transition:opacity .15s" '
+     +'onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">🎮 '+label+'</a>';
+    if(editLinksMode){
+     html+='<span onclick="mgEditLink(\''+safeKey+'\')" '
+      +'style="display:inline-flex;align-items:center;padding:6px 10px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';
+    }
    } else if(editLinksMode){
-    linkCell='<span onclick="mgEditLink(\''+safeKey+'\')" style="font-size:12px;color:#9ca3af;cursor:pointer;border:1.5px dashed #d1d5db;border-radius:6px;padding:3px 10px;display:inline-block">+ Add Game '+i+'</span>';
+    html+='<span onclick="mgEditLink(\''+safeKey+'\')" '
+     +'style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed '+col+';color:'+col+';border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:'+colLight+'">+ '+label+'</span>';
    } else {
-    linkCell='<span style="font-size:12px;color:#cbd5e1">Game '+i+'</span>';
+    html+='<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:20px;font-size:12px;font-weight:600">'+label+'</span>';
    }
-   html+='<tr style="border-bottom:1px solid var(--border)">';
-   if(i===1){
-    html+='<td rowspan="'+cat.games+'" style="padding:10px 16px;font-size:13px;font-weight:700;color:var(--dark);vertical-align:middle;border-right:2px solid var(--border);border-bottom:2px solid var(--border)">'+cat.name+'</td>';
-   }
-   html+='<td style="padding:8px 16px;text-align:center">'+linkCell+'</td>';
-   html+='</tr>';
   }
+  html+='</div></div>';
  });
- html+='</tbody></table></div></div>';
+ html+='</div>';
  el.innerHTML=html;
+ // Animate stats
+ var stTotal=$('mg-stat-total');var stLinked=$('mg-stat-linked');
+ if(stTotal)countUp(stTotal,totalGames,'');
+ if(stLinked)countUp(stLinked,linkedCount,'');
 }
 var _mgEditKey='';
 function toggleMgEditMode(){editLinksMode=!editLinksMode;buildMiniGames();}
