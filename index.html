@@ -2028,15 +2028,16 @@ var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGI
 var GH_WRITE_TOKEN=atob(_tk.join(''));
 var ASSIGN_REPO='anoud-ashour/gamification-dashboard';
 var ASSIGN_FILE='assignments.json';
-var ASSIGNMENTS={overrides:{},extra:[],customTabs:[]};
+var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[]};
 var managerMode=false;
+var _managerEmail='';
 var _assignPending=false;
 var _mgrEditKey='';
 
 async function loadAssignments(){
  try{
   var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
-  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];}
+  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];}
  }catch(e){}
 }
 
@@ -2062,18 +2063,132 @@ function applyAssignments(){
  });
 }
 
-function toggleManagerMode(){
- managerMode=!managerMode;
+async function mgHash(email,pw){
+ var str=email.toLowerCase().trim()+'::'+pw;
+ var buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+ return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+}
+
+function openManagerLogin(){
+ $('mgr-login-email').value='';$('mgr-login-pw').value='';
+ $('mgr-login-err').style.display='none';
+ $('mgr-login-btn').textContent='Login';$('mgr-login-btn').disabled=false;
+ $('mgr-login-overlay').style.display='block';$('mgr-login-modal').style.display='block';
+ setTimeout(function(){$('mgr-login-email').focus();},50);
+}
+function closeManagerLogin(){$('mgr-login-overlay').style.display='none';$('mgr-login-modal').style.display='none';}
+
+async function attemptManagerLogin(){
+ var btn=$('mgr-login-btn');if(btn){btn.disabled=true;btn.textContent='Checking…';}
+ var email=($('mgr-login-email').value||'').toLowerCase().trim();
+ var pw=$('mgr-login-pw').value;
+ var err=$('mgr-login-err');
+ if(!email||!pw){if(err){err.textContent='Enter your email and password.';err.style.display='block';}if(btn){btn.disabled=false;btn.textContent='Login';}return;}
+ var hash=await mgHash(email,pw);
+ var mgrs=ASSIGNMENTS.managers||[];
+ var found=mgrs.find(function(m){return m.email.toLowerCase()===email&&m.hash===hash;});
+ if(found){
+  _managerEmail=email;
+  closeManagerLogin();
+  _enterManagerMode();
+ }else{
+  if(err){err.textContent='Wrong email or password.';err.style.display='block';}
+  if(btn){btn.disabled=false;btn.textContent='Login';}
+ }
+}
+
+function _enterManagerMode(){
+ managerMode=true;
  var btn=$('mgr-mode-btn');
- if(btn){btn.textContent=managerMode?'✓ Exit Manager':'👩‍💼 Manager';btn.style.background=managerMode?'#8318d8':'none';btn.style.color=managerMode?'#fff':'#8318d8';btn.style.borderColor='#8318d8';}
- var bar=$('mgr-save-bar');if(bar)bar.style.display=managerMode?'flex':'none';
+ if(btn){btn.textContent='✓ Manager';btn.style.background='#8318d8';btn.style.color='#fff';btn.style.borderColor='#8318d8';}
+ var bar=$('mgr-save-bar');if(bar)bar.style.display='flex';
+ var el=$('mgr-email-label');if(el)el.textContent='👤 '+_managerEmail;
  renderCustomTabNav();
  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
  else{renderTable();}
- if(activeTab.indexOf('ctab-')===0||activeTab==='updates'||activeTab==='uni'||document.getElementById('sec-'+activeTab)){
-  document.querySelectorAll('.dynamic-section, .custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+activeTab);});
+ document.querySelectorAll('.dynamic-section,.custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+activeTab);});
+}
+
+function toggleManagerMode(){
+ if(!_managerEmail){openManagerLogin();return;}
+ if(managerMode){
+  // Exit manager mode (stay authenticated)
+  managerMode=false;
+  var btn=$('mgr-mode-btn');
+  if(btn){btn.textContent='👩‍💼 Manager';btn.style.background='none';btn.style.color='#8318d8';btn.style.borderColor='#8318d8';}
+  var bar=$('mgr-save-bar');if(bar)bar.style.display='none';
+  renderCustomTabNav();
+  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+  else if(activeTab==='updates'){buildUpdateProjects();}
+  else{renderTable();}
+ }else{
+  _enterManagerMode();
  }
+}
+
+function logoutManager(){
+ _managerEmail='';managerMode=false;
+ var btn=$('mgr-mode-btn');
+ if(btn){btn.textContent='👩‍💼 Manager';btn.style.background='none';btn.style.color='#8318d8';btn.style.borderColor='#8318d8';}
+ var bar=$('mgr-save-bar');if(bar)bar.style.display='none';
+ renderCustomTabNav();
+ if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else{renderTable();}
+}
+
+function openManageAccess(){
+ $('mgr-new-email').value='';$('mgr-new-pw').value='';
+ $('mgr-access-err').style.display='none';
+ renderManagerList();
+ $('mgr-access-overlay').style.display='block';$('mgr-access-modal').style.display='block';
+}
+function closeManageAccess(){$('mgr-access-overlay').style.display='none';$('mgr-access-modal').style.display='none';}
+function renderManagerList(){
+ var el=$('mgr-list');if(!el)return;
+ var mgrs=ASSIGNMENTS.managers||[];
+ if(!mgrs.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px 0">No managers yet.</div>';return;}
+ el.innerHTML=mgrs.map(function(m,i){
+  var isMe=m.email.toLowerCase()===_managerEmail;
+  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">'
+   +'<span style="font-size:13px;font-weight:600;color:var(--dark)">'+m.email+'</span>'
+   +(isMe?'<span style="font-size:11px;padding:2px 10px;border-radius:6px;background:#ede9fe;color:#8318d8;font-weight:700">You</span>'
+    :'<button onclick="removeManagerAt('+i+')" style="padding:3px 10px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">Remove</button>')
+   +'</div>';
+ }).join('');
+}
+async function addManagerAccess(){
+ var email=($('mgr-new-email').value||'').toLowerCase().trim();
+ var pw=$('mgr-new-pw').value;
+ var err=$('mgr-access-err');
+ if(!email||!pw){if(err){err.textContent='Email and password required.';err.style.display='block';}return;}
+ var hash=await mgHash(email,pw);
+ if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];
+ var idx=ASSIGNMENTS.managers.findIndex(function(m){return m.email.toLowerCase()===email;});
+ if(idx>-1)ASSIGNMENTS.managers[idx].hash=hash;
+ else ASSIGNMENTS.managers.push({email:email,hash:hash});
+ $('mgr-new-email').value='';$('mgr-new-pw').value='';
+ if(err)err.style.display='none';
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ renderManagerList();
+}
+function removeManagerAt(i){
+ if((ASSIGNMENTS.managers[i]||{}).email.toLowerCase()===_managerEmail){alert('Cannot remove yourself.');return;}
+ if(!confirm('Remove this manager?'))return;
+ ASSIGNMENTS.managers.splice(i,1);
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ renderManagerList();
+}
+async function changeMyPassword(){
+ var pw=$('mgr-pw-change').value;
+ if(!pw.trim())return;
+ var hash=await mgHash(_managerEmail,pw);
+ var me=ASSIGNMENTS.managers.find(function(m){return m.email.toLowerCase()===_managerEmail;});
+ if(me)me.hash=hash;
+ $('mgr-pw-change').value='';
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ var b=$('mgr-pw-change-btn');if(b){b.textContent='✓ Updated';setTimeout(function(){b.textContent='Update';},2000);}
 }
 
 function openAssignEdit(artKey,lob){
@@ -2306,13 +2421,16 @@ function deleteCustomTab(id){
 </div>
 
 <!-- Manager floating save bar -->
-<div id="mgr-save-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #8318d8;padding:12px 20px;z-index:8000;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.1)">
+<div id="mgr-save-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #8318d8;padding:12px 20px;z-index:8000;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.1);flex-wrap:wrap">
  <span style="font-size:13px;font-weight:700;color:#8318d8">👩‍💼 Manager Mode</span>
+ <span id="mgr-email-label" style="font-size:11px;color:#6b7280;font-weight:600;background:#f3f4f6;padding:3px 10px;border-radius:20px"></span>
  <span id="mgr-pending" style="display:none;font-size:11px;background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:6px;font-weight:700">● Unsaved changes</span>
  <button id="mgr-save-btn" onclick="saveAssignments()" style="padding:8px 20px;border-radius:8px;border:none;background:#8318d8;color:#fff;font-size:12px;font-weight:800;cursor:pointer">💾 Save Changes</button>
  <button onclick="openAddArticle()" style="padding:8px 16px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>
  <button onclick="openAddTab()" style="padding:8px 16px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ New Tab</button>
- <button onclick="toggleManagerMode()" style="margin-left:auto;padding:8px 14px;border-radius:8px;border:1px solid #e7ddcf;background:none;color:var(--muted);font-size:12px;cursor:pointer">Exit Manager</button>
+ <button onclick="openManageAccess()" style="padding:8px 16px;border-radius:8px;border:1.5px solid #6b7280;background:none;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">🔐 Manage Access</button>
+ <button onclick="toggleManagerMode()" style="padding:8px 14px;border-radius:8px;border:1px solid #e7ddcf;background:none;color:var(--muted);font-size:12px;cursor:pointer">Exit Manager</button>
+ <button onclick="logoutManager()" style="margin-left:auto;padding:8px 14px;border-radius:8px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">Logout</button>
 </div>
 
 <!-- Assignment edit modal -->
@@ -2423,6 +2541,58 @@ function deleteCustomTab(id){
   <button onclick="closeAddArticle()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
+<!-- Manager Login modal -->
+<div id="mgr-login-overlay" onclick="closeManagerLogin()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9400"></div>
+<div id="mgr-login-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;padding:36px 32px;width:380px;max-width:93vw;z-index:9401;box-shadow:0 24px 64px rgba(0,0,0,.28)">
+ <div style="text-align:center;margin-bottom:24px">
+  <div style="font-size:36px;margin-bottom:10px">👩‍💼</div>
+  <div style="font-size:18px;font-weight:900;color:var(--dark)">Manager Login</div>
+  <div style="font-size:12px;color:var(--muted);margin-top:5px">Sign in to access editing tools</div>
+ </div>
+ <div style="margin-bottom:12px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Email</div>
+  <input id="mgr-login-email" type="email" placeholder="your@email.com" autocomplete="email" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')attemptManagerLogin()" onfocus="this.style.borderColor='#8318d8'" onblur="this.style.borderColor='var(--border)'">
+ </div>
+ <div style="margin-bottom:16px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Password</div>
+  <input id="mgr-login-pw" type="password" placeholder="••••••••" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')attemptManagerLogin()" onfocus="this.style.borderColor='#8318d8'" onblur="this.style.borderColor='var(--border)'">
+ </div>
+ <div id="mgr-login-err" style="display:none;font-size:12px;color:#dc2626;background:#fee2e2;padding:9px 12px;border-radius:8px;margin-bottom:14px;font-weight:600"></div>
+ <button id="mgr-login-btn" onclick="attemptManagerLogin()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px">Login</button>
+ <button onclick="closeManagerLogin()" style="width:100%;margin-top:8px;padding:11px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+</div>
+
+<!-- Manage Access modal -->
+<div id="mgr-access-overlay" onclick="closeManageAccess()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9400"></div>
+<div id="mgr-access-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;padding:30px;width:480px;max-width:93vw;z-index:9401;box-shadow:0 24px 64px rgba(0,0,0,.28);max-height:90vh;overflow-y:auto">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:18px">🔐 Manage Access</div>
+ <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:8px">Authorized Managers</div>
+ <div id="mgr-list" style="margin-bottom:20px;min-height:40px"></div>
+ <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:16px">
+  <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Add / Update Manager</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+   <div>
+    <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:4px">Email</div>
+    <input id="mgr-new-email" type="email" placeholder="email@talabat.com" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;outline:none">
+   </div>
+   <div>
+    <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:4px">Password</div>
+    <input id="mgr-new-pw" type="password" placeholder="Set password…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;outline:none">
+   </div>
+  </div>
+  <div id="mgr-access-err" style="display:none;font-size:12px;color:#dc2626;background:#fee2e2;padding:7px 10px;border-radius:7px;margin-bottom:8px"></div>
+  <button onclick="addManagerAccess()" style="padding:8px 18px;border-radius:8px;border:none;background:#8318d8;color:#fff;font-size:12px;font-weight:800;cursor:pointer">Add / Update</button>
+ </div>
+ <div style="border-top:1px solid var(--border);padding-top:18px;margin-bottom:18px">
+  <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Change My Password</div>
+  <div style="display:flex;gap:8px">
+   <input id="mgr-pw-change" type="password" placeholder="New password…" style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;outline:none">
+   <button id="mgr-pw-change-btn" onclick="changeMyPassword()" style="padding:9px 16px;border-radius:9px;border:none;background:#6b7280;color:#fff;font-size:12px;font-weight:700;cursor:pointer">Update</button>
+  </div>
+ </div>
+ <button onclick="closeManageAccess()" style="width:100%;padding:11px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Close</button>
+</div>
+
 <!-- Add Tab modal -->
 <div id="addtab-overlay" onclick="closeAddTab()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
 <div id="addtab-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
