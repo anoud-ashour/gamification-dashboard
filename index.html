@@ -215,6 +215,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <span><span class="dot" style="background:var(--green)"></span>Has content</span>
 <span><span class="dot" style="background:var(--red)"></span>Missing</span>
 <span style="margin-left:auto" id="rowcount"></span>
+<button id="edit-links-btn" onclick="toggleEditLinksMode()" style="display:none;margin-left:10px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:none;color:var(--orange);font-size:12px;font-weight:800;cursor:pointer">🎮 Edit Links</button>
 </div>
 <div class="tbl-wrap"><table id="tbl"><thead><tr id="thead-row"></tr></thead><tbody></tbody></table></div>
 </div>
@@ -249,6 +250,8 @@ const sopById=id=>SOPS.find(s=>s.id===id);
 let DATA=[],ROWS=[],charts={},activeTab='overview',membersBuilt=false,MEM_STATS={};
 const OR='#FF5900',GR='#16a34a',AM='#f59e0b',GY='#cbd5e1',PU='#8318d8',BR='#411514',MN='#CFFF00';
 const MEMCOLS={'Amal':OR,'Anoud':PU,'Dalia':'var(--mem-dalia)'};
+var GAME_LINKS={};try{GAME_LINKS=JSON.parse(localStorage.getItem('gameDashLinks')||'{}')}catch(e){}
+var editLinksMode=false;
 // ---- Sheet 2: production status tracker ----
 const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
@@ -674,12 +677,15 @@ function renderTable(){
    +'<th style="text-align:center;min-width:100px"><span style="color:#10b981">&#11044;</span> Universal</th>'
    +'<th style="min-width:120px">Coverage</th>';
   $('tbl-title').textContent='All LOBs — Coverage Matrix';
+  var elb=$('edit-links-btn');if(elb)elb.style.display='none';
   renderAllLops();
   return;
  }
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
-  +'<th>Arabic</th><th>English</th><th>LOB %</th>';
+  +'<th>Arabic</th><th>English</th><th>LOB %</th><th style="text-align:center;width:48px">🎮</th>';
  $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
+ var elb=$('edit-links-btn');
+ if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
  ROWS.forEach(r=>{
@@ -693,13 +699,26 @@ function renderTable(){
   const tr=document.createElement('tr');
   tr.title=r.article+' — '+r.member+' · '+r.sopName+': AR '+(r.ar?'✓':'✕')+' / EN '+(r.en?'✓':'✕');
   const mm=(r.member||'').replace(/'/g,'');
+  const gkey=r.article.toLowerCase().trim();
+  const gurl=GAME_LINKS[gkey]||'';
+  var gameCell='';
+  if(gurl){
+   gameCell='<td style="text-align:center"><a href="'+gurl+'" target="_blank" title="Open game" style="font-size:18px;text-decoration:none;cursor:pointer">🎮</a>'
+    +(editLinksMode?'<br><span onclick="editGameLink(\''+gkey.replace(/'/g,"\\'")+'\')" style="font-size:9px;color:var(--orange);cursor:pointer;font-weight:700">edit</span>':'')
+    +'</td>';
+  } else if(editLinksMode){
+   gameCell='<td style="text-align:center"><span onclick="editGameLink(\''+gkey.replace(/'/g,"\\'")+'\')" title="Add game link" style="font-size:18px;cursor:pointer;opacity:.3;filter:grayscale(1)">🎮</span></td>';
+  } else {
+   gameCell='<td></td>';
+  }
   tr.innerHTML='<td class="article">'+r.article+'</td><td class="jrn">'+r.journey+'</td>'
    +'<td class="l"><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
-   +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>';
+   +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
+   +gameCell;
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="6" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="7" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' rows';
 }
 function renderAllLops(){
@@ -1068,6 +1087,40 @@ function toggleDoTable(){
  if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
 
+var _glmKey='';
+function toggleEditLinksMode(){
+ editLinksMode=!editLinksMode;
+ renderTable();
+}
+function editGameLink(artKey){
+ _glmKey=artKey;
+ var nameEl=$('glm-article-name');
+ var inp=$('glm-url-input');
+ if(nameEl)nameEl.textContent=artKey;
+ if(inp)inp.value=GAME_LINKS[artKey]||'';
+ $('glm-overlay').style.display='block';
+ $('glm-modal').style.display='block';
+ setTimeout(function(){if(inp)inp.focus();},50);
+}
+function saveGameLink(){
+ var url=($('glm-url-input').value||'').trim();
+ if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
+ if(url)GAME_LINKS[_glmKey]=url;
+ else delete GAME_LINKS[_glmKey];
+ localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ closeGameLinkModal();
+ renderTable();
+}
+function clearGameLink(){
+ delete GAME_LINKS[_glmKey];
+ localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ closeGameLinkModal();
+ renderTable();
+}
+function closeGameLinkModal(){
+ $('glm-overlay').style.display='none';
+ $('glm-modal').style.display='none';
+}
 function setTab(t){
  activeTab=t;
  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
@@ -1351,4 +1404,16 @@ async function load(){
 load();
 setInterval(handleRefresh,5*60*1000);
 </script>
+<!-- Game Link Modal -->
+<div id="glm-overlay" onclick="closeGameLinkModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000"></div>
+<div id="glm-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 28px 22px;width:420px;max-width:92vw;z-index:9001;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:6px">🎮 Game Link</div>
+ <div id="glm-article-name" style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:16px;line-height:1.4"></div>
+ <input id="glm-url-input" type="url" placeholder="Paste game URL here…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:16px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
+ <div style="display:flex;gap:8px">
+  <button onclick="saveGameLink()" style="flex:1;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Save Link</button>
+  <button onclick="clearGameLink()" style="padding:10px 16px;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Remove</button>
+  <button onclick="closeGameLinkModal()" style="padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
 </body></html>
