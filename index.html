@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -129,6 +129,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="updates">Update Projects</button>
 <button class="tab" data-tab="minigames">🎮 Mini Games</button>
 <div id="sheet-tab-nav" style="display:none"></div>
+<div id="custom-tab-nav" style="display:inline-flex;gap:4px"></div>
 </div>
 
 <!-- Overview -->
@@ -239,6 +240,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 
 <div id="dyn-sections"></div>
+<div id="custom-tab-secs"></div>
 <div class="sub" style="margin-top:14px;display:flex;align-items:center;flex-wrap:wrap;gap:10px">
 <span id="ts" style="color:var(--muted)"></span>
 <span id="countdown" style="color:var(--muted);font-size:11px"></span>
@@ -1246,6 +1248,15 @@ function buildUpdateProjects(){
   +'</div></div>';
  // Table (hidden by default, toggled on click)
  html+='<div id="do-table-wrap" style="display:none"><div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
+ // Apply assignment overrides for updates tab
+ doRows.forEach(function(r){
+  var k=r.article.toLowerCase().trim()+'::updates';
+  var ov=ASSIGNMENTS.overrides[k]||{};
+  if(ov.member)r.member=ov.member;
+  if(ov.priority)r._priority=ov.priority;
+  if(ov.deadline)r._deadline=ov.deadline;
+  if(ov.notes)r._notes=ov.notes;
+ });
  html+='<thead>'
   +'<tr>'
   +'<th rowspan="2" style="background:#FF5900;color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800">Article Name</th>'
@@ -1253,6 +1264,7 @@ function buildUpdateProjects(){
   +'<th colspan="2" style="background:#7c3aed;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:3px solid rgba(255,255,255,.3)">VIP / tPro</th>'
   +'<th colspan="2" style="background:#c2410c;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:3px solid rgba(255,255,255,.3)">Default</th>'
   +'<th colspan="2" style="background:#3b1a1a;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:3px solid rgba(255,255,255,.3)">TKT</th>'
+  +(managerMode?'<th rowspan="2" style="background:#8318d8;color:#fff;padding:10px 8px;text-align:center;font-size:11px;font-weight:800;border-left:3px solid rgba(255,255,255,.3)">✏️ Edit</th>':'')
   +'</tr><tr>'
   +'<th style="background:#8318d8;color:#fff;padding:7px 8px;text-align:center;font-size:11px;font-weight:700;border-left:3px solid rgba(255,255,255,.3)">Arabic</th>'
   +'<th style="background:#8318d8;color:#fff;padding:7px 8px;text-align:center;font-size:11px;font-weight:700">English</th>'
@@ -1264,8 +1276,12 @@ function buildUpdateProjects(){
  doRows.forEach(function(r,i){
   var bg=i%2===0?'var(--card)':'#faf8f5';
   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
+  var artLabel=r.article;
+  if(r._priority){var pc3=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pc3+'">'+r._priority.toUpperCase()+'</span>';}
+  if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
+  var ek4=r.article.toLowerCase().trim().replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   html+='<tr style="background:'+bg+'">'
-   +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+r.article+'</td>'
+   +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+artLabel+'</td>'
    +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+r.member+'</span></td>'
    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);border-left:3px solid #f3f4f6">'+pstBadge(r.vip_ar)+'</td>'
    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.vip_en)+'</td>'
@@ -1273,6 +1289,7 @@ function buildUpdateProjects(){
    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.def_en)+'</td>'
    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);border-left:3px solid #f3f4f6">'+pstBadge(r.tkt_ar)+'</td>'
    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.tkt_en)+'</td>'
+   +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);border-left:3px solid #f3f4f6"><button onclick="openAssignEdit(\''+ek4+'\',\'updates\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button></td>':'')
    +'</tr>';
  });
  html+='</tbody></table></div></div></div>';
@@ -1289,10 +1306,13 @@ function toggleDoTable(){
 function buildUniHtml(tabName,safeId,uniRows){
  var elLabel=editLinksMode?'✓ Done Editing':'🎮 Edit Links';
  var elBg=editLinksMode?'var(--orange)':'none';var elCol=editLinksMode?'#fff':'var(--orange)';
+ var mgrLabel=managerMode?'✓ Exit Manager':'👩‍💼 Manager';
+ var mgrBg=managerMode?'#8318d8':'none';var mgrCol=managerMode?'#fff':'#8318d8';
  var h='<div class="card"><h3>'+tabName+'</h3>'
   +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px">'
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
   +'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>'
+  +'<button onclick="toggleManagerMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #8318d8;background:'+mgrBg+';color:'+mgrCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+mgrLabel+'</button>'
   +'</div>'
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
   +'<thead><tr>'
@@ -1303,6 +1323,7 @@ function buildUniHtml(tabName,safeId,uniRows){
   +'<th style="text-align:center;min-width:80px">COVERAGE</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
+  +(managerMode?'<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>':'')
   +'</tr></thead><tbody>';
  uniRows.forEach(function(r){
   var arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
@@ -1314,16 +1335,23 @@ function buildUniHtml(tabName,safeId,uniRows){
   var mm=(r.member||'').replace(/'/g,'');
   var pCol=p===100?'#16a34a':p>=50?'#f59e0b':'#dc2626';
   var gkey=r.article.toLowerCase().trim();
+  var uniOv=ASSIGNMENTS.overrides[gkey+'::uni']||{};
+  var dispMember=uniOv.member||r.member||'—';
+  var artLabel=r.article;
+  if(uniOv.priority){var pc2=uniOv.priority==='high'?'#fee2e2;color:#dc2626':uniOv.priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pc2+'">'+uniOv.priority.toUpperCase()+'</span>';}
+  if(uniOv.deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+uniOv.deadline+'</span>';
+  var ek3=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   h+='<tr>'
-   +'<td class="article" style="padding:10px 14px;font-weight:600">'+r.article+'</td>'
-   +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+col+';color:'+tcol+';cursor:pointer">'+(r.member||'—')+'</span></td>'
+   +'<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>'
+   +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[dispMember]||'#e7ddcf')+';color:'+(MEMCOLS[dispMember]?'#fff':'#7c6f63')+';cursor:pointer">'+dispMember+'</span></td>'
    +'<td style="text-align:center;padding:10px 6px">'+cell(arDone?1:0)+'</td>'
    +'<td style="text-align:center;padding:10px 6px">'+cell(enDone?1:0)+'</td>'
    +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+p+'%</span></td>'
    +glCellForLob(gkey,'ar','uni')+glCellForLob(gkey,'en','uni')
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button></td>':'')
    +'</tr>';
  });
- if(!uniRows.length)h+='<tr><td colspan="7" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
+ if(!uniRows.length)h+='<tr><td colspan="'+(managerMode?8:7)+'" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
  h+='</tbody></table></div></div>';
  return h;
 }
@@ -1580,11 +1608,13 @@ function setTab(t){
  $('sec-minigames').classList.toggle('hide',t!=='minigames');
  $('sec-table').classList.toggle('hide',!(t==='all'||t==='default'||t==='tpro'||t==='tkt'));
  document.querySelectorAll('.dynamic-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
+ document.querySelectorAll('.custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
  if(t==='members')buildMembers();
  if(t==='progress')buildProgress();
  if(t==='updates')buildUpdateProjects();
  if(t==='minigames')buildMiniGames();
  if(t==='all'||t==='default'||t==='tpro'||t==='tkt')renderTable();
+ if(t.indexOf('ctab-')===0)buildCustomTab(t);
 }
 
 // ===== visual + interaction upgrades =====
@@ -1853,6 +1883,7 @@ async function load(){
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
  build();
+ renderCustomTabNav();
 }
 load();
 setInterval(handleRefresh,5*60*1000);
@@ -1862,7 +1893,7 @@ var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGI
 var GH_WRITE_TOKEN=atob(_tk.join(''));
 var ASSIGN_REPO='anoud-ashour/gamification-dashboard';
 var ASSIGN_FILE='assignments.json';
-var ASSIGNMENTS={overrides:{},extra:[]};
+var ASSIGNMENTS={overrides:{},extra:[],customTabs:[]};
 var managerMode=false;
 var _assignPending=false;
 var _mgrEditKey='';
@@ -1870,7 +1901,7 @@ var _mgrEditKey='';
 async function loadAssignments(){
  try{
   var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
-  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];}
+  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];}
  }catch(e){}
 }
 
@@ -1888,9 +1919,11 @@ function applyAssignments(){
  });
  ASSIGNMENTS.extra.forEach(function(e){
   if(!e.article||!e.lob)return;
-  var sop=sopById(e.lob);if(!sop)return;
+  var sop=sopById(e.lob);
+  if(!sop&&e.lob.indexOf('ctab-')!==0)return;
+  var sd=sop||{name:e.lob,cls:'',id:e.lob};
   var exists=ROWS.some(function(r){return r._extraId===e.id;});
-  if(!exists)ROWS.push({sopId:e.lob,sopName:sop.name,cls:sop.cls,article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
+  if(!exists)ROWS.push({sopId:e.lob,sopName:sd.name,cls:sd.cls||'',article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
  });
 }
 
@@ -1899,7 +1932,13 @@ function toggleManagerMode(){
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent=managerMode?'✓ Exit Manager':'👩‍💼 Manager';btn.style.background=managerMode?'#8318d8':'none';btn.style.color=managerMode?'#fff':'#8318d8';btn.style.borderColor='#8318d8';}
  var bar=$('mgr-save-bar');if(bar)bar.style.display=managerMode?'flex':'none';
- renderTable();
+ renderCustomTabNav();
+ if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else{renderTable();}
+ if(activeTab.indexOf('ctab-')===0||activeTab==='updates'||activeTab==='uni'||document.getElementById('sec-'+activeTab)){
+  document.querySelectorAll('.dynamic-section, .custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+activeTab);});
+ }
 }
 
 function openAssignEdit(artKey,lob){
@@ -1907,7 +1946,7 @@ function openAssignEdit(artKey,lob){
  var ov=ASSIGNMENTS.overrides[_mgrEditKey]||{};
  var row=ROWS.find(function(r){return r.article.toLowerCase().trim()===artKey&&r.sopId===lob;});
  $('asgn-title').textContent=row?row.article:artKey;
- var lobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing'}[lob]||lob;
+ var lobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing','uni':'Universal','updates':'Update Projects'}[lob]||((ASSIGNMENTS.customTabs||[]).find(function(c){return 'ctab-'+c.id===lob;})||{name:lob}).name;
  $('asgn-lob-label').textContent=lobLabel;
  $('asgn-member').value=ov.member!==undefined?ov.member:(row?row.member||'':'');
  $('asgn-ar').value=ov.ar!==undefined?String(ov.ar):(row?String(row.ar):'0');
@@ -1987,7 +2026,8 @@ function saveNewArticle(){
  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,notes:$('addart-notes').value});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- closeAddArticle();buildRows();applyAssignments();renderTable();
+ closeAddArticle();buildRows();applyAssignments();
+ if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}else if(activeTab==='updates'){buildUpdateProjects();}else{renderTable();}
 }
 function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
@@ -1995,7 +2035,114 @@ function deleteExtraArticle(id){
  delete ASSIGNMENTS.overrides[Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);})];
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- buildRows();applyAssignments();renderTable();
+ buildRows();applyAssignments();
+ if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}else if(activeTab==='updates'){buildUpdateProjects();}else{renderTable();}
+}
+
+function renderCustomTabNav(){
+ var nav=$('custom-tab-nav');var secs=$('custom-tab-secs');
+ if(!nav||!secs)return;
+ var prevActive=activeTab;
+ nav.innerHTML='';
+ document.querySelectorAll('.custom-tab-section').forEach(function(s){s.remove();});
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+  var tid='ctab-'+ct.id;
+  var btn=document.createElement('button');
+  btn.className='tab'+(prevActive===tid?' active':'');
+  btn.dataset.tab=tid;btn.textContent=ct.name;
+  btn.onclick=function(){setTab(tid);};
+  nav.appendChild(btn);
+  var sec=document.createElement('div');
+  sec.id='sec-'+tid;sec.className='tabsec hide custom-tab-section';
+  secs.appendChild(sec);
+ });
+}
+
+function buildCustomTab(tabId){
+ var sec=$('sec-'+tabId);if(!sec)return;
+ var ct=(ASSIGNMENTS.customTabs||[]).find(function(c){return 'ctab-'+c.id===tabId;});
+ var ctRows=ROWS.filter(function(r){return r.sopId===tabId;});
+ var h='<div style="margin-bottom:10px"><button onclick="setTab(\'overview\')" style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:700;cursor:pointer;padding:0">← Back to Overview</button></div>';
+ h+='<div class="card"><h3>'+(ct?ct.name:tabId)+'</h3>';
+ if(managerMode){
+  h+='<div style="margin-bottom:12px;display:flex;gap:8px">';
+  h+='<button onclick="openAddArticleToTab(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>';
+  if(ct)h+='<button onclick="deleteCustomTab(\''+ct.id+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">🗑 Delete Tab</button>';
+  h+='</div>';
+ }
+ h+='<div class="tbl-wrap"><table style="width:100%"><thead><tr>';
+ h+='<th class="l" style="min-width:200px">ARTICLE</th><th class="l">MEMBER</th>';
+ h+='<th style="text-align:center">AR</th><th style="text-align:center">EN</th>';
+ h+='<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th><th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
+ if(managerMode)h+='<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>';
+ h+='</tr></thead><tbody>';
+ if(!ctRows.length){
+  h+='<tr><td colspan="'+(managerMode?7:6)+'" class="empty" style="padding:20px;text-align:center">No articles yet.'+(managerMode?' Click "+ Add Article" to add one.':'')+'</td></tr>';
+ }else{
+  ctRows.forEach(function(r){
+   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
+   var artLabel=r.article;
+   if(r._priority){var pcc=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pcc+'">'+r._priority.toUpperCase()+'</span>';}
+   if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
+   var gkey=r.article.toLowerCase().trim();
+   var ek6=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+   h+='<tr>';
+   h+='<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>';
+   h+='<td style="padding:10px 14px"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>';
+   h+='<td style="text-align:center;padding:10px 6px">'+cell(r.ar||0)+'</td>';
+   h+='<td style="text-align:center;padding:10px 6px">'+cell(r.en||0)+'</td>';
+   h+=glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId);
+   if(managerMode){
+    h+='<td style="text-align:center;padding:10px 6px">';
+    h+='<button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>';
+    if(r._extraId)h+=' <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>';
+    h+='</td>';
+   }
+   h+='</tr>';
+  });
+ }
+ h+='</tbody></table></div></div>';
+ sec.innerHTML=h;
+}
+
+function openAddArticleToTab(tabId){
+ var sel=$('addart-lob');if(!sel)return;
+ var found=false;
+ for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===tabId){found=true;break;}}
+ if(!found){
+  var ct=(ASSIGNMENTS.customTabs||[]).find(function(c){return 'ctab-'+c.id===tabId;});
+  var opt=document.createElement('option');opt.value=tabId;opt.textContent=ct?ct.name:tabId;
+  sel.appendChild(opt);
+ }
+ sel.value=tabId;
+ openAddArticle();
+}
+
+function openAddTab(){
+ var el=$('addtab-name');if(el)el.value='';
+ $('addtab-overlay').style.display='block';$('addtab-modal').style.display='block';
+}
+function closeAddTab(){$('addtab-overlay').style.display='none';$('addtab-modal').style.display='none';}
+function saveNewTab(){
+ var name=($('addtab-name').value||'').trim();
+ if(!name)return;
+ if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];
+ var id=Date.now().toString(36);
+ ASSIGNMENTS.customTabs.push({id:id,name:name});
+ _assignPending=true;
+ var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeAddTab();
+ renderCustomTabNav();
+ setTab('ctab-'+id);
+}
+function deleteCustomTab(id){
+ if(!confirm('Delete this tab and all its articles?'))return;
+ ASSIGNMENTS.customTabs=(ASSIGNMENTS.customTabs||[]).filter(function(c){return c.id!==id;});
+ ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.lob!=='ctab-'+id;});
+ _assignPending=true;
+ var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ renderCustomTabNav();
+ setTab('overview');
 }
 </script>
 <!-- Game Link Modal -->
@@ -2022,6 +2169,7 @@ function deleteExtraArticle(id){
  <span id="mgr-pending" style="display:none;font-size:11px;background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:6px;font-weight:700">● Unsaved changes</span>
  <button id="mgr-save-btn" onclick="saveAssignments()" style="padding:8px 20px;border-radius:8px;border:none;background:#8318d8;color:#fff;font-size:12px;font-weight:800;cursor:pointer">💾 Save Changes</button>
  <button onclick="openAddArticle()" style="padding:8px 16px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>
+ <button onclick="openAddTab()" style="padding:8px 16px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ New Tab</button>
  <button onclick="toggleManagerMode()" style="margin-left:auto;padding:8px 14px;border-radius:8px;border:1px solid #e7ddcf;background:none;color:var(--muted);font-size:12px;cursor:pointer">Exit Manager</button>
 </div>
 
@@ -2131,6 +2279,19 @@ function deleteExtraArticle(id){
  <div style="display:flex;gap:8px">
   <button onclick="saveNewArticle()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Article</button>
   <button onclick="closeAddArticle()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
+<!-- Add Tab modal -->
+<div id="addtab-overlay" onclick="closeAddTab()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
+<div id="addtab-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:16px">+ Create New Tab</div>
+ <div style="margin-bottom:18px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Tab Name *</div>
+  <input id="addtab-name" type="text" placeholder="e.g. Drop Off Checks, Q3 Reviews…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewTab()">
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveNewTab()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Tab</button>
+  <button onclick="closeAddTab()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
 </body></html>
