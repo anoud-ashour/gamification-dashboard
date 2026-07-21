@@ -399,35 +399,8 @@ function buildDynamicTabs(){
      var k=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();
      if(pSeen.has(k))return false;pSeen.add(k);return true;
     });
-    html=backBtn+'<div class="card"><h3>'+tab.name+'</h3>'
-     +'<div class="controls" style="margin-bottom:10px"><input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px"></div>'
-     +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
-     +'<thead><tr>'
-     +'<th class="l" style="min-width:200px">ARTICLE</th>'
-     +'<th class="l">MEMBER</th>'
-     +'<th style="text-align:center">ARABIC</th>'
-     +'<th style="text-align:center">ENGLISH</th>'
-     +'<th style="text-align:center;min-width:80px">COVERAGE</th>'
-     +'</tr></thead><tbody>';
-    uniRows.forEach(function(r){
-     var arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
-     var enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
-     var arDone=arCells.length>0&&arCells.every(function(v){return statusOf(v)==='Done';});
-     var enDone=enCells.length>0&&enCells.every(function(v){return statusOf(v)==='Done';});
-     var p=Math.round(([arDone,enDone].filter(Boolean).length/2)*100);
-     var col=MEMCOLS[r.member]||'#9ca3af';var tcol=MEMCOLS[r.member]?'#fff':'#7c6f63';
-     var mm=(r.member||'').replace(/'/g,'');
-     var pCol=p===100?'#16a34a':p>=50?'#f59e0b':'#dc2626';
-     html+='<tr>'
-      +'<td class="article" style="padding:10px 14px;font-weight:600">'+r.article+'</td>'
-      +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+col+';color:'+tcol+';cursor:pointer">'+(r.member||'—')+'</span></td>'
-      +'<td style="text-align:center;padding:10px 6px">'+cell(arDone?1:0)+'</td>'
-      +'<td style="text-align:center;padding:10px 6px">'+cell(enDone?1:0)+'</td>'
-      +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+p+'%</span></td>'
-      +'</tr>';
-    });
-    if(!uniRows.length)html+='<tr><td colspan="5" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
-    html+='</tbody></table></div></div>';
+    window._uniSafeId=safeId;window._uniRows=uniRows;window._uniSec=sec;window._uniTabName=tab.name;window._uniBackBtn=backBtn;
+    html=backBtn+buildUniHtml(tab.name,safeId,uniRows);
    }else{
     // Generic raw-sheet rendering for non-Universal dynamic tabs
     var headers=rows[0];
@@ -675,12 +648,9 @@ function renderTable(){
    +'<th style="text-align:center;min-width:120px"><span style="color:#8318d8">&#11044;</span> TPRO</th>'
    +'<th style="text-align:center;min-width:120px"><span style="color:var(--tkt-accent)">&#11044;</span> Ticketing</th>'
    +'<th style="text-align:center;min-width:100px"><span style="color:#10b981">&#11044;</span> Universal</th>'
-   +'<th style="min-width:120px">Coverage</th>'
-   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
-   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
+   +'<th style="min-width:120px">Coverage</th>';
   $('tbl-title').textContent='All LOBs — Coverage Matrix';
-  var elb=$('edit-links-btn');
-  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
+  var elb=$('edit-links-btn');if(elb)elb.style.display='none';
   renderAllLops();
   return;
  }
@@ -764,11 +734,10 @@ function renderAllLops(){
    +'<td><div style="display:flex;align-items:center;gap:8px">'
    +'<div style="width:70px;background:#f0ece6;border-radius:4px;height:7px;overflow:hidden;flex:none">'
    +'<div style="width:'+ovPct+'%;height:100%;background:'+pctCol+';border-radius:4px"></div></div>'
-   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>'
-   +glCell(gkey,'ar')+glCell(gkey,'en');
+   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>';
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="9" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="7" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' articles';
 }
 
@@ -1083,6 +1052,59 @@ function toggleDoTable(){
  if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
 
+function buildUniHtml(tabName,safeId,uniRows){
+ var elLabel=editLinksMode?'✓ Done Editing':'🎮 Edit Links';
+ var elBg=editLinksMode?'var(--orange)':'none';var elCol=editLinksMode?'#fff':'var(--orange)';
+ var h='<div class="card"><h3>'+tabName+'</h3>'
+  +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px">'
+  +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
+  +'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>'
+  +'</div>'
+  +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
+  +'<thead><tr>'
+  +'<th class="l" style="min-width:200px">ARTICLE</th>'
+  +'<th class="l">MEMBER</th>'
+  +'<th style="text-align:center">ARABIC</th>'
+  +'<th style="text-align:center">ENGLISH</th>'
+  +'<th style="text-align:center;min-width:80px">COVERAGE</th>'
+  +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
+  +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
+  +'</tr></thead><tbody>';
+ uniRows.forEach(function(r){
+  var arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
+  var enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
+  var arDone=arCells.length>0&&arCells.every(function(v){return statusOf(v)==='Done';});
+  var enDone=enCells.length>0&&enCells.every(function(v){return statusOf(v)==='Done';});
+  var p=Math.round(([arDone,enDone].filter(Boolean).length/2)*100);
+  var col=MEMCOLS[r.member]||'#9ca3af';var tcol=MEMCOLS[r.member]?'#fff':'#7c6f63';
+  var mm=(r.member||'').replace(/'/g,'');
+  var pCol=p===100?'#16a34a':p>=50?'#f59e0b':'#dc2626';
+  var gkey=r.article.toLowerCase().trim();
+  h+='<tr>'
+   +'<td class="article" style="padding:10px 14px;font-weight:600">'+r.article+'</td>'
+   +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+col+';color:'+tcol+';cursor:pointer">'+(r.member||'—')+'</span></td>'
+   +'<td style="text-align:center;padding:10px 6px">'+cell(arDone?1:0)+'</td>'
+   +'<td style="text-align:center;padding:10px 6px">'+cell(enDone?1:0)+'</td>'
+   +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+p+'%</span></td>'
+   +glCellForLob(gkey,'ar','uni')+glCellForLob(gkey,'en','uni')
+   +'</tr>';
+ });
+ if(!uniRows.length)h+='<tr><td colspan="7" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
+ h+='</tbody></table></div></div>';
+ return h;
+}
+function glCellForLob(gkey,lang,lob){
+ var url=GAME_LINKS[gkey+'::'+lob+'::'+lang]||'';
+ var ek=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+ if(url){
+  return '<td style="text-align:center"><a href="'+url+'" target="_blank" title="Open '+lang.toUpperCase()+' game" style="font-size:16px;text-decoration:none">🎮</a>'
+   +(editLinksMode?'<br><span onclick="editGameLinkForLob(\''+ek+'\',\'uni\')" style="font-size:9px;color:var(--orange);cursor:pointer;font-weight:700">edit</span>':'')
+   +'</td>';
+ } else if(editLinksMode){
+  return '<td style="text-align:center"><span onclick="editGameLinkForLob(\''+ek+'\',\'uni\')" title="Add '+lang.toUpperCase()+' link" style="font-size:16px;cursor:pointer;opacity:.25;filter:grayscale(1)">🎮</span></td>';
+ }
+ return '<td></td>';
+}
 var _glmKey='';var _glmLob='';
 function glCell(gkey,lang){
  var lob=activeTab;
@@ -1099,7 +1121,22 @@ function glCell(gkey,lang){
 }
 function toggleEditLinksMode(){
  editLinksMode=!editLinksMode;
- renderTable();
+ if(window._uniSafeId&&activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId){
+  if(window._uniSec&&window._uniRows)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,window._uniRows);
+ } else {
+  renderTable();
+ }
+}
+function editGameLinkForLob(artKey,lob){
+ _glmKey=artKey;_glmLob=lob;
+ var nameEl=$('glm-article-name');
+ if(nameEl)nameEl.textContent=artKey;
+ var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
+ if(inpAr)inpAr.value=GAME_LINKS[artKey+'::'+lob+'::ar']||'';
+ if(inpEn)inpEn.value=GAME_LINKS[artKey+'::'+lob+'::en']||'';
+ $('glm-overlay').style.display='block';
+ $('glm-modal').style.display='block';
+ setTimeout(function(){if(inpAr)inpAr.focus();},50);
 }
 function editGameLink(artKey){
  _glmKey=artKey;_glmLob=activeTab;
@@ -1121,14 +1158,16 @@ function saveGameLink(){
  if(en)GAME_LINKS[_glmKey+'::'+_glmLob+'::en']=en; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  closeGameLinkModal();
- renderTable();
+ if(_glmLob==='uni'&&window._uniSec&&window._uniRows)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,window._uniRows);
+ else renderTable();
 }
 function clearGameLink(){
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  closeGameLinkModal();
- renderTable();
+ if(_glmLob==='uni'&&window._uniSec&&window._uniRows)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,window._uniRows);
+ else renderTable();
 }
 function closeGameLinkModal(){
  $('glm-overlay').style.display='none';
