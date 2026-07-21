@@ -1180,7 +1180,11 @@ function clearGameLink(){
 function closeGameLinkModal(){
  $('glm-overlay').style.display='none';
  $('glm-modal').style.display='none';
- if(_mgEditKey){var enSec=$('glm-en-section');if(enSec)enSec.style.display='';_mgEditKey='';}
+ if(_mgEditKey){
+  var enSec=$('glm-en-section');if(enSec)enSec.style.display='';
+  var arLbl=$('glm-ar-label');if(arLbl)arLbl.textContent='Arabic Game Link';
+  _mgEditKey='';
+ }
 }
 var MG_CATS=[
  {name:'Cancelation Reasons and Contact Drivers',games:6},
@@ -1244,6 +1248,7 @@ function mgEditLink(key){
  var inpAr=$('glm-url-ar');
  if(inpAr)inpAr.value=GAME_LINKS[key]||'';
  var enSec=$('glm-en-section');if(enSec)enSec.style.display='none';
+ var arLbl=$('glm-ar-label');if(arLbl)arLbl.textContent='Game Link';
  $('glm-overlay').style.display='block';$('glm-modal').style.display='block';
  setTimeout(function(){if(inpAr)inpAr.focus();},50);
 }
@@ -1559,7 +1564,7 @@ setInterval(handleRefresh,5*60*1000);
 <div id="glm-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 28px 22px;width:440px;max-width:93vw;z-index:9001;box-shadow:0 20px 60px rgba(0,0,0,.25)">
  <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:6px">🎮 Game Links</div>
  <div id="glm-article-name" style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:18px;line-height:1.4"></div>
- <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Arabic Game Link</div>
+ <div id="glm-ar-label" style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Arabic Game Link</div>
  <input id="glm-url-ar" type="url" placeholder="Paste Arabic game URL…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:14px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
  <div id="glm-en-section">
  <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">English Game Link</div>
