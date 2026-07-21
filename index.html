@@ -222,6 +222,16 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <span><span class="dot" style="background:var(--red)"></span>Missing</span>
 <span style="margin-left:auto" id="rowcount"></span>
 <button id="edit-links-btn" onclick="toggleEditLinksMode()" style="display:none;margin-left:10px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:none;color:var(--orange);font-size:12px;font-weight:800;cursor:pointer">🎮 Edit Links</button>
+<button id="export-art-btn" onclick="exportArticleLinks()" style="display:none;margin-left:6px;padding:6px 14px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer">📋 Export Links</button>
+<div id="art-export-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:24px;width:480px;max-width:93vw;z-index:9100;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+ <div style="font-weight:800;font-size:14px;margin-bottom:12px;color:var(--dark)">Article Game Links — Export</div>
+ <textarea id="art-export-txt" style="width:100%;box-sizing:border-box;height:160px;font-size:11px;font-family:monospace;border:1.5px solid var(--border);border-radius:8px;padding:10px;resize:none;outline:none" readonly></textarea>
+ <div style="display:flex;gap:8px;margin-top:12px">
+  <button onclick="copyArticleExport()" style="flex:1;padding:8px;border-radius:8px;border:none;background:#16a34a;color:#fff;font-size:12px;font-weight:800;cursor:pointer">Copy to Clipboard</button>
+  <button onclick="document.getElementById('art-export-box').style.display='none';document.getElementById('art-export-overlay').style.display='none'" style="padding:8px 16px;border-radius:8px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer">Close</button>
+ </div>
+</div>
+<div id="art-export-overlay" onclick="document.getElementById('art-export-box').style.display='none';this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9099"></div>
 </div>
 <div class="tbl-wrap"><table id="tbl"><thead><tr id="thead-row"></tr></thead><tbody></tbody></table></div>
 </div>
@@ -694,6 +704,7 @@ function renderTable(){
  $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
  var elb=$('edit-links-btn');
  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
+ var eab=$('export-art-btn');if(eab)eab.style.display='inline-block';
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
  ROWS.forEach(r=>{
@@ -1159,6 +1170,18 @@ function toggleEditLinksMode(){
  } else {
   renderTable();
  }
+}
+function exportArticleLinks(){
+ var artOnly={};
+ Object.keys(GAME_LINKS).forEach(function(k){if(k.indexOf('mglink::')<0)artOnly[k]=GAME_LINKS[k];});
+ var txt=$('art-export-txt');if(txt)txt.value=JSON.stringify(artOnly,null,2);
+ $('art-export-overlay').style.display='block';
+ $('art-export-box').style.display='block';
+}
+function copyArticleExport(){
+ var txt=$('art-export-txt');if(!txt)return;
+ txt.select();document.execCommand('copy');
+ var btn=event.target;btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy to Clipboard';},2000);
 }
 function editGameLinkForLob(artKey,lob){
  _mgEditKey='';_glmKey=artKey;_glmLob=lob;
