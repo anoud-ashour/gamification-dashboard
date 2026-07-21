@@ -970,12 +970,11 @@ function buildUpdateProjects(){
   doTab.rows.forEach(function(r){
    while(r.length<9)r.push('');
    var art=(r[0]||'').toString().trim();
-   // Skip header rows and empty rows
    if(!art||/^(article|name)/i.test(art)||/^-+$/.test(art))return;
    doRows.push({
     article:art,
     member:(r[1]||'').toString().trim(),
-    steps5:(r[2]||'').toString().trim(),
+    // r[2] = 5 Steps — intentionally skipped per user request
     vip_ar:(r[3]||'').toString().trim(),
     vip_en:(r[4]||'').toString().trim(),
     def_ar:(r[5]||'').toString().trim(),
@@ -985,7 +984,6 @@ function buildUpdateProjects(){
    });
   });
  }
- // Fallback: use DATA rows that have any drop-off column filled
  if(!doRows.length){
   var seen2=new Set();
   DATA.forEach(function(r){
@@ -993,67 +991,85 @@ function buildUpdateProjects(){
    var k=r.article.toLowerCase().trim();if(seen2.has(k))return;seen2.add(k);
    if(!(r.lc_do_ar||r.lc_do_en||r.vip_do_ar||r.vip_do_en||r.tkt_do_ar||r.tkt_do_en))return;
    var m=ownerOf(r.article);
-   doRows.push({article:r.article,member:m,steps5:'',
+   doRows.push({article:r.article,member:m,
     vip_ar:r.vip_do_ar?'Done':'',vip_en:r.vip_do_en?'Done':'',
     def_ar:r.lc_do_ar?'Done':'',def_en:r.lc_do_en?'Done':'',
     tkt_ar:r.tkt_do_ar?'Done':'',tkt_en:r.tkt_do_en?'Done':'',
    });
   });
  }
- // KPI counts
- var allDone=doRows.filter(function(r){
-  var vals=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(function(v){return v&&v!=='—';});
-  return vals.length>0&&vals.every(function(v){return statusOf(v)==='Done';});
- }).length;
- var inPrg=doRows.filter(function(r){
-  var vals=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(function(v){return v&&v!=='—';});
-  return vals.some(function(v){return statusOf(v)!=='Done';});
- }).length;
- // Build HTML
- var html='<div class="kpis" style="margin-bottom:18px">'
-  +'<div class="kpi big"><div class="v">'+doRows.length+'</div><div class="l">Total Articles</div></div>'
-  +'<div class="kpi"><div class="v" style="color:#16a34a">'+allDone+'</div><div class="l">All Done</div></div>'
-  +'<div class="kpi"><div class="v" style="color:#f59e0b">'+inPrg+'</div><div class="l">In Progress</div></div>'
-  +'</div>';
- html+='<div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:860px">';
- // Two-row header styled like screenshot
- html+='<thead>'
-  +'<tr>'
-  +'<th rowspan="2" style="background:#FF5900;color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800;border-radius:8px 0 0 0">Article Name</th>'
-  +'<th rowspan="2" style="background:#FF5900;color:#fff;padding:10px 10px;text-align:center;font-size:13px;font-weight:800">Name</th>'
-  +'<th colspan="3" style="background:#7c3aed;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:2px solid rgba(255,255,255,.25)">VIP / tPro</th>'
-  +'<th colspan="2" style="background:#c2410c;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:2px solid rgba(255,255,255,.25)">Default</th>'
-  +'<th colspan="2" style="background:#3b1a1a;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:2px solid rgba(255,255,255,.25)">TKT</th>'
-  +'</tr><tr>'
-  +'<th style="background:#8318d8;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700;border-left:2px solid rgba(255,255,255,.25)">5 Steps</th>'
-  +'<th style="background:#8318d8;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">Arabic</th>'
-  +'<th style="background:#8318d8;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">English</th>'
-  +'<th style="background:#c2410c;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700;border-left:2px solid rgba(255,255,255,.25)">Arabic</th>'
-  +'<th style="background:#c2410c;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">English</th>'
-  +'<th style="background:#3b1a1a;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700;border-left:2px solid rgba(255,255,255,.25)">Arabic</th>'
-  +'<th style="background:#3b1a1a;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">English</th>'
-  +'</tr></thead><tbody>';
- if(!doRows.length){
-  html+='<tr><td colspan="9" class="empty" style="padding:30px;text-align:center">No drop-off articles found — make sure the "Drop Off Checks" sheet tab is published in data.json.</td></tr>';
- }else{
-  doRows.forEach(function(r,i){
-   var bg=i%2===0?'var(--card)':'#faf8f5';
-   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
-   html+='<tr style="background:'+bg+'">'
-    +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+r.article+'</td>'
-    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+r.member+'</span></td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:2px solid #f3f4f6">'+pstBadge(r.steps5)+'</td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.vip_ar)+'</td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.vip_en)+'</td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:2px solid #f3f4f6">'+pstBadge(r.def_ar)+'</td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.def_en)+'</td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:2px solid #f3f4f6">'+pstBadge(r.tkt_ar)+'</td>'
-    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.tkt_en)+'</td>'
-    +'</tr>';
-  });
- }
- html+='</tbody></table></div></div>';
+ var total=doRows.length;
+ // Per-LOB stats for cards
+ var lobs=[
+  {id:'vip',name:'VIP / tPro',color:PU,cssCol:'var(--purple)',arKey:'vip_ar',enKey:'vip_en'},
+  {id:'def',name:'Default',color:OR,cssCol:'var(--orange)',arKey:'def_ar',enKey:'def_en'},
+  {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',arKey:'tkt_ar',enKey:'tkt_en'},
+ ];
+ lobs.forEach(function(l){
+  l.done=doRows.filter(function(r){return statusOf(r[l.arKey])==='Done'&&statusOf(r[l.enKey])==='Done';}).length;
+  l.p=pct(l.done,total||1);
+ });
+ // Store for detail handler
+ window._doRows=doRows;window._doLobs=lobs;
+ // Cards — same style as Overview
+ var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
+ var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:4px 0 24px">';
+ lobs.forEach(function(l){
+  html+='<div id="do-card-'+l.id+'" onclick="showDoDetail(\''+l.id+'\')" style="'+cs+';border-left:5px solid '+l.color+'" '
+   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" '
+   +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:22px;font-weight:900;color:var(--dark);line-height:1.2">'+l.name+'</div>'
+   +'<span style="font-size:18px;color:'+l.cssCol+';opacity:.6;flex:none;padding-top:2px">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
+   +'<div id="do-kpi-'+l.id+'" style="font-size:36px;font-weight:900;color:'+l.cssCol+';line-height:1;letter-spacing:-1px">0%</div>'
+   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
+   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+l.done+' / '+total+' done</div>'
+   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
+   +'<div style="width:'+l.p+'%;height:100%;background:'+l.cssCol+';border-radius:4px"></div></div>'
+   +'</div>';
+ });
+ html+='</div>';
+ html+='<div id="do-detail"></div>';
  el.innerHTML=html;
+ lobs.forEach(function(l){countUp($('do-kpi-'+l.id),l.p,'%');});
+}
+function showDoDetail(lobId){
+ var detail=$('do-detail');if(!detail)return;
+ var rows=window._doRows||[];
+ var lob=(window._doLobs||[]).find(function(l){return l.id===lobId;});
+ if(!lob)return;
+ // Highlight selected card
+ ['vip','def','tkt'].forEach(function(id){
+  var c=$('do-card-'+id);
+  if(c)c.style.boxShadow=id===lobId?'0 0 0 3px '+lob.color+',0 8px 28px rgba(0,0,0,.13)':'0 2px 8px rgba(0,0,0,.07)';
+ });
+ var html='<div class="card" style="border-top:4px solid '+lob.color+'">';
+ html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+  +'<div style="width:5px;height:26px;background:'+lob.color+';border-radius:3px"></div>'
+  +'<h3 style="margin:0;color:var(--dark)">'+lob.name+' — Drop-Off Update</h3>'
+  +'<span style="margin-left:auto;font-size:12px;color:var(--muted);font-weight:700">'+rows.length+' articles</span>'
+  +'</div>';
+ html+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
+ html+='<thead><tr style="background:#f8f6f3">'
+  +'<th style="padding:10px 14px;text-align:left;font-size:12px;font-weight:800;color:#6b7280">Article Name</th>'
+  +'<th style="padding:10px 10px;text-align:center;font-size:12px;font-weight:800;color:#6b7280">Assignee</th>'
+  +'<th style="padding:10px 14px;text-align:center;font-size:12px;font-weight:800;color:'+lob.color+'">Arabic</th>'
+  +'<th style="padding:10px 14px;text-align:center;font-size:12px;font-weight:800;color:'+lob.color+'">English</th>'
+  +'</tr></thead><tbody>';
+ rows.forEach(function(r,i){
+  var bg=i%2===0?'var(--card)':'#faf8f5';
+  var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
+  html+='<tr style="background:'+bg+'">'
+   +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+r.article+'</td>'
+   +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+r.member+'</span></td>'
+   +'<td style="padding:9px 14px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r[lob.arKey])+'</td>'
+   +'<td style="padding:9px 14px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r[lob.enKey])+'</td>'
+   +'</tr>';
+ });
+ html+='</tbody></table></div></div>';
+ detail.innerHTML=html;
+ detail.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function setTab(t){
