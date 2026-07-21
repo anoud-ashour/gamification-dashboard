@@ -1134,7 +1134,7 @@ function toggleEditLinksMode(){
  }
 }
 function editGameLinkForLob(artKey,lob){
- _glmKey=artKey;_glmLob=lob;
+ _mgEditKey='';_glmKey=artKey;_glmLob=lob;
  var nameEl=$('glm-article-name');
  if(nameEl)nameEl.textContent=artKey;
  var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
@@ -1145,7 +1145,7 @@ function editGameLinkForLob(artKey,lob){
  setTimeout(function(){if(inpAr)inpAr.focus();},50);
 }
 function editGameLink(artKey){
- _glmKey=artKey;_glmLob=activeTab;
+ _mgEditKey='';_glmKey=artKey;_glmLob=activeTab;
  var nameEl=$('glm-article-name');
  if(nameEl)nameEl.textContent=artKey;
  var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
@@ -1156,6 +1156,7 @@ function editGameLink(artKey){
  setTimeout(function(){if(inpAr)inpAr.focus();},50);
 }
 function saveGameLink(){
+ if(_mgEditKey){saveMgLink();return;}
  var ar=($('glm-url-ar').value||'').trim();
  var en=($('glm-url-en').value||'').trim();
  if(ar&&!/^https?:\/\//i.test(ar))ar='https://'+ar;
@@ -1168,6 +1169,7 @@ function saveGameLink(){
  else renderTable();
 }
 function clearGameLink(){
+ if(_mgEditKey){delete GAME_LINKS[_mgEditKey];localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));var inpEn=$('glm-url-en');if(inpEn&&inpEn.parentElement)inpEn.parentElement.style.display='';closeGameLinkModal();buildMiniGames();_mgEditKey='';return;}
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
@@ -1179,85 +1181,89 @@ function closeGameLinkModal(){
  $('glm-overlay').style.display='none';
  $('glm-modal').style.display='none';
 }
+var MG_CATS=[
+ {name:'Cancelation Reasons and Contact Drivers',games:6},
+ {name:'Soft Skills',games:6},
+ {name:'Photo validation',games:5},
+ {name:'Documentation',games:6},
+ {name:'documentation tutorial game',games:1},
+];
+function mgKey(cat,num){return 'mglink::'+cat.toLowerCase().replace(/[^a-z0-9]/g,'-')+'::'+num;}
 function buildMiniGames(){
  var el=$('minigames-content');if(!el)return;
- var mgTab=(typeof SHEET_TABS!=='undefined'?SHEET_TABS:[]).find(function(t){
-  return (t.name||'').toLowerCase().replace(/[\s\-_]/g,'').indexOf('mini')>-1;
- });
- var games=[];
- if(mgTab&&mgTab.rows&&mgTab.rows.length){
-  var isUrl=function(v){return /^https?:\/\//i.test((v||'').toString().trim());};
-  // Find link column — first non-zero col that has URLs
-  var linkCol=-1;
-  var sampleRows=mgTab.rows.slice(1,6);
-  for(var ci=1;ci<10;ci++){
-   if(sampleRows.some(function(r){return isUrl(r[ci]);})){linkCol=ci;break;}
-  }
-  mgTab.rows.forEach(function(r,ri){
-   if(ri===0)return; // skip header
-   var name=(r[0]||'').toString().trim();
-   if(!name||/^(game|name|mini)/i.test(name))return;
-   var url=linkCol>-1?(r[linkCol]||'').toString().trim():'';
-   // Also scan all cols for any URL as fallback
-   if(!url){for(var i=1;i<r.length;i++){var v=(r[i]||'').toString().trim();if(isUrl(v)){url=v;break;}}}
-   if(name)games.push({name:name,url:url});
-  });
- }
- var total=games.length;
- // Clickable card (like Drop Off Update)
- var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 22px">'
-  +'<div id="mg-main-card" onclick="toggleMgTable()" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+PU+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:340px" '
-  +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
-  +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
-  +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-  +'<div style="font-size:18px;font-weight:900;color:var(--dark)">CS Mini Games</div>'
-  +'<span id="mg-toggle-icon" style="font-size:20px;color:'+PU+';font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
-  +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
-  +'<div style="font-size:32px;font-weight:900;color:'+PU+';line-height:1;letter-spacing:-1px">'+total+'</div>'
-  +'<div style="font-size:12px;color:var(--muted);font-weight:600">games available</div></div>'
-  +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px">Click to view all games</div>'
-  +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
-  +'<div style="width:100%;height:100%;background:'+PU+';border-radius:3px"></div></div>'
-  +'</div></div>';
- // Games list (hidden by default)
- html+='<div id="mg-table-wrap" style="display:none">';
- if(!total){
-  html+='<div class="card"><div class="empty" style="padding:40px;text-align:center">No games found in the Mini Games sheet tab.</div></div>';
- } else {
-  html+='<div class="card">'
-   +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">'
-   +'<h3 style="margin:0">CS Mini Games</h3>'
-   +'<input id="mg-search" type="text" placeholder="🔍 Search game…" oninput="filterMiniGames(this.value)" '
-   +'style="padding:7px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;outline:none;width:220px" '
-   +'onfocus="this.style.borderColor=\''+PU+'\'" onblur="this.style.borderColor=\'var(--border)\'">'
-   +'</div>'
-   +'<div id="mg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">';
-  games.forEach(function(g,i){
-   var num=String(i+1).padStart(2,'0');
-   var safeArt=g.name.replace(/"/g,'&quot;');
-   html+='<div class="mg-card" data-art="'+g.name.toLowerCase().replace(/"/g,'').replace(/'/g,'')+'" '
-    +'style="background:#faf8f5;border-radius:14px;padding:16px 14px;border:1px solid var(--border);display:flex;flex-direction:column;gap:10px">'
-    +'<div style="display:flex;align-items:flex-start;gap:8px">'
-    +'<span style="font-size:10px;font-weight:800;color:'+PU+';background:#f3e8ff;border-radius:5px;padding:2px 6px;flex:none;margin-top:1px">#'+num+'</span>'
-    +'<div style="font-size:12px;font-weight:800;color:var(--dark);line-height:1.4">'+g.name+'</div>'
-    +'</div>';
-   if(g.url){
-    html+='<a href="'+g.url+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;background:'+PU+';color:#fff;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none">🎮 Play</a>';
+ var totalGames=MG_CATS.reduce(function(s,c){return s+c.games;},0);
+ var linkedCount=0;
+ MG_CATS.forEach(function(c){for(var i=1;i<=c.games;i++){if(GAME_LINKS[mgKey(c.name,i)])linkedCount++;}});
+ var elLabel=editLinksMode?'✓ Done Editing':'🎮 Edit Links';
+ var elBg=editLinksMode?PU:'none';var elCol=editLinksMode?'#fff':PU;
+ var html='<div class="card">'
+  +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">'
+  +'<div>'
+  +'<h3 style="margin:0 0 2px">CS Mini Games</h3>'
+  +'<div style="font-size:12px;color:var(--muted);font-weight:600">'+linkedCount+' / '+totalGames+' links added</div>'
+  +'</div>'
+  +'<button onclick="toggleMgEditMode()" style="padding:7px 16px;border-radius:8px;border:1.5px solid '+PU+';background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer">'+elLabel+'</button>'
+  +'</div>'
+  +'<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;max-width:560px">'
+  +'<thead><tr>'
+  +'<th style="background:'+BR+';color:#fff;padding:10px 16px;text-align:left;font-size:12px;font-weight:800;width:55%">Game Objective</th>'
+  +'<th style="background:'+BR+';color:#fff;padding:10px 16px;text-align:center;font-size:12px;font-weight:800">Game Link</th>'
+  +'</tr></thead><tbody>';
+ MG_CATS.forEach(function(cat){
+  for(var i=1;i<=cat.games;i++){
+   var key=mgKey(cat.name,i);
+   var url=GAME_LINKS[key]||'';
+   var safeKey=key.replace(/'/g,"\\'");
+   var linkCell='';
+   if(url){
+    linkCell='<a href="'+url+'" target="_blank" style="color:#1d4ed8;font-weight:700;text-decoration:underline;font-size:13px">Game '+i+'</a>';
+    if(editLinksMode)linkCell+=' <span onclick="mgEditLink(\''+safeKey+'\')" style="font-size:10px;color:var(--orange);cursor:pointer;font-weight:800">[edit]</span>';
+   } else if(editLinksMode){
+    linkCell='<span onclick="mgEditLink(\''+safeKey+'\')" style="font-size:12px;color:#9ca3af;cursor:pointer;border:1.5px dashed #d1d5db;border-radius:6px;padding:3px 10px;display:inline-block">+ Add Game '+i+'</span>';
    } else {
-    html+='<div style="display:flex;align-items:center;justify-content:center;padding:8px 12px;background:#f3f4f6;color:#9ca3af;border-radius:9px;font-size:12px;font-weight:700">No link yet</div>';
+    linkCell='<span style="font-size:12px;color:#cbd5e1">Game '+i+'</span>';
    }
-   html+='</div>';
-  });
-  html+='</div></div>';
- }
- html+='</div>';
+   html+='<tr style="border-bottom:1px solid var(--border)">';
+   if(i===1){
+    html+='<td rowspan="'+cat.games+'" style="padding:10px 16px;font-size:13px;font-weight:700;color:var(--dark);vertical-align:middle;border-right:2px solid var(--border);border-bottom:2px solid var(--border)">'+cat.name+'</td>';
+   }
+   html+='<td style="padding:8px 16px;text-align:center">'+linkCell+'</td>';
+   html+='</tr>';
+  }
+ });
+ html+='</tbody></table></div></div>';
  el.innerHTML=html;
 }
-function toggleMgTable(){
- var wrap=$('mg-table-wrap');var icon=$('mg-toggle-icon');if(!wrap)return;
- var open=wrap.style.display==='none';
- wrap.style.display=open?'block':'none';
- if(icon)icon.style.transform=open?'rotate(90deg)':'';
+var _mgEditKey='';
+function toggleMgEditMode(){editLinksMode=!editLinksMode;buildMiniGames();}
+function mgEditLink(key){
+ _mgEditKey=key;
+ var label=key.replace(/mglink::/,'').replace(/::/g,' → game ');
+ var nameEl=$('glm-article-name');if(nameEl)nameEl.textContent=label;
+ var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
+ // Reuse single-input modal — hide EN field, use AR for the single URL
+ if(inpAr)inpAr.value=GAME_LINKS[key]||'';
+ if(inpEn){inpEn.value='';inpEn.parentElement.style.display='none';}
+ var arLabel=inpAr&&inpAr.previousElementSibling;if(arLabel)arLabel.textContent='Game Link';
+ $('glm-overlay').style.display='block';$('glm-modal').style.display='block';
+ setTimeout(function(){if(inpAr)inpAr.focus();},50);
+}
+function saveMgLink(){
+ var url=($('glm-url-ar').value||'').trim();
+ if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
+ if(url)GAME_LINKS[_mgEditKey]=url; else delete GAME_LINKS[_mgEditKey];
+ localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ // Restore EN field visibility
+ var inpEn=$('glm-url-en');if(inpEn&&inpEn.parentElement)inpEn.parentElement.style.display='';
+ var arLabel=$('glm-url-ar')&&$('glm-url-ar').previousElementSibling;if(arLabel)arLabel.textContent='Arabic Game Link';
+ closeGameLinkModal();
+ buildMiniGames();
+}
+function filterMiniGames(q){
+ q=(q||'').toLowerCase().trim();
+ document.querySelectorAll('.mg-card').forEach(function(c){
+  c.style.display=(!q||(c.dataset.art||'').indexOf(q)>-1)?'':'none';
+ });
 }
 function filterMiniGames(q){
  q=(q||'').toLowerCase().trim();
