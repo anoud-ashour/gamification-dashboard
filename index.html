@@ -129,7 +129,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="updates">Update Projects</button>
 <button class="tab" data-tab="minigames">🎮 Mini Games</button>
 <div id="sheet-tab-nav" style="display:none"></div>
-<div id="custom-tab-nav" style="display:contents"></div>
+<div id="custom-tab-nav" style="display:none"></div>
 </div>
 
 <!-- Overview -->
@@ -2175,21 +2175,28 @@ function deleteExtraArticle(id){
 }
 
 function renderCustomTabNav(){
- var nav=$('custom-tab-nav');var secs=$('custom-tab-secs');
- if(!nav||!secs)return;
- var prevActive=activeTab;
- nav.innerHTML='';
+ var secs=$('custom-tab-secs');
+ // Remove previously injected custom tab buttons from the .tabs bar
+ document.querySelectorAll('.tab[data-ctab]').forEach(function(b){b.remove();});
+ // Remove old custom tab sections
  document.querySelectorAll('.custom-tab-section').forEach(function(s){s.remove();});
+ var tabsBar=document.querySelector('.tabs');
  (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
   var tid='ctab-'+ct.id;
-  var btn=document.createElement('button');
-  btn.className='tab'+(prevActive===tid?' active':'');
-  btn.dataset.tab=tid;btn.textContent=ct.name;
-  btn.onclick=function(){setTab(tid);};
-  nav.appendChild(btn);
-  var sec=document.createElement('div');
-  sec.id='sec-'+tid;sec.className='tabsec hide custom-tab-section';
-  secs.appendChild(sec);
+  // Inject button directly into .tabs bar so it's a proper flex sibling
+  if(tabsBar){
+   var btn=document.createElement('button');
+   btn.className='tab'+(activeTab===tid?' active':'');
+   btn.dataset.tab=tid;btn.dataset.ctab='true';btn.textContent=ct.name;
+   btn.onclick=function(){setTab(tid);};
+   tabsBar.appendChild(btn);
+  }
+  // Add section container
+  if(secs){
+   var sec=document.createElement('div');
+   sec.id='sec-'+tid;sec.className='tabsec hide custom-tab-section';
+   secs.appendChild(sec);
+  }
  });
 }
 
