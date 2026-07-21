@@ -256,7 +256,34 @@ const sopById=id=>SOPS.find(s=>s.id===id);
 let DATA=[],ROWS=[],charts={},activeTab='overview',membersBuilt=false,MEM_STATS={};
 const OR='#FF5900',GR='#16a34a',AM='#f59e0b',GY='#cbd5e1',PU='#8318d8',BR='#411514',MN='#CFFF00';
 const MEMCOLS={'Amal':OR,'Anoud':PU,'Dalia':'var(--mem-dalia)'};
+var MG_LINKS_DEFAULT={
+ "mglink::cancelation-reasons-and-contact-drivers::1":"https://talabat.genially.com/6967b2e4a1136909d6771ec4",
+ "mglink::cancelation-reasons-and-contact-drivers::2":"https://talabat.genially.com/6963ad27f4e7cd1099827959",
+ "mglink::cancelation-reasons-and-contact-drivers::3":"https://talabat.genially.com/6963c41f28bcb333af7777c0",
+ "mglink::cancelation-reasons-and-contact-drivers::4":"https://talabat.genially.com/6963b99f346f840d0ce69251",
+ "mglink::cancelation-reasons-and-contact-drivers::5":"https://talabat.genially.com/695cfc6baf1831ae6e91ade9",
+ "mglink::cancelation-reasons-and-contact-drivers::6":"https://talabat.genially.com/6966cac700f94f3ad5d7a319",
+ "mglink::soft-skills::1":"https://talabat.genially.com/6963a9427d843b5c658eda44",
+ "mglink::soft-skills::2":"https://talabat.genially.com/696606107373171d7ab0037a",
+ "mglink::soft-skills::3":"https://talabat.genially.com/6968d74527d2cc865d6c9d9b",
+ "mglink::soft-skills::4":"https://talabat.genially.com/6965fbe2882c450166869bd8",
+ "mglink::soft-skills::5":"https://talabat.genially.com/6963ba5c21df481af27fd40b",
+ "mglink::soft-skills::6":"https://talabat.genially.com/6964f139c14c340a2a09d836",
+ "mglink::photo-validation::1":"https://talabat.genially.com/696f5b05d3c1da61c5544c0e",
+ "mglink::photo-validation::2":"https://talabat.genially.com/696f8dcb88dbdaa88d0517bf",
+ "mglink::photo-validation::3":"https://talabat.genially.com/696f9fe774f45d1efbded0ab",
+ "mglink::photo-validation::4":"https://talabat.genially.com/6970ed89610d258024ed2874",
+ "mglink::photo-validation::5":"https://talabat.genially.com/696f4ce7b312f7cf637cdc22",
+ "mglink::documentation::1":"https://talabat.genially.com/6968a3b2e5da8a72e00c0f87",
+ "mglink::documentation::2":"https://talabat.genially.com/696677b36787bfa23cf6847d",
+ "mglink::documentation::3":"https://talabat.genially.com/6963ae5d7d863f2876b8d6f4",
+ "mglink::documentation::4":"https://talabat.genially.com/696624e23c056d1f645f2075",
+ "mglink::documentation::5":"https://talabat.genially.com/6963ac5e9a9d1f73103681bb",
+ "mglink::documentation::6":"https://talabat.genially.com/6963c48f28bcb333af779b7d",
+ "mglink::documentation-tutorial-game::1":"https://talabat.genially.com/69c93a98dab614c021716596"
+};
 var GAME_LINKS={};try{GAME_LINKS=JSON.parse(localStorage.getItem('gameDashLinks')||'{}')}catch(e){}
+Object.keys(MG_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=MG_LINKS_DEFAULT[k];});
 var editLinksMode=false;
 // ---- Sheet 2: production status tracker ----
 const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
