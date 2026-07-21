@@ -675,12 +675,9 @@ function renderTable(){
    +'<th style="text-align:center;min-width:120px"><span style="color:#8318d8">&#11044;</span> TPRO</th>'
    +'<th style="text-align:center;min-width:120px"><span style="color:var(--tkt-accent)">&#11044;</span> Ticketing</th>'
    +'<th style="text-align:center;min-width:100px"><span style="color:#10b981">&#11044;</span> Universal</th>'
-   +'<th style="min-width:120px">Coverage</th>'
-   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
-   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
+   +'<th style="min-width:120px">Coverage</th>';
   $('tbl-title').textContent='All LOBs — Coverage Matrix';
-  var elb=$('edit-links-btn');
-  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
+  var elb=$('edit-links-btn');if(elb)elb.style.display='none';
   renderAllLops();
   return;
  }
@@ -764,11 +761,10 @@ function renderAllLops(){
    +'<td><div style="display:flex;align-items:center;gap:8px">'
    +'<div style="width:70px;background:#f0ece6;border-radius:4px;height:7px;overflow:hidden;flex:none">'
    +'<div style="width:'+ovPct+'%;height:100%;background:'+pctCol+';border-radius:4px"></div></div>'
-   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>'
-   +glCell(gkey,'ar')+glCell(gkey,'en');
+   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>';
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="9" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="7" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' articles';
 }
 
