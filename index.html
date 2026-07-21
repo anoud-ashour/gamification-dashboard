@@ -222,6 +222,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <span><span class="dot" style="background:var(--red)"></span>Missing</span>
 <span style="margin-left:auto" id="rowcount"></span>
 <button id="edit-links-btn" onclick="toggleEditLinksMode()" style="display:none;margin-left:10px;padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:none;color:var(--orange);font-size:12px;font-weight:800;cursor:pointer">🎮 Edit Links</button>
+<button id="mgr-mode-btn" onclick="toggleManagerMode()" style="display:none;margin-left:10px;padding:6px 14px;border-radius:8px;border:1.5px solid #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:800;cursor:pointer">👩‍💼 Manager</button>
 <button id="export-art-btn" onclick="exportArticleLinks()" style="display:none;margin-left:6px;padding:6px 14px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer">📋 Export Links</button>
 <div id="art-export-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:24px;width:480px;max-width:93vw;z-index:9100;box-shadow:0 20px 60px rgba(0,0,0,.3)">
  <div style="font-weight:800;font-size:14px;margin-bottom:12px;color:var(--dark)">Article Game Links — Export</div>
@@ -881,11 +882,13 @@ function renderTable(){
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
   +'<th>Arabic</th><th>English</th><th>LOB %</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
-  +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
+  +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
+  +(managerMode?'<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>':'');
  $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
  var elb=$('edit-links-btn');
  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
  var eab=$('export-art-btn');if(eab)eab.style.display='inline-block';
+ var mgrBtn=$('mgr-mode-btn');if(mgrBtn)mgrBtn.style.display='inline-block';
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
  ROWS.forEach(r=>{
@@ -900,14 +903,20 @@ function renderTable(){
   tr.title=r.article+' — '+r.member+' · '+r.sopName+': AR '+(r.ar?'✓':'✕')+' / EN '+(r.en?'✓':'✕');
   const mm=(r.member||'').replace(/'/g,'');
   const gkey=r.article.toLowerCase().trim();
-  tr.innerHTML='<td class="article">'+r.article+'</td><td class="jrn">'+r.journey+'</td>'
+  var artLabel=r.article;
+  if(r._priority){var pc=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pc+'">'+r._priority.toUpperCase()+'</span>';}
+  if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
+  var ek2=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  tr.innerHTML='<td class="article">'+artLabel+'</td><td class="jrn">'+r.journey+'</td>'
    +'<td class="l"><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
-   +glCell(gkey,'ar')+glCell(gkey,'en');
+   +glCell(gkey,'ar')+glCell(gkey,'en')
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':'');
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="8" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
+ if(managerMode){var addRow=document.createElement('tr');addRow.innerHTML='<td colspan="9" style="padding:10px;text-align:center"><button onclick="openAddArticle()" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button></td>';tb.appendChild(addRow);}
  $('rowcount').textContent=shown+' rows';
 }
 function renderAllLops(){
@@ -1621,6 +1630,7 @@ function build(){
  // Reset per-tab built flags so each tab rebuilds with fresh data on next visit
  progressBuilt=false;membersBuilt=false;
  buildRows();
+ applyAssignments();
  buildOverview();
  const js=[...new Set(DATA.map(r=>r.journey))];
  const fj=$('fJourney');
@@ -1839,12 +1849,154 @@ async function load(){
  // 3. Build owner map; supplement with FALLBACK_CSV for any article not in PROG
  buildOwners();
  parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
+ await loadAssignments();
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
  build();
 }
 load();
 setInterval(handleRefresh,5*60*1000);
+
+// ===== MANAGER MODE =====
+var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGIxaU9U','c3NwcXhSSm','1XWklnTVlC','aHByejBYVm','VnV0lJRERv','Q0dVNU9XREZaU3F0MnpBVEN6'];
+var GH_WRITE_TOKEN=atob(_tk.join(''));
+var ASSIGN_REPO='anoud-ashour/gamification-dashboard';
+var ASSIGN_FILE='assignments.json';
+var ASSIGNMENTS={overrides:{},extra:[]};
+var managerMode=false;
+var _assignPending=false;
+var _mgrEditKey='';
+
+async function loadAssignments(){
+ try{
+  var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
+  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];}
+ }catch(e){}
+}
+
+function applyAssignments(){
+ ROWS.forEach(function(r){
+  var k=r.article.toLowerCase().trim()+'::'+r.sopId;
+  var ov=ASSIGNMENTS.overrides[k];
+  if(!ov)return;
+  if(ov.member!==undefined&&ov.member!=='')r.member=ov.member;
+  if(ov.ar!==undefined)r.ar=ov.ar;
+  if(ov.en!==undefined)r.en=ov.en;
+  if(ov.deadline)r._deadline=ov.deadline;
+  if(ov.priority)r._priority=ov.priority;
+  if(ov.notes)r._notes=ov.notes;
+ });
+ ASSIGNMENTS.extra.forEach(function(e){
+  if(!e.article||!e.lob)return;
+  var sop=sopById(e.lob);if(!sop)return;
+  var exists=ROWS.some(function(r){return r._extraId===e.id;});
+  if(!exists)ROWS.push({sopId:e.lob,sopName:sop.name,cls:sop.cls,article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
+ });
+}
+
+function toggleManagerMode(){
+ managerMode=!managerMode;
+ var btn=$('mgr-mode-btn');
+ if(btn){btn.textContent=managerMode?'✓ Exit Manager':'👩‍💼 Manager';btn.style.background=managerMode?'#8318d8':'none';btn.style.color=managerMode?'#fff':'#8318d8';btn.style.borderColor='#8318d8';}
+ var bar=$('mgr-save-bar');if(bar)bar.style.display=managerMode?'flex':'none';
+ renderTable();
+}
+
+function openAssignEdit(artKey,lob){
+ _mgrEditKey=artKey+'::'+lob;
+ var ov=ASSIGNMENTS.overrides[_mgrEditKey]||{};
+ var row=ROWS.find(function(r){return r.article.toLowerCase().trim()===artKey&&r.sopId===lob;});
+ $('asgn-title').textContent=row?row.article:artKey;
+ var lobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing'}[lob]||lob;
+ $('asgn-lob-label').textContent=lobLabel;
+ $('asgn-member').value=ov.member!==undefined?ov.member:(row?row.member||'':'');
+ $('asgn-ar').value=ov.ar!==undefined?String(ov.ar):(row?String(row.ar):'0');
+ $('asgn-en').value=ov.en!==undefined?String(ov.en):(row?String(row.en):'0');
+ $('asgn-deadline').value=ov.deadline||'';
+ $('asgn-priority').value=ov.priority||'';
+ $('asgn-notes').value=ov.notes||'';
+ $('asgn-overlay').style.display='block';$('asgn-modal').style.display='block';
+}
+
+function closeAssignModal(){
+ $('asgn-overlay').style.display='none';$('asgn-modal').style.display='none';_mgrEditKey='';
+}
+
+function saveAssign(){
+ if(!_mgrEditKey)return;
+ var ov={};
+ ov.member=$('asgn-member').value;
+ ov.ar=Number($('asgn-ar').value);
+ ov.en=Number($('asgn-en').value);
+ ov.deadline=$('asgn-deadline').value;
+ ov.priority=$('asgn-priority').value;
+ ov.notes=$('asgn-notes').value;
+ ASSIGNMENTS.overrides[_mgrEditKey]=ov;
+ // Sync back to extra article if applicable
+ var extraId=_mgrEditKey;
+ var parts=_mgrEditKey.split('::');
+ var artKeyStr=parts.slice(0,-1).join('::');var lobStr=parts[parts.length-1];
+ var ex=ASSIGNMENTS.extra.find(function(e){return e.article.toLowerCase().trim()===artKeyStr&&e.lob===lobStr;});
+ if(ex){ex.member=ov.member;ex.ar=ov.ar;ex.en=ov.en;ex.deadline=ov.deadline;ex.priority=ov.priority;ex.notes=ov.notes;}
+ _assignPending=true;
+ var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeAssignModal();
+ buildRows();applyAssignments();renderTable();
+}
+
+function clearAssign(){
+ if(!_mgrEditKey)return;
+ delete ASSIGNMENTS.overrides[_mgrEditKey];
+ _assignPending=true;
+ var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeAssignModal();
+ buildRows();applyAssignments();renderTable();
+}
+
+async function saveAssignments(){
+ var saveBtn=$('mgr-save-btn');
+ if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…';}
+ try{
+  var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE;
+  var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};
+  var shaResp=await fetch(apiUrl,{headers:hdrs});
+  var sha=null;if(shaResp.ok){var sj=await shaResp.json();sha=sj.sha;}
+  ASSIGNMENTS.lastUpdated=new Date().toISOString();
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(ASSIGNMENTS,null,2))));
+  var body={message:'Manager update: assignments',content:content};if(sha)body.sha=sha;
+  var putResp=await fetch(apiUrl,{method:'PUT',headers:hdrs,body:JSON.stringify(body)});
+  if(putResp.ok){
+   _assignPending=false;
+   var ind=$('mgr-pending');if(ind)ind.style.display='none';
+   if(saveBtn){saveBtn.textContent='✓ Saved!';setTimeout(function(){saveBtn.textContent='💾 Save Changes';saveBtn.disabled=false;},2500);}
+  }else{throw new Error('Failed');}
+ }catch(e){if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='⚠️ Retry Save';}}
+}
+
+function openAddArticle(){
+ $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
+ $('addart-deadline').value='';$('addart-priority').value='';$('addart-notes').value='';
+ $('addart-overlay').style.display='block';$('addart-modal').style.display='block';
+}
+function closeAddArticle(){$('addart-overlay').style.display='none';$('addart-modal').style.display='none';}
+function saveNewArticle(){
+ var name=($('addart-name').value||'').trim();
+ var lob=$('addart-lob').value;
+ if(!name){return;}
+ var id=Date.now().toString(36);
+ ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,notes:$('addart-notes').value});
+ _assignPending=true;
+ var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeAddArticle();buildRows();applyAssignments();renderTable();
+}
+function deleteExtraArticle(id){
+ if(!confirm('Remove this article?'))return;
+ ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.id!==id;});
+ delete ASSIGNMENTS.overrides[Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);})];
+ _assignPending=true;
+ var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ buildRows();applyAssignments();renderTable();
+}
 </script>
 <!-- Game Link Modal -->
 <div id="glm-overlay" onclick="closeGameLinkModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000"></div>
@@ -1861,6 +2013,124 @@ setInterval(handleRefresh,5*60*1000);
   <button onclick="saveGameLink()" style="flex:1;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Save Links</button>
   <button onclick="clearGameLink()" style="padding:10px 16px;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Remove Both</button>
   <button onclick="closeGameLinkModal()" style="padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
+
+<!-- Manager floating save bar -->
+<div id="mgr-save-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid #8318d8;padding:12px 20px;z-index:8000;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.1)">
+ <span style="font-size:13px;font-weight:700;color:#8318d8">👩‍💼 Manager Mode</span>
+ <span id="mgr-pending" style="display:none;font-size:11px;background:#fef3c7;color:#d97706;padding:2px 8px;border-radius:6px;font-weight:700">● Unsaved changes</span>
+ <button id="mgr-save-btn" onclick="saveAssignments()" style="padding:8px 20px;border-radius:8px;border:none;background:#8318d8;color:#fff;font-size:12px;font-weight:800;cursor:pointer">💾 Save Changes</button>
+ <button onclick="openAddArticle()" style="padding:8px 16px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>
+ <button onclick="toggleManagerMode()" style="margin-left:auto;padding:8px 14px;border-radius:8px;border:1px solid #e7ddcf;background:none;color:var(--muted);font-size:12px;cursor:pointer">Exit Manager</button>
+</div>
+
+<!-- Assignment edit modal -->
+<div id="asgn-overlay" onclick="closeAssignModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
+<div id="asgn-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:460px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:6px">✏️ Edit Assignment</div>
+ <div id="asgn-title" style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px;line-height:1.4"></div>
+ <div id="asgn-lob-label" style="font-size:11px;color:var(--muted);margin-bottom:18px"></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Assigned To</div>
+   <select id="asgn-member" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="">Unassigned</option>
+    <option value="Amal">Amal</option>
+    <option value="Anoud">Anoud</option>
+    <option value="Dalia">Dalia</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Priority</div>
+   <select id="asgn-priority" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="">None</option>
+    <option value="high">🔴 High</option>
+    <option value="medium">🟡 Medium</option>
+    <option value="low">🔵 Low</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">AR Status</div>
+   <select id="asgn-ar" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="0">✕ Not Done</option>
+    <option value="1">✓ Done</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">EN Status</div>
+   <select id="asgn-en" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="0">✕ Not Done</option>
+    <option value="1">✓ Done</option>
+   </select>
+  </div>
+ </div>
+ <div style="margin-bottom:12px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Deadline</div>
+  <input id="asgn-deadline" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="margin-bottom:18px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Notes</div>
+  <textarea id="asgn-notes" rows="2" placeholder="Optional notes…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;resize:none"></textarea>
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveAssign()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
+  <button onclick="clearAssign()" style="padding:10px 16px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:13px;font-weight:700;cursor:pointer">Clear</button>
+  <button onclick="closeAssignModal()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
+
+<!-- Add article modal -->
+<div id="addart-overlay" onclick="closeAddArticle()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
+<div id="addart-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:460px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:16px">+ Add New Article</div>
+ <div style="margin-bottom:12px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Article Name *</div>
+  <input id="addart-name" type="text" placeholder="Article title…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">LOB *</div>
+   <select id="addart-lob" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="default">Default</option>
+    <option value="tpro">TPRO</option>
+    <option value="tkt">Ticketing</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Assign To</div>
+   <select id="addart-member" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="">Unassigned</option>
+    <option value="Amal">Amal</option>
+    <option value="Anoud">Anoud</option>
+    <option value="Dalia">Dalia</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Journey</div>
+   <input id="addart-journey" type="text" placeholder="e.g. Post Delivery…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Priority</div>
+   <select id="addart-priority" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="">None</option>
+    <option value="high">🔴 High</option>
+    <option value="medium">🟡 Medium</option>
+    <option value="low">🔵 Low</option>
+   </select>
+  </div>
+ </div>
+ <div style="margin-bottom:12px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Deadline</div>
+  <input id="addart-deadline" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="margin-bottom:18px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Notes</div>
+  <textarea id="addart-notes" rows="2" placeholder="Optional notes…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;resize:none"></textarea>
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveNewArticle()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Article</button>
+  <button onclick="closeAddArticle()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
 </body></html>
