@@ -675,14 +675,19 @@ function renderTable(){
    +'<th style="text-align:center;min-width:120px"><span style="color:#8318d8">&#11044;</span> TPRO</th>'
    +'<th style="text-align:center;min-width:120px"><span style="color:var(--tkt-accent)">&#11044;</span> Ticketing</th>'
    +'<th style="text-align:center;min-width:100px"><span style="color:#10b981">&#11044;</span> Universal</th>'
-   +'<th style="min-width:120px">Coverage</th>';
+   +'<th style="min-width:120px">Coverage</th>'
+   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
+   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
   $('tbl-title').textContent='All LOBs — Coverage Matrix';
-  var elb=$('edit-links-btn');if(elb)elb.style.display='none';
+  var elb=$('edit-links-btn');
+  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
   renderAllLops();
   return;
  }
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
-  +'<th>Arabic</th><th>English</th><th>LOB %</th><th style="text-align:center;width:48px">🎮</th>';
+  +'<th>Arabic</th><th>English</th><th>LOB %</th>'
+  +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
+  +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
  $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
  var elb=$('edit-links-btn');
  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
@@ -700,25 +705,14 @@ function renderTable(){
   tr.title=r.article+' — '+r.member+' · '+r.sopName+': AR '+(r.ar?'✓':'✕')+' / EN '+(r.en?'✓':'✕');
   const mm=(r.member||'').replace(/'/g,'');
   const gkey=r.article.toLowerCase().trim();
-  const gurl=GAME_LINKS[gkey]||'';
-  var gameCell='';
-  if(gurl){
-   gameCell='<td style="text-align:center"><a href="'+gurl+'" target="_blank" title="Open game" style="font-size:18px;text-decoration:none;cursor:pointer">🎮</a>'
-    +(editLinksMode?'<br><span onclick="editGameLink(\''+gkey.replace(/'/g,"\\'")+'\')" style="font-size:9px;color:var(--orange);cursor:pointer;font-weight:700">edit</span>':'')
-    +'</td>';
-  } else if(editLinksMode){
-   gameCell='<td style="text-align:center"><span onclick="editGameLink(\''+gkey.replace(/'/g,"\\'")+'\')" title="Add game link" style="font-size:18px;cursor:pointer;opacity:.3;filter:grayscale(1)">🎮</span></td>';
-  } else {
-   gameCell='<td></td>';
-  }
   tr.innerHTML='<td class="article">'+r.article+'</td><td class="jrn">'+r.journey+'</td>'
    +'<td class="l"><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
-   +gameCell;
+   +glCell(gkey,'ar')+glCell(gkey,'en');
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="7" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="8" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' rows';
 }
 function renderAllLops(){
@@ -758,6 +752,7 @@ function renderAllLops(){
   var ovPct=pct(g,t);
   var pctCol=ovPct===100?'#16a34a':ovPct>=60?'#f59e0b':'#dc2626';
   var mm=(a.member||'').replace(/'/g,'');
+  var gkey=a.article.toLowerCase().trim();
   var tr=document.createElement('tr');
   tr.innerHTML='<td><div style="font-weight:700;color:var(--dark);font-size:13px">'+a.article+'</div>'
    +'<div style="font-size:11px;color:#9ca3af;margin-top:2px">'+a.journey+'</div></td>'
@@ -769,10 +764,11 @@ function renderAllLops(){
    +'<td><div style="display:flex;align-items:center;gap:8px">'
    +'<div style="width:70px;background:#f0ece6;border-radius:4px;height:7px;overflow:hidden;flex:none">'
    +'<div style="width:'+ovPct+'%;height:100%;background:'+pctCol+';border-radius:4px"></div></div>'
-   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>';
+   +'<span style="font-size:12px;font-weight:700;color:'+pctCol+'">'+ovPct+'%</span></div></td>'
+   +glCell(gkey,'ar')+glCell(gkey,'en');
   tb.appendChild(tr);shown++;
  });
- if(!shown){tb.innerHTML='<tr><td colspan="7" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="9" class="empty">No articles match your search or filters.</td></tr>';}
  $('rowcount').textContent=shown+' articles';
 }
 
@@ -1088,6 +1084,18 @@ function toggleDoTable(){
 }
 
 var _glmKey='';
+function glCell(gkey,lang){
+ var url=GAME_LINKS[gkey+'::'+lang]||'';
+ var ek=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+ if(url){
+  return '<td style="text-align:center"><a href="'+url+'" target="_blank" title="Open '+lang.toUpperCase()+' game" style="font-size:16px;text-decoration:none">🎮</a>'
+   +(editLinksMode?'<br><span onclick="editGameLink(\''+ek+'\')" style="font-size:9px;color:var(--orange);cursor:pointer;font-weight:700">edit</span>':'')
+   +'</td>';
+ } else if(editLinksMode){
+  return '<td style="text-align:center"><span onclick="editGameLink(\''+ek+'\')" title="Add '+lang.toUpperCase()+' link" style="font-size:16px;cursor:pointer;opacity:.25;filter:grayscale(1)">🎮</span></td>';
+ }
+ return '<td></td>';
+}
 function toggleEditLinksMode(){
  editLinksMode=!editLinksMode;
  renderTable();
@@ -1095,24 +1103,28 @@ function toggleEditLinksMode(){
 function editGameLink(artKey){
  _glmKey=artKey;
  var nameEl=$('glm-article-name');
- var inp=$('glm-url-input');
  if(nameEl)nameEl.textContent=artKey;
- if(inp)inp.value=GAME_LINKS[artKey]||'';
+ var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
+ if(inpAr)inpAr.value=GAME_LINKS[artKey+'::ar']||'';
+ if(inpEn)inpEn.value=GAME_LINKS[artKey+'::en']||'';
  $('glm-overlay').style.display='block';
  $('glm-modal').style.display='block';
- setTimeout(function(){if(inp)inp.focus();},50);
+ setTimeout(function(){if(inpAr)inpAr.focus();},50);
 }
 function saveGameLink(){
- var url=($('glm-url-input').value||'').trim();
- if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
- if(url)GAME_LINKS[_glmKey]=url;
- else delete GAME_LINKS[_glmKey];
+ var ar=($('glm-url-ar').value||'').trim();
+ var en=($('glm-url-en').value||'').trim();
+ if(ar&&!/^https?:\/\//i.test(ar))ar='https://'+ar;
+ if(en&&!/^https?:\/\//i.test(en))en='https://'+en;
+ if(ar)GAME_LINKS[_glmKey+'::ar']=ar; else delete GAME_LINKS[_glmKey+'::ar'];
+ if(en)GAME_LINKS[_glmKey+'::en']=en; else delete GAME_LINKS[_glmKey+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  closeGameLinkModal();
  renderTable();
 }
 function clearGameLink(){
- delete GAME_LINKS[_glmKey];
+ delete GAME_LINKS[_glmKey+'::ar'];
+ delete GAME_LINKS[_glmKey+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  closeGameLinkModal();
  renderTable();
@@ -1406,13 +1418,16 @@ setInterval(handleRefresh,5*60*1000);
 </script>
 <!-- Game Link Modal -->
 <div id="glm-overlay" onclick="closeGameLinkModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000"></div>
-<div id="glm-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 28px 22px;width:420px;max-width:92vw;z-index:9001;box-shadow:0 20px 60px rgba(0,0,0,.25)">
- <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:6px">🎮 Game Link</div>
- <div id="glm-article-name" style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:16px;line-height:1.4"></div>
- <input id="glm-url-input" type="url" placeholder="Paste game URL here…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:16px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
+<div id="glm-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px 28px 22px;width:440px;max-width:93vw;z-index:9001;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:6px">🎮 Game Links</div>
+ <div id="glm-article-name" style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:18px;line-height:1.4"></div>
+ <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Arabic Game Link</div>
+ <input id="glm-url-ar" type="url" placeholder="Paste Arabic game URL…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:14px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
+ <div style="font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">English Game Link</div>
+ <input id="glm-url-en" type="url" placeholder="Paste English game URL…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;margin-bottom:18px" onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border)'">
  <div style="display:flex;gap:8px">
-  <button onclick="saveGameLink()" style="flex:1;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Save Link</button>
-  <button onclick="clearGameLink()" style="padding:10px 16px;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Remove</button>
+  <button onclick="saveGameLink()" style="flex:1;padding:10px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer">Save Links</button>
+  <button onclick="clearGameLink()" style="padding:10px 16px;background:#fee2e2;color:#dc2626;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Remove Both</button>
   <button onclick="closeGameLinkModal()" style="padding:10px 16px;background:#f3f4f6;color:#6b7280;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
