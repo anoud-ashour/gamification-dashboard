@@ -129,7 +129,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="updates">Update Projects</button>
 <button class="tab" data-tab="minigames">🎮 Mini Games</button>
 <div id="sheet-tab-nav" style="display:none"></div>
-<div id="custom-tab-nav" style="display:inline-flex;gap:4px"></div>
+<div id="custom-tab-nav" style="display:contents"></div>
 </div>
 
 <!-- Overview -->
@@ -555,7 +555,7 @@ function buildOverview(){
  var uniC=0,uniD=0;uniR.forEach(function(r){PCELLS.forEach(function(k){var v=r[k];if(isStatusValue(v)){uniC++;if(statusOf(v)==='Done')uniD++;}});});
  var uniP=pct(uniD,uniC);
  var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
- var html='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:4px 0">';
+ var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:4px 0">';
  lops.forEach(function(c){
   html+='<div onclick="setTab(\''+c.tab+'\')" style="'+cs+';border-left:5px solid '+c.color+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
@@ -580,10 +580,40 @@ function buildOverview(){
   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
   +'<div style="width:'+uniP+'%;height:100%;background:#10b981;border-radius:4px"></div></div>'
   +'</div>';
+ // Custom LOB cards
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+  var tid='ctab-'+ct.id;
+  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
+  var arD=ctRows.filter(function(r){return (r.ar||0)>0;}).length;
+  var enD=ctRows.filter(function(r){return (r.en||0)>0;}).length;
+  var tot=ctRows.length;
+  var covP=tot>0?Math.round(((arD+enD)/(tot*2))*100):0;
+  var eid='ovkpi-ctab-'+ct.id;
+  html+='<div onclick="setTab(\''+tid+'\')" style="'+cs+';border-left:5px solid #6366f1" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:26px;font-weight:900;color:var(--dark);line-height:1.2">'+ct.name+'</div>'
+   +'<span style="font-size:18px;color:#6366f1;opacity:.6;flex:none;padding-top:2px">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
+   +'<div id="'+eid+'" style="font-size:36px;font-weight:900;color:#6366f1;line-height:1;letter-spacing:-1px">0%</div>'
+   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
+   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+tot+' article'+(tot!==1?'s':'')+' tracked</div>'
+   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
+   +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
+   +'</div>';
+ });
  html+='</div>';
  el.innerHTML=html;
  lops.forEach(function(c){countUp($('ovkpi-'+c.id),c.p,'%');});
  countUp($('ovkpi-uni'),uniP,'%');
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+  var tid='ctab-'+ct.id;
+  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
+  var arD=ctRows.filter(function(r){return (r.ar||0)>0;}).length;
+  var enD=ctRows.filter(function(r){return (r.en||0)>0;}).length;
+  var tot=ctRows.length;
+  var covP=tot>0?Math.round(((arD+enD)/(tot*2))*100):0;
+  countUp($('ovkpi-ctab-'+ct.id),covP,'%');
+ });
 }
 
 function leaveBadge(s){
@@ -1295,6 +1325,59 @@ function buildUpdateProjects(){
  html+='</tbody></table></div></div></div>';
  el.innerHTML=html;
  countUp($('do-kpi-main'),overallPct,'%');
+ // Custom LOB sections in Update Projects
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+  var tid='ctab-'+ct.id;
+  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
+  if(!ctRows.length)return;
+  var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
+  var ctPct=pct(ctDone,ctRows.length||1);
+  var wrapId='ctupt-wrap-'+ct.id;var iconId='ctupt-icon-'+ct.id;var kpiId='ctupt-kpi-'+ct.id;
+  var toggle='var w=document.getElementById(\''+wrapId+'\');var ic=document.getElementById(\''+iconId+'\');if(w){var op=w.style.display===\'none\';w.style.display=op?\'block\':\'none\';if(ic)ic.style.transform=op?\'rotate(90deg)\':\'\'}';
+  var cth='<div style="margin-top:24px">';
+  cth+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 14px">'
+   +'<div onclick="'+toggle+'" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid #6366f1;box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:340px" '
+   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
+   +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">'+ct.name+'</div>'
+   +'<span id="'+iconId+'" style="font-size:20px;color:#6366f1;font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
+   +'<div id="'+kpiId+'" style="font-size:32px;font-weight:900;color:#6366f1;line-height:1;letter-spacing:-1px">0%</div>'
+   +'<div style="font-size:12px;color:var(--muted);font-weight:600">overall coverage</div></div>'
+   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px">'+ctDone+' / '+ctRows.length+' articles done</div>'
+   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
+   +'<div style="width:'+ctPct+'%;height:100%;background:#6366f1;border-radius:3px"></div></div>'
+   +'</div></div>';
+  cth+='<div id="'+wrapId+'" style="display:none"><div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
+  cth+='<thead><tr>'
+   +'<th style="background:#6366f1;color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800">Article</th>'
+   +'<th style="background:#6366f1;color:#fff;padding:10px 10px;text-align:center;font-size:13px;font-weight:800">Assignee</th>'
+   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">AR</th>'
+   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">EN</th>'
+   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Priority</th>'
+   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Deadline</th>'
+   +(managerMode?'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">✏️</th>':'')
+   +'</tr></thead><tbody>';
+  ctRows.forEach(function(r,i){
+   var bg=i%2===0?'var(--card)':'#faf8f5';
+   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
+   var prBg=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':r._priority==='low'?'#e0f2fe;color:#0369a1':'transparent;color:var(--muted)';
+   var ek7=r.article.toLowerCase().trim().replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+   cth+='<tr style="background:'+bg+'">'
+    +'<td style="padding:9px 14px;font-size:12px;font-weight:700;border-bottom:1px solid var(--border)">'+r.article+'</td>'
+    +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>'
+    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+cell(r.ar||0)+'</td>'
+    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+cell(r.en||0)+'</td>'
+    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><span style="font-size:10px;padding:2px 8px;border-radius:5px;font-weight:700;background:'+prBg+'">'+(r._priority||'—')+'</span></td>'
+    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)">'+(r._deadline||'—')+'</td>'
+    +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><button onclick="openAssignEdit(\''+ek7+'\',\''+tid+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer">✏️</button></td>':'')
+    +'</tr>';
+  });
+  cth+='</tbody></table></div></div></div></div>';
+  el.insertAdjacentHTML('beforeend',cth);
+  countUp($(kpiId),ctPct,'%');
+ });
 }
 function toggleDoTable(){
  var wrap=$('do-table-wrap');var icon=$('do-toggle-icon');if(!wrap)return;
@@ -1545,6 +1628,58 @@ function buildMiniGames(){
  html+='</div></div>';
  el.innerHTML=html;
  countUp($('mg-stat-total'),totalGames,'');
+ // Custom LOB article game links
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+  var tid='ctab-'+ct.id;
+  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
+  if(!ctRows.length)return;
+  var linked=0;
+  ctRows.forEach(function(r){var k=r.article.toLowerCase().trim();if(GAME_LINKS[k+'::'+tid+'::ar'])linked++;if(GAME_LINKS[k+'::'+tid+'::en'])linked++;});
+  var wrapId='mgctab-wrap-'+ct.id;var iconId='mgctab-icon-'+ct.id;
+  var toggle='var w=document.getElementById(\''+wrapId+'\');var ic=document.getElementById(\''+iconId+'\');if(w){var op=w.style.display===\'none\';w.style.display=op?\'block\':\'none\';if(ic)ic.style.transform=op?\'rotate(90deg)\':\'\'}';
+  var total2=ctRows.length*2;
+  var pct2=total2>0?Math.round((linked/total2)*100):0;
+  var mgh='<div style="margin-top:20px">'
+   +'<div onclick="'+toggle+'" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid #6366f1;box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s;max-width:340px;margin-bottom:14px" '
+   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">🎮 '+ct.name+'</div>'
+   +'<span id="'+iconId+'" style="font-size:20px;color:#6366f1;font-weight:900;transition:transform .2s">›</span></div>'
+   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:8px">'+linked+' / '+total2+' links added</div>'
+   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:10px;overflow:hidden">'
+   +'<div style="width:'+pct2+'%;height:100%;background:#6366f1;border-radius:3px"></div></div>'
+   +'</div>';
+  mgh+='<div id="'+wrapId+'" style="display:none">'
+   +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">';
+  ctRows.forEach(function(r){
+   var gkey=r.article.toLowerCase().trim();
+   var arUrl=GAME_LINKS[gkey+'::'+tid+'::ar']||'';
+   var enUrl=GAME_LINKS[gkey+'::'+tid+'::en']||'';
+   var safeKey=gkey.replace(/'/g,"\\'");
+   mgh+='<div style="background:var(--card);border-radius:14px;padding:16px;border:1px solid var(--border)">'
+    +'<div style="font-size:12px;font-weight:800;color:var(--dark);margin-bottom:10px;line-height:1.3">'+r.article+'</div>'
+    +'<div style="display:flex;gap:7px;flex-wrap:wrap">';
+   if(arUrl){
+    mgh+='<a href="'+arUrl+'" target="_blank" style="padding:5px 12px;background:#6366f1;color:#fff;border-radius:16px;font-size:11px;font-weight:800;text-decoration:none">🎮 AR</a>';
+    if(editLinksMode)mgh+='<span onclick="editGameLinkForLob(\''+safeKey+'\',\''+tid+'\')" style="padding:5px 10px;background:#f3f4f6;color:#6b7280;border-radius:16px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';
+   }else if(editLinksMode){
+    mgh+='<span onclick="editGameLinkForLob(\''+safeKey+'\',\''+tid+'\')" style="padding:5px 12px;border:1.5px dashed #6366f1;color:#6366f1;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer">+ AR</span>';
+   }else{
+    mgh+='<span style="padding:5px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:16px;font-size:11px">AR</span>';
+   }
+   if(enUrl){
+    mgh+='<a href="'+enUrl+'" target="_blank" style="padding:5px 12px;background:#6366f1;color:#fff;border-radius:16px;font-size:11px;font-weight:800;text-decoration:none">🎮 EN</a>';
+    if(editLinksMode)mgh+='<span onclick="editGameLinkForLob(\''+safeKey+'\',\''+tid+'\')" style="padding:5px 10px;background:#f3f4f6;color:#6b7280;border-radius:16px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';
+   }else if(editLinksMode){
+    mgh+='<span onclick="editGameLinkForLob(\''+safeKey+'\',\''+tid+'\')" style="padding:5px 12px;border:1.5px dashed #6366f1;color:#6366f1;border-radius:16px;font-size:11px;font-weight:700;cursor:pointer">+ EN</span>';
+   }else{
+    mgh+='<span style="padding:5px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:16px;font-size:11px">EN</span>';
+   }
+   mgh+='</div></div>';
+  });
+  mgh+='</div></div></div>';
+  el.insertAdjacentHTML('beforeend',mgh);
+ });
 }
 var _mgEditKey='';
 function toggleMgTable(){
