@@ -1202,45 +1202,25 @@ function buildMiniGames(){
  var linkedCount=0;
  MG_CATS.forEach(function(c){for(var i=1;i<=c.games;i++){if(GAME_LINKS[mgKey(c.name,i)])linkedCount++;}});
  var pct100=Math.round((linkedCount/totalGames)*100);
- var elLabel=editLinksMode?'✓ Done':'✏️ Edit Links';
- var elBg=editLinksMode?'#16a34a':'rgba(255,255,255,.18)';
- // Hero
- var html='<div style="background:linear-gradient(135deg,#1a0533 0%,#3b0764 50%,#1e1b4b 100%);border-radius:24px;padding:36px 32px 28px;margin-bottom:24px;position:relative;overflow:hidden">'
-  +'<div style="position:absolute;top:-30px;right:-30px;font-size:120px;opacity:.07;pointer-events:none">🎮</div>'
-  +'<div style="position:absolute;bottom:-20px;left:20px;font-size:80px;opacity:.05;pointer-events:none">🕹️</div>'
-  +'<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">'
-  +'<div>'
-  +'<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#a78bfa;margin-bottom:8px">Gamification Hub</div>'
-  +'<div style="font-size:32px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:6px">🎮 CS Mini Games</div>'
-  +'<div style="font-size:14px;color:#c4b5fd;font-weight:500">Test your knowledge with interactive games</div>'
-  +'</div>'
-  +'<button onclick="toggleMgEditMode()" style="padding:10px 20px;border-radius:12px;border:none;background:'+elBg+';backdrop-filter:blur(10px);color:#fff;font-size:13px;font-weight:800;cursor:pointer;border:1.5px solid rgba(255,255,255,.2)">'+elLabel+'</button>'
-  +'</div>'
-  // Stats row
-  +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px">'
-  +'<div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)">'
-  +'<div id="mg-stat-total" style="font-size:28px;font-weight:900;color:#fff;line-height:1">0</div>'
-  +'<div style="font-size:11px;font-weight:700;color:#a78bfa;margin-top:3px;text-transform:uppercase;letter-spacing:.5px">Total Games</div>'
-  +'</div>'
-  +'<div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)">'
-  +'<div style="font-size:28px;font-weight:900;color:#fff;line-height:1">'+MG_CATS.length+'</div>'
-  +'<div style="font-size:11px;font-weight:700;color:#a78bfa;margin-top:3px;text-transform:uppercase;letter-spacing:.5px">Categories</div>'
-  +'</div>'
-  +'<div style="background:rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1)">'
-  +'<div id="mg-stat-linked" style="font-size:28px;font-weight:900;color:'+(linkedCount===totalGames?'#4ade80':'#fbbf24')+';line-height:1">0</div>'
-  +'<div style="font-size:11px;font-weight:700;color:#a78bfa;margin-top:3px;text-transform:uppercase;letter-spacing:.5px">Links Added</div>'
-  +'</div>'
-  +'</div>'
-  // Overall progress
-  +'<div style="margin-top:16px">'
-  +'<div style="display:flex;justify-content:space-between;margin-bottom:6px">'
-  +'<span style="font-size:11px;color:#c4b5fd;font-weight:700">Overall Progress</span>'
-  +'<span style="font-size:11px;color:#fff;font-weight:800">'+linkedCount+' / '+totalGames+' linked</span>'
-  +'</div>'
-  +'<div style="height:8px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden">'
-  +'<div style="width:'+pct100+'%;height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);border-radius:6px;transition:width .6s ease"></div>'
-  +'</div>'
-  +'</div>'
+ // Clickable summary card (same style as Drop Off Update)
+ var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 22px">'
+  +'<div onclick="toggleMgTable()" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+PU+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:340px" '
+  +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
+  +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+  +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+  +'<div style="font-size:18px;font-weight:900;color:var(--dark)">🎮 CS Mini Games</div>'
+  +'<span id="mg-toggle-icon" style="font-size:20px;color:'+PU+';font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
+  +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
+  +'<div id="mg-stat-total" style="font-size:32px;font-weight:900;color:'+PU+';line-height:1;letter-spacing:-1px">0</div>'
+  +'<div style="font-size:12px;color:var(--muted);font-weight:600">games across '+MG_CATS.length+' categories</div></div>'
+  +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px" id="mg-stat-linked-label">'+linkedCount+' / '+totalGames+' links added</div>'
+  +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
+  +'<div style="width:'+pct100+'%;height:100%;background:'+PU+';border-radius:3px"></div></div>'
+  +'</div></div>';
+ // Expandable content
+ html+='<div id="mg-table-wrap" style="display:none">'
+  +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
+  +'<button onclick="toggleMgEditMode()" style="padding:7px 16px;border-radius:8px;border:1.5px solid '+PU+';background:'+(editLinksMode?PU:'none')+';color:'+(editLinksMode?'#fff':PU)+';font-size:12px;font-weight:800;cursor:pointer">'+(editLinksMode?'✓ Done':'✏️ Edit Links')+'</button>'
   +'</div>';
  // Category cards grid
  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
@@ -1288,15 +1268,23 @@ function buildMiniGames(){
   }
   html+='</div></div>';
  });
- html+='</div>';
+ html+='</div></div>';
  el.innerHTML=html;
- // Animate stats
- var stTotal=$('mg-stat-total');var stLinked=$('mg-stat-linked');
- if(stTotal)countUp(stTotal,totalGames,'');
- if(stLinked)countUp(stLinked,linkedCount,'');
+ countUp($('mg-stat-total'),totalGames,'');
 }
 var _mgEditKey='';
-function toggleMgEditMode(){editLinksMode=!editLinksMode;buildMiniGames();}
+function toggleMgTable(){
+ var wrap=$('mg-table-wrap');var icon=$('mg-toggle-icon');if(!wrap)return;
+ var open=wrap.style.display==='none';
+ wrap.style.display=open?'block':'none';
+ if(icon)icon.style.transform=open?'rotate(90deg)':'';
+}
+function toggleMgEditMode(){
+ editLinksMode=!editLinksMode;
+ var wrap=$('mg-table-wrap');
+ buildMiniGames();
+ if(wrap&&wrap.style.display!=='none'){$('mg-table-wrap').style.display='block';var icon=$('mg-toggle-icon');if(icon)icon.style.transform='rotate(90deg)';}
+}
 function mgEditLink(key){
  _mgEditKey=key;
  var label=key.replace(/mglink::/,'').replace(/::/g,' → game ');
