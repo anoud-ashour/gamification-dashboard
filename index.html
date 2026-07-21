@@ -958,75 +958,102 @@ function buildProgress(){
  renderProgress();
 }
 
-function setUpdateSubTab(sub){
- // currently only one sub-tab; keep hook for future tabs
- $('upt-'+sub).style.display='';
-}
 function buildUpdateProjects(){
  var el=$('upt-dropoff');if(!el)return;
- var lobs=[
-  {id:'default',name:'Default (Live Chat)',color:OR,cssCol:'var(--orange)',arKey:'lc_do_ar',enKey:'lc_do_en',cArKey:'lc_ar',cEnKey:'lc_en'},
-  {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,cssCol:'var(--purple)',arKey:'vip_do_ar',enKey:'vip_do_en',cArKey:'vip_ar',cEnKey:'vip_en'},
-  {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',arKey:'tkt_do_ar',enKey:'tkt_do_en',cArKey:'tkt_ar',cEnKey:'tkt_en'},
- ];
- lobs.forEach(function(l){
-  var lobRows=DATA.filter(function(r){return r[l.cArKey]>0||r[l.cEnKey]>0;});
-  l.total=lobRows.length;
-  l.done=lobRows.filter(function(r){return r[l.arKey]>0&&r[l.enKey]>0;}).length;
-  l.arOnly=lobRows.filter(function(r){return r[l.arKey]>0&&!r[l.enKey];}).length;
-  l.p=pct(l.done,l.total);
-  l.rows=lobRows;
+ // Find "Drop Off Checks" tab in SHEET_TABS
+ var doTab=(typeof SHEET_TABS!=='undefined'?SHEET_TABS:[]).find(function(t){
+  var n=(t.name||'').toLowerCase().replace(/[\s\-_]/g,'');
+  return n.indexOf('dropoff')>-1;
  });
- var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:default;box-shadow:0 2px 8px rgba(0,0,0,.07)';
- var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:4px 0 20px">';
- lobs.forEach(function(l){
-  html+='<div style="'+cs+';border-left:5px solid '+l.color+'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-   +'<div style="font-size:20px;font-weight:900;color:var(--dark);line-height:1.2">'+l.name+'</div>'
-   +'<span style="font-size:18px;color:'+l.cssCol+';opacity:.6">›</span></div>'
-   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
-   +'<div id="do-kpi-'+l.id+'" style="font-size:36px;font-weight:900;color:'+l.cssCol+';line-height:1;letter-spacing:-1px">0%</div>'
-   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
-   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+l.done+' / '+l.total+' done</div>'
-   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
-   +'<div style="width:'+l.p+'%;height:100%;background:'+l.cssCol+';border-radius:4px"></div></div>'
-   +'</div>';
- });
- html+='</div>';
- // Detail table — all articles across all 3 LOBs
- html+='<div class="card">';
- html+='<h3 style="margin-bottom:14px">Drop-Off Coverage — All Articles</h3>';
- html+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
- html+='<thead><tr style="background:#f8f6f3">'
-  +'<th class="l" style="padding:8px 10px">Article</th>'
-  +'<th class="l" style="padding:8px 10px">Member</th>'
-  +'<th style="text-align:center;padding:8px 6px;color:#FF5900">Default AR</th>'
-  +'<th style="text-align:center;padding:8px 6px;color:#FF5900">Default EN</th>'
-  +'<th style="text-align:center;padding:8px 6px;color:#8318d8">TPRO AR</th>'
-  +'<th style="text-align:center;padding:8px 6px;color:#8318d8">TPRO EN</th>'
-  +'<th style="text-align:center;padding:8px 6px;color:#411514">TKT AR</th>'
-  +'<th style="text-align:center;padding:8px 6px;color:#411514">TKT EN</th>'
+ var doRows=[];
+ if(doTab&&doTab.rows&&doTab.rows.length){
+  doTab.rows.forEach(function(r){
+   while(r.length<9)r.push('');
+   var art=(r[0]||'').toString().trim();
+   // Skip header rows and empty rows
+   if(!art||/^(article|name)/i.test(art)||/^-+$/.test(art))return;
+   doRows.push({
+    article:art,
+    member:(r[1]||'').toString().trim(),
+    steps5:(r[2]||'').toString().trim(),
+    vip_ar:(r[3]||'').toString().trim(),
+    vip_en:(r[4]||'').toString().trim(),
+    def_ar:(r[5]||'').toString().trim(),
+    def_en:(r[6]||'').toString().trim(),
+    tkt_ar:(r[7]||'').toString().trim(),
+    tkt_en:(r[8]||'').toString().trim(),
+   });
+  });
+ }
+ // Fallback: use DATA rows that have any drop-off column filled
+ if(!doRows.length){
+  var seen2=new Set();
+  DATA.forEach(function(r){
+   if(!r.article)return;
+   var k=r.article.toLowerCase().trim();if(seen2.has(k))return;seen2.add(k);
+   if(!(r.lc_do_ar||r.lc_do_en||r.vip_do_ar||r.vip_do_en||r.tkt_do_ar||r.tkt_do_en))return;
+   var m=ownerOf(r.article);
+   doRows.push({article:r.article,member:m,steps5:'',
+    vip_ar:r.vip_do_ar?'Done':'',vip_en:r.vip_do_en?'Done':'',
+    def_ar:r.lc_do_ar?'Done':'',def_en:r.lc_do_en?'Done':'',
+    tkt_ar:r.tkt_do_ar?'Done':'',tkt_en:r.tkt_do_en?'Done':'',
+   });
+  });
+ }
+ // KPI counts
+ var allDone=doRows.filter(function(r){
+  var vals=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(function(v){return v&&v!=='—';});
+  return vals.length>0&&vals.every(function(v){return statusOf(v)==='Done';});
+ }).length;
+ var inPrg=doRows.filter(function(r){
+  var vals=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(function(v){return v&&v!=='—';});
+  return vals.some(function(v){return statusOf(v)!=='Done';});
+ }).length;
+ // Build HTML
+ var html='<div class="kpis" style="margin-bottom:18px">'
+  +'<div class="kpi big"><div class="v">'+doRows.length+'</div><div class="l">Total Articles</div></div>'
+  +'<div class="kpi"><div class="v" style="color:#16a34a">'+allDone+'</div><div class="l">All Done</div></div>'
+  +'<div class="kpi"><div class="v" style="color:#f59e0b">'+inPrg+'</div><div class="l">In Progress</div></div>'
+  +'</div>';
+ html+='<div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:860px">';
+ // Two-row header styled like screenshot
+ html+='<thead>'
+  +'<tr>'
+  +'<th rowspan="2" style="background:#FF5900;color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800;border-radius:8px 0 0 0">Article Name</th>'
+  +'<th rowspan="2" style="background:#FF5900;color:#fff;padding:10px 10px;text-align:center;font-size:13px;font-weight:800">Name</th>'
+  +'<th colspan="3" style="background:#7c3aed;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:2px solid rgba(255,255,255,.25)">VIP / tPro</th>'
+  +'<th colspan="2" style="background:#c2410c;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:2px solid rgba(255,255,255,.25)">Default</th>'
+  +'<th colspan="2" style="background:#3b1a1a;color:#fff;padding:9px 8px;text-align:center;font-size:12px;font-weight:800;border-left:2px solid rgba(255,255,255,.25)">TKT</th>'
+  +'</tr><tr>'
+  +'<th style="background:#8318d8;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700;border-left:2px solid rgba(255,255,255,.25)">5 Steps</th>'
+  +'<th style="background:#8318d8;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">Arabic</th>'
+  +'<th style="background:#8318d8;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">English</th>'
+  +'<th style="background:#c2410c;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700;border-left:2px solid rgba(255,255,255,.25)">Arabic</th>'
+  +'<th style="background:#c2410c;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">English</th>'
+  +'<th style="background:#3b1a1a;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700;border-left:2px solid rgba(255,255,255,.25)">Arabic</th>'
+  +'<th style="background:#3b1a1a;color:#fff;padding:7px 6px;text-align:center;font-size:11px;font-weight:700">English</th>'
   +'</tr></thead><tbody>';
- var seen=new Set();
- DATA.forEach(function(r){
-  if(!r.article)return;
-  var k=r.article.toLowerCase().trim();
-  if(seen.has(k))return;seen.add(k);
-  var m=ownerOf(r.article);
-  html+='<tr>'
-   +'<td style="padding:8px 10px;font-size:12px;font-weight:600;color:var(--dark);border-bottom:1px solid var(--border)">'+r.article+'</td>'
-   +'<td style="padding:8px 10px;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+(MEMCOLS[m]||'#e7ddcf')+';color:'+(MEMCOLS[m]?'#fff':'#7c6f63')+'">'+m+'</span></td>'
-   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.lc_do_ar)+'</td>'
-   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.lc_do_en)+'</td>'
-   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.vip_do_ar)+'</td>'
-   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.vip_do_en)+'</td>'
-   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.tkt_do_ar)+'</td>'
-   +'<td style="text-align:center;padding:8px 6px;border-bottom:1px solid var(--border)">'+cell(r.tkt_do_en)+'</td>'
-   +'</tr>';
- });
+ if(!doRows.length){
+  html+='<tr><td colspan="9" class="empty" style="padding:30px;text-align:center">No drop-off articles found — make sure the "Drop Off Checks" sheet tab is published in data.json.</td></tr>';
+ }else{
+  doRows.forEach(function(r,i){
+   var bg=i%2===0?'var(--card)':'#faf8f5';
+   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
+   html+='<tr style="background:'+bg+'">'
+    +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+r.article+'</td>'
+    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+r.member+'</span></td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:2px solid #f3f4f6">'+pstBadge(r.steps5)+'</td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.vip_ar)+'</td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.vip_en)+'</td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:2px solid #f3f4f6">'+pstBadge(r.def_ar)+'</td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.def_en)+'</td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border);border-left:2px solid #f3f4f6">'+pstBadge(r.tkt_ar)+'</td>'
+    +'<td style="padding:9px 6px;text-align:center;border-bottom:1px solid var(--border)">'+pstBadge(r.tkt_en)+'</td>'
+    +'</tr>';
+  });
+ }
  html+='</tbody></table></div></div>';
  el.innerHTML=html;
- lobs.forEach(function(l){countUp($('do-kpi-'+l.id),l.p,'%');});
 }
 
 function setTab(t){
