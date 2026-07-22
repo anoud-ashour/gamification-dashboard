@@ -683,6 +683,8 @@ function buildDynamicTabs(){
   secs.appendChild(sec);
  });
 }
+var WL_STYLES={'Available':{color:'#059669',bg:'#d1fae5'},'On Track':{color:'#16a34a',bg:'#dcfce7'},'At Risk':{color:'#dc2626',bg:'#fee2e2'},'Inactive':{color:'#6366f1',bg:'#e0e7ff'}};
+var AV_STYLES={'Present':{color:'#16a34a',bg:'#dcfce7'},'Annual Leave':{color:'#6366f1',bg:'#e0e7ff'},'Casual Leave':{color:'#d97706',bg:'#fef3c7'},'No Show':{color:'#dc2626',bg:'#fee2e2'},'Sick Leave':{color:'#f59e0b',bg:'#fef3c7'}};
 function buildWorkload(){
  var wl=$('workload-list'),al=$('avail-list');if(!wl||!al)return;
  var now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
@@ -690,33 +692,71 @@ function buildWorkload(){
  wl.innerHTML='';al.innerHTML='';
  members.forEach(function(m){
   var arts=PROG.filter(function(r){return r.member===m;});
-  // Leave status
   var leave='';for(var i=0;i<arts.length;i++){if(arts[i].leave_status){leave=arts[i].leave_status.trim();break;}}
-  // Workload status
-  var hasOverdue=false,hasDueSoon=false;
+  var hasOverdue=false;
   arts.forEach(function(r){
    var e=endDate(r);if(!e)return;
    var fk=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].filter(function(k){return r[k];});
    var done=fk.length>0&&fk.every(function(k){return statusOf(r[k])==='Done';});if(done)return;
    var dd=Math.round((+new Date(e.getFullYear(),e.getMonth(),e.getDate())-+today)/86400000);
-   if(dd<0)hasOverdue=true;else if(dd<=1)hasDueSoon=true;
+   if(dd<0)hasOverdue=true;
   });
   var lslw=leave.toLowerCase();var isInactiveW=lslw.indexOf('annual')>-1||lslw.indexOf('casual')>-1||lslw.indexOf('no show')>-1||lslw.indexOf('noshow')>-1||lslw.indexOf('sick')>-1;
-  var ws=isInactiveW?{label:'Inactive',color:'#6366f1',bg:'#e0e7ff'}:(!arts.length)?{label:'Available',color:'#059669',bg:'#d1fae5'}:hasOverdue?{label:'At Risk',color:'#dc2626',bg:'#fee2e2'}:{label:'On Track',color:'#16a34a',bg:'#dcfce7'};
-  // Availability status
+  var wsAuto=isInactiveW?'Inactive':(!arts.length)?'Available':hasOverdue?'At Risk':'On Track';
   var lsl=leave.toLowerCase();
-  var av=lsl.includes('annual')?{label:'Annual Leave',color:'#6366f1',bg:'#e0e7ff'}:lsl.includes('casual')?{label:'Casual Leave',color:'#d97706',bg:'#fef3c7'}:(lsl.includes('no show')||lsl.includes('noshow'))?{label:'No Show',color:'#dc2626',bg:'#fee2e2'}:lsl.includes('sick')?{label:'Sick Leave',color:'#f59e0b',bg:'#fef3c7'}:{label:'Present',color:'#16a34a',bg:'#dcfce7'};
+  var avAuto=lsl.indexOf('annual')>-1?'Annual Leave':lsl.indexOf('casual')>-1?'Casual Leave':(lsl.indexOf('no show')>-1||lsl.indexOf('noshow')>-1)?'No Show':lsl.indexOf('sick')>-1?'Sick Leave':'Present';
+  // Apply manual overrides
+  var ov=(ASSIGNMENTS.memberStatus||{})[m]||{};
+  var wsLabel=ov.workload||wsAuto;
+  var avLabel=ov.availability||avAuto;
+  var ws=WL_STYLES[wsLabel]||{color:'#6b7280',bg:'#f3f4f6'};
+  var av=AV_STYLES[avLabel]||{color:'#16a34a',bg:'#dcfce7'};
+  var isManualWl=!!ov.workload;var isManualAv=!!ov.availability;
   // Avatar initials
   var parts=m.trim().split(/\s+/);
   var ini=parts.length>=2?(parts[0][0]+parts[1][0]).toUpperCase():m.slice(0,2).toUpperCase();
   var col=MEMCOLS[m]||'#9ca3af';
+  var safeM=m.replace(/'/g,"\\'");
+  var editBtn=managerMode?'<button onclick="openMemberStatus(\''+safeM+'\')" style="margin-left:6px;padding:2px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>':'';
+  var manualDotWl=isManualWl?'<span title="Manually set" style="font-size:9px;margin-left:4px;opacity:.7">📌</span>':'';
+  var manualDotAv=isManualAv?'<span title="Manually set" style="font-size:9px;margin-left:4px;opacity:.7">📌</span>':'';
+  var noteRow=ov.notes?'<div style="font-size:11px;color:var(--muted);margin-top:1px">📝 '+ov.notes+'</div>':'';
   var row='<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">'
    +'<div style="width:38px;height:38px;border-radius:50%;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex:none">'+ini+'</div>'
    +'<div style="flex:1"><div style="font-weight:600;color:var(--dark)">'+m+'</div>'
-   +'<div style="font-size:12px;color:var(--muted)">'+arts.length+' article'+(arts.length!==1?'s':'')+'</div></div>';
-  wl.insertAdjacentHTML('beforeend',row+'<span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px;background:'+ws.bg+';color:'+ws.color+'">'+ws.label+'</span></div>');
-  al.insertAdjacentHTML('beforeend',row+'<span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px;background:'+av.bg+';color:'+av.color+'">'+av.label+'</span></div>');
+   +(noteRow||'<div style="font-size:12px;color:var(--muted)">'+arts.length+' article'+(arts.length!==1?'s':'')+'</div>')
+   +'</div>';
+  wl.insertAdjacentHTML('beforeend',row+'<span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px;background:'+ws.bg+';color:'+ws.color+'">'+wsLabel+'</span>'+manualDotWl+editBtn+'</div>');
+  al.insertAdjacentHTML('beforeend',row+'<span style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:12px;background:'+av.bg+';color:'+av.color+'">'+avLabel+'</span>'+manualDotAv+editBtn+'</div>');
  });
+}
+var _mStatusTarget='';
+function openMemberStatus(m){
+ _mStatusTarget=m;
+ $('ms-name').textContent=m;
+ var ov=(ASSIGNMENTS.memberStatus||{})[m]||{};
+ $('ms-workload').value=ov.workload||'';
+ $('ms-availability').value=ov.availability||'';
+ $('ms-notes').value=ov.notes||'';
+ $('ms-overlay').style.display='block';$('ms-modal').style.display='block';
+}
+function closeMemberStatus(){$('ms-overlay').style.display='none';$('ms-modal').style.display='none';}
+function saveMemberStatus(){
+ if(!_mStatusTarget)return;
+ if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};
+ var wl=$('ms-workload').value;
+ var av=$('ms-availability').value;
+ var notes=($('ms-notes').value||'').trim();
+ if(!wl&&!av&&!notes){delete ASSIGNMENTS.memberStatus[_mStatusTarget];}
+ else{var obj={};if(wl)obj.workload=wl;if(av)obj.availability=av;if(notes)obj.notes=notes;ASSIGNMENTS.memberStatus[_mStatusTarget]=obj;}
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeMemberStatus();buildWorkload();
+}
+function clearMemberStatus(){
+ if(!_mStatusTarget)return;
+ if(ASSIGNMENTS.memberStatus)delete ASSIGNMENTS.memberStatus[_mStatusTarget];
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeMemberStatus();buildWorkload();
 }
 function buildMembers(){
  if(membersBuilt)return;membersBuilt=true;
@@ -2028,7 +2068,7 @@ var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGI
 var GH_WRITE_TOKEN=atob(_tk.join(''));
 var ASSIGN_REPO='anoud-ashour/gamification-dashboard';
 var ASSIGN_FILE='assignments.json';
-var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[]};
+var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{}};
 var managerMode=false;
 var _managerEmail='';
 var _assignPending=false;
@@ -2037,7 +2077,7 @@ var _mgrEditKey='';
 async function loadAssignments(){
  try{
   var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
-  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];}
+  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};}
  }catch(e){}
 }
 
@@ -2104,6 +2144,7 @@ function _enterManagerMode(){
  var bar=$('mgr-save-bar');if(bar)bar.style.display='flex';
  var el=$('mgr-email-label');if(el)el.textContent='👤 '+_managerEmail;
  renderCustomTabNav();
+ buildWorkload();
  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
  else{renderTable();}
@@ -2119,6 +2160,7 @@ function toggleManagerMode(){
   if(btn){btn.textContent='👩‍💼 Manager';btn.style.background='none';btn.style.color='#8318d8';btn.style.borderColor='#8318d8';}
   var bar=$('mgr-save-bar');if(bar)bar.style.display='none';
   renderCustomTabNav();
+  buildWorkload();
   if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
   else if(activeTab==='updates'){buildUpdateProjects();}
   else{renderTable();}
@@ -2541,6 +2583,45 @@ function deleteCustomTab(id){
   <button onclick="closeAddArticle()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
+<!-- Member Status Edit modal -->
+<div id="ms-overlay" onclick="closeMemberStatus()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
+<div id="ms-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:420px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:6px">✏️ Edit Member Status</div>
+ <div id="ms-name" style="font-size:16px;font-weight:900;color:var(--dark);margin-bottom:18px"></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Team Workload</div>
+   <select id="ms-workload" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="">Auto (calculated)</option>
+    <option value="Available">🟢 Available</option>
+    <option value="On Track">✅ On Track</option>
+    <option value="At Risk">🔴 At Risk</option>
+    <option value="Inactive">🔵 Inactive</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Coordinator Availability</div>
+   <select id="ms-availability" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="">Auto (calculated)</option>
+    <option value="Present">🟢 Present</option>
+    <option value="Annual Leave">🔵 Annual Leave</option>
+    <option value="Casual Leave">🟡 Casual Leave</option>
+    <option value="Sick Leave">🟠 Sick Leave</option>
+    <option value="No Show">🔴 No Show</option>
+   </select>
+  </div>
+ </div>
+ <div style="margin-bottom:18px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Notes (optional)</div>
+  <input id="ms-notes" type="text" placeholder="e.g. Back on Thursday…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveMemberStatus()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
+  <button onclick="clearMemberStatus()" style="padding:10px 16px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:13px;font-weight:700;cursor:pointer">Reset to Auto</button>
+  <button onclick="closeMemberStatus()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
+
 <!-- Manager Login modal -->
 <div id="mgr-login-overlay" onclick="closeManagerLogin()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9400"></div>
 <div id="mgr-login-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;padding:36px 32px;width:380px;max-width:93vw;z-index:9401;box-shadow:0 24px 64px rgba(0,0,0,.28)">
