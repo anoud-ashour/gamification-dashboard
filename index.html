@@ -581,23 +581,25 @@ function buildOverview(){
   +'<div style="width:'+uniP+'%;height:100%;background:#10b981;border-radius:4px"></div></div>'
   +'</div>';
  // Custom LOB cards
- (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+ var CTAB_PAL=['#FF5900','#8318d8','#10b981','#0d9488','#f59e0b','#ec4899','#0ea5e9','#411514'];
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct,ctIdx){
   var tid='ctab-'+ct.id;
+  var ctCol=CTAB_PAL[ctIdx%CTAB_PAL.length];
   var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
   var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
   var tot=ctRows.length;
   var covP=tot>0?Math.round((ctDone/tot)*100):0;
   var eid='ovkpi-ctab-'+ct.id;
-  html+='<div onclick="setTab(\''+tid+'\')" style="'+cs+';border-left:5px solid #6366f1" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+  html+='<div onclick="setTab(\''+tid+'\')" style="'+cs+';border-left:5px solid '+ctCol+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
    +'<div style="font-size:26px;font-weight:900;color:var(--dark);line-height:1.2">'+ct.name+'</div>'
-   +'<span style="font-size:18px;color:#6366f1;opacity:.6;flex:none;padding-top:2px">›</span></div>'
+   +'<span style="font-size:18px;opacity:.6;flex:none;padding-top:2px;color:'+ctCol+'">›</span></div>'
    +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
-   +'<div id="'+eid+'" style="font-size:36px;font-weight:900;color:#6366f1;line-height:1;letter-spacing:-1px">0%</div>'
+   +'<div id="'+eid+'" style="font-size:36px;font-weight:900;line-height:1;letter-spacing:-1px;color:'+ctCol+'">0%</div>'
    +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
    +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+ctDone+' / '+tot+' done</div>'
    +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
-   +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
+   +'<div style="width:'+covP+'%;height:100%;border-radius:4px;background:'+ctCol+'"></div></div>'
    +'</div>';
  });
  if(managerMode){
