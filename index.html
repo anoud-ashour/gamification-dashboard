@@ -1005,8 +1005,9 @@ function renderTable(){
   jkeys.forEach(function(jname){
    var jrows=journeyMap[jname];
    var jDone=jrows.filter(function(r){return r.ar&&r.en;}).length;
+   var jSlug=jname.replace(/\s+/g,'_');
    var hdr=document.createElement('tr');
-   hdr.innerHTML='<td colspan="'+(managerMode?9:8)+'" style="background:#f8f4ff;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#6366f1;cursor:pointer;border-top:2px solid #e0e7ff" onclick="this.parentElement.querySelectorAll(\'.jgroup-'+jname.replace(/\s+/g,\'_\')+'\').forEach(function(r){r.style.display=r.style.display===\'none\'?\'table-row\':\'none\'})">▸ '+jname+' <span style="font-weight:400;opacity:.7;font-size:10px;text-transform:none">('+jrows.length+' articles · '+jDone+' complete)</span></td>';
+   hdr.innerHTML='<td colspan="'+(managerMode?9:8)+'" style="background:#f8f4ff;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#6366f1;cursor:pointer;border-top:2px solid #e0e7ff" onclick="this.parentElement.querySelectorAll(\'.jgroup-'+jSlug+'\').forEach(function(r){r.style.display=r.style.display===\'none\'?\'table-row\':\'none\'})">▸ '+jname+' <span style="font-weight:400;opacity:.7;font-size:10px;text-transform:none">('+jrows.length+' articles · '+jDone+' complete)</span></td>';
    tb.appendChild(hdr);
    jrows.forEach(function(r){renderRow(r);tb.lastChild.classList.add('jgroup-'+jname.replace(/\s+/g,'_'));});
   });
