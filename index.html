@@ -1823,6 +1823,7 @@ function setTab(t){
  $('sec-table').classList.toggle('hide',!(t==='all'||t==='default'||t==='tpro'||t==='tkt'));
  document.querySelectorAll('.dynamic-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
  document.querySelectorAll('.custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
+ if(t==='overview')buildOverview();
  if(t==='members')buildMembers();
  if(t==='progress')buildProgress();
  if(t==='updates')buildUpdateProjects();
