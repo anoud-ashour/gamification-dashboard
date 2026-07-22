@@ -2172,6 +2172,12 @@ async function attemptManagerLogin(){
  var pw=$('mgr-login-pw').value;
  var err=$('mgr-login-err');
  if(!email||!pw){if(err){err.textContent='Enter your email and password.';err.style.display='block';}if(btn){btn.disabled=false;btn.textContent='Login';}return;}
+ // If assignments not loaded yet, fetch them now before checking credentials
+ if(!ASSIGNMENTS.managers||ASSIGNMENTS.managers.length===0){
+  if(btn)btn.textContent='Loading credentials…';
+  try{await Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,6000);})]);}catch(e){}
+  if(btn)btn.textContent='Checking…';
+ }
  var hash=await mgHash(email,pw);
  var mgrs=ASSIGNMENTS.managers||[];
  var found=mgrs.find(function(m){return m.email.toLowerCase()===email&&m.hash===hash;});
