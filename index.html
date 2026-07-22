@@ -1007,15 +1007,23 @@ function renderTable(){
    var jDone=jrows.filter(function(r){return r.ar&&r.en;}).length;
    var jSlug=jname.replace(/\s+/g,'_');
    var hdr=document.createElement('tr');
-   hdr.innerHTML='<td colspan="'+(managerMode?9:8)+'" style="background:#f8f4ff;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#6366f1;cursor:pointer;border-top:2px solid #e0e7ff" onclick="this.parentElement.querySelectorAll(\'.jgroup-'+jSlug+'\').forEach(function(r){r.style.display=r.style.display===\'none\'?\'table-row\':\'none\'})">▸ '+jname+' <span style="font-weight:400;opacity:.7;font-size:10px;text-transform:none">('+jrows.length+' articles · '+jDone+' complete)</span></td>';
+   hdr.innerHTML='<td colspan="'+(managerMode?9:8)+'" style="background:#f8f4ff;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#6366f1;cursor:pointer;border-top:2px solid #e0e7ff" onclick="this.parentElement.parentElement.querySelectorAll(\'.jgroup-'+jSlug+'\').forEach(function(r){r.style.display=r.style.display===\'none\'?\'table-row\':\'none\'})">&#9658; '+jname+' <span style="font-weight:400;opacity:.7;font-size:10px;text-transform:none">('+jrows.length+' articles, '+jDone+' complete)</span></td>';
    tb.appendChild(hdr);
-   jrows.forEach(function(r){renderRow(r);tb.lastChild.classList.add('jgroup-'+jname.replace(/\s+/g,'_'));});
+   jrows.forEach(function(r){renderRow(r);tb.lastChild.classList.add('jgroup-'+jSlug);});
   });
  }else{
-  filteredRows.forEach(renderRow);
+  _renderSubCatRows(filteredRows,tb,renderRow,managerMode,activeTab);
  }
  if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
- if(managerMode){var addRow=document.createElement('tr');addRow.innerHTML='<td colspan="9" style="padding:10px;text-align:center"><button onclick="openAddArticle()" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button></td>';tb.appendChild(addRow);}
+ if(managerMode){
+  var addRow=document.createElement('tr');
+  var safeTab=activeTab.replace(/'/g,"\\'");
+  addRow.innerHTML='<td colspan="9" style="padding:10px;text-align:center;border-top:1px solid var(--border)">'
+   +'<button onclick="openAddArticle()" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px">+ Add Article</button>'
+   +'<button onclick="openAddSubCat(\''+safeTab+'\')" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Sub-Category</button>'
+   +'</td>';
+  tb.appendChild(addRow);
+ }
  $('rowcount').textContent=shown+' rows';
 }
 function renderAllLops(){
@@ -2116,7 +2124,7 @@ var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGI
 var GH_WRITE_TOKEN=atob(_tk.join(''));
 var ASSIGN_REPO='anoud-ashour/gamification-dashboard';
 var ASSIGN_FILE='assignments.json';
-var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{}};
+var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{},subCategories:{},articleSubCat:{}};
 var managerMode=false;
 var _managerEmail='';
 var _assignPending=false;
@@ -2125,7 +2133,7 @@ var _mgrEditKey='';
 async function loadAssignments(){
  try{
   var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
-  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};}
+  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};}
  }catch(e){}
 }
 
@@ -2301,6 +2309,15 @@ function openAssignEdit(artKey,lob){
  $('asgn-deadline').value=ov.deadline||'';
  $('asgn-priority').value=ov.priority||'';
  $('asgn-notes').value=ov.notes||'';
+ // Populate sub-category dropdown
+ var subCats=getSubCatsForLob(lob);
+ var scSel=$('asgn-subcat');
+ if(scSel){
+  scSel.innerHTML='<option value="">— None —</option>';
+  subCats.forEach(function(sc){var o=document.createElement('option');o.value=sc.id;o.textContent=sc.name;scSel.appendChild(o);});
+  scSel.value=getArticleSubCat(artKey,lob);
+  scSel.parentElement.style.display=subCats.length?'block':'none';
+ }
  $('asgn-overlay').style.display='block';$('asgn-modal').style.display='block';
 }
 
@@ -2318,10 +2335,11 @@ function saveAssign(){
  ov.priority=$('asgn-priority').value;
  ov.notes=$('asgn-notes').value;
  ASSIGNMENTS.overrides[_mgrEditKey]=ov;
- // Sync back to extra article if applicable
- var extraId=_mgrEditKey;
+ // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
  var artKeyStr=parts.slice(0,-1).join('::');var lobStr=parts[parts.length-1];
+ var scSel=$('asgn-subcat');if(scSel)setArticleSubCat(artKeyStr,lobStr,scSel.value);
+ // Sync back to extra article if applicable
  var ex=ASSIGNMENTS.extra.find(function(e){return e.article.toLowerCase().trim()===artKeyStr&&e.lob===lobStr;});
  if(ex){ex.member=ov.member;ex.ar=ov.ar;ex.en=ov.en;ex.deadline=ov.deadline;ex.priority=ov.priority;ex.notes=ov.notes;}
  _assignPending=true;
@@ -2444,8 +2462,9 @@ function buildCustomTab(tabId){
  var h='<div style="margin-bottom:10px"><button onclick="setTab(\'overview\')" style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:700;cursor:pointer;padding:0">← Back to Overview</button></div>';
  h+='<div class="card"><h3>'+(ct?ct.name:tabId)+'</h3>';
  if(managerMode){
-  h+='<div style="margin-bottom:12px;display:flex;gap:8px">';
+  h+='<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">';
   h+='<button onclick="openAddArticleToTab(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>';
+  h+='<button onclick="openAddSubCat(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Sub-Category</button>';
   if(ct)h+='<button onclick="deleteCustomTab(\''+ct.id+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">🗑 Delete Tab</button>';
   h+='</div>';
  }
@@ -2455,33 +2474,41 @@ function buildCustomTab(tabId){
  h+='<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th><th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
  if(managerMode)h+='<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>';
  h+='</tr></thead><tbody>';
- if(!ctRows.length){
-  h+='<tr><td colspan="'+(managerMode?7:6)+'" class="empty" style="padding:20px;text-align:center">No articles yet.'+(managerMode?' Click "+ Add Article" to add one.':'')+'</td></tr>';
- }else{
-  ctRows.forEach(function(r){
-   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
-   var artLabel=r.article;
-   if(r._priority){var pcc=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pcc+'">'+r._priority.toUpperCase()+'</span>';}
-   if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
-   var gkey=r.article.toLowerCase().trim();
-   var ek6=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-   h+='<tr>';
-   h+='<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>';
-   h+='<td style="padding:10px 14px"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>';
-   h+='<td style="text-align:center;padding:10px 6px">'+cell(r.ar||0)+'</td>';
-   h+='<td style="text-align:center;padding:10px 6px">'+cell(r.en||0)+'</td>';
-   h+=glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId);
-   if(managerMode){
-    h+='<td style="text-align:center;padding:10px 6px">';
-    h+='<button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>';
-    if(r._extraId)h+=' <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>';
-    h+='</td>';
-   }
-   h+='</tr>';
-  });
- }
  h+='</tbody></table></div></div>';
  sec.innerHTML=h;
+ var ctTb=sec.querySelector('tbody');
+ if(!ctTb)return;
+ function ctRenderRow(r){
+  var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
+  var artLabel=r.article;
+  if(r._priority){var pcc=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pcc+'">'+r._priority.toUpperCase()+'</span>';}
+  if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
+  var gkey=r.article.toLowerCase().trim();
+  var ek6=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>'
+   +'<td style="padding:10px 14px"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>'
+   +'<td style="text-align:center;padding:10px 6px">'+cell(r.ar||0)+'</td>'
+   +'<td style="text-align:center;padding:10px 6px">'+cell(r.en||0)+'</td>'
+   +glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId)
+   +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':'');
+  ctTb.appendChild(tr);
+ }
+ if(!ctRows.length){
+  var emptyTr=document.createElement('tr');
+  emptyTr.innerHTML='<td colspan="'+(managerMode?7:6)+'" class="empty" style="padding:20px;text-align:center">No articles yet.'+(managerMode?' Click "+ Add Article" to add one.':'')+'</td>';
+  ctTb.appendChild(emptyTr);
+ }else{
+  _renderSubCatRows(ctRows,ctTb,ctRenderRow,managerMode,tabId);
+ }
+ if(managerMode){
+  var addTr=document.createElement('tr');
+  addTr.innerHTML='<td colspan="'+(managerMode?7:6)+'" style="padding:10px;text-align:center;border-top:1px solid var(--border)">'
+   +'<button onclick="openAddArticleToTab(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px">+ Add Article</button>'
+   +'<button onclick="openAddSubCat(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Sub-Category</button>'
+   +'</td>';
+  ctTb.appendChild(addTr);
+ }
 }
 
 function openAddArticleToTab(tabId){
@@ -2515,6 +2542,95 @@ function deleteCustomTab(id){
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  renderCustomTabNav();
  setTab('overview');
+}
+
+// ===== SUB-CATEGORIES =====
+function getSubCatsForLob(lobId){return (ASSIGNMENTS.subCategories||{})[lobId]||[];}
+function getArticleSubCat(artKey,lobId){return ((ASSIGNMENTS.articleSubCat||{})[artKey+'::'+lobId])||'';}
+function setArticleSubCat(artKey,lobId,subCatId){
+ if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};
+ if(subCatId)ASSIGNMENTS.articleSubCat[artKey+'::'+lobId]=subCatId;
+ else delete ASSIGNMENTS.articleSubCat[artKey+'::'+lobId];
+}
+var _subCatTargetLob='';
+function openAddSubCat(lobId){
+ _subCatTargetLob=lobId;
+ var el=$('subcat-name-inp');if(el)el.value='';
+ $('subcat-overlay').style.display='block';$('subcat-modal').style.display='block';
+ setTimeout(function(){var e=$('subcat-name-inp');if(e)e.focus();},80);
+}
+function closeAddSubCat(){$('subcat-overlay').style.display='none';$('subcat-modal').style.display='none';}
+function saveNewSubCat(){
+ var name=($('subcat-name-inp').value||'').trim();
+ if(!name)return;
+ if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};
+ if(!ASSIGNMENTS.subCategories[_subCatTargetLob])ASSIGNMENTS.subCategories[_subCatTargetLob]=[];
+ var id=Date.now().toString(36);
+ ASSIGNMENTS.subCategories[_subCatTargetLob].push({id:id,name:name});
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeAddSubCat();
+ if(_subCatTargetLob.indexOf('ctab-')===0)buildCustomTab(_subCatTargetLob);
+ else{renderTable();}
+}
+function deleteSubCat(lobId,subCatId){
+ if(!confirm('Delete this sub-category? Articles will become uncategorized.'))return;
+ if(ASSIGNMENTS.subCategories&&ASSIGNMENTS.subCategories[lobId])
+  ASSIGNMENTS.subCategories[lobId]=ASSIGNMENTS.subCategories[lobId].filter(function(c){return c.id!==subCatId;});
+ Object.keys(ASSIGNMENTS.articleSubCat||{}).forEach(function(k){if(ASSIGNMENTS.articleSubCat[k]===subCatId)delete ASSIGNMENTS.articleSubCat[k];});
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ if(lobId.indexOf('ctab-')===0)buildCustomTab(lobId);
+ else renderTable();
+}
+function renameSubCat(lobId,subCatId){
+ var sc=(getSubCatsForLob(lobId)).find(function(c){return c.id===subCatId;});
+ if(!sc)return;
+ var newName=prompt('Rename sub-category:',sc.name);
+ if(!newName||!newName.trim())return;
+ sc.name=newName.trim();
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ if(lobId.indexOf('ctab-')===0)buildCustomTab(lobId);
+ else renderTable();
+}
+function _renderSubCatRows(rows,tb,renderRow,managerMode,lobId){
+ var subCats=getSubCatsForLob(lobId);
+ if(!subCats.length){rows.forEach(renderRow);return;}
+ var grouped={};var uncategorized=[];
+ subCats.forEach(function(sc){grouped[sc.id]=[];});
+ rows.forEach(function(r){
+  var artKey=r.article.toLowerCase().trim();
+  var scId=getArticleSubCat(artKey,lobId);
+  if(scId&&grouped[scId]!==undefined)grouped[scId].push(r);
+  else uncategorized.push(r);
+ });
+ var cols=managerMode?9:8;
+ subCats.forEach(function(sc){
+  var scRows=grouped[sc.id]||[];
+  var scDone=scRows.filter(function(r){return r.ar&&r.en;}).length;
+  var hdr=document.createElement('tr');
+  var safeId=sc.id.replace(/'/g,"\\'");var safeLob=lobId.replace(/'/g,"\\'");
+  hdr.innerHTML='<td colspan="'+cols+'" style="background:linear-gradient(90deg,#f5f3ff,#faf9ff);padding:9px 14px;border-top:2px solid #e0e7ff;border-bottom:1px solid #e0e7ff">'
+   +'<div style="display:flex;align-items:center;gap:8px">'
+   +'<span style="font-size:12px;font-weight:800;color:#6366f1;letter-spacing:.5px">📁 '+sc.name+'</span>'
+   +'<span style="font-size:10px;color:#9ca3af;font-weight:500">'+scRows.length+' articles · '+scDone+' complete</span>'
+   +(managerMode?'<button onclick="renameSubCat(\''+safeLob+'\',\''+safeId+'\')" style="margin-left:auto;padding:2px 8px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:10px;cursor:pointer">✏️ Rename</button>'
+    +'<button onclick="deleteSubCat(\''+safeLob+'\',\''+safeId+'\')" style="padding:2px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:10px;cursor:pointer">🗑</button>':'')
+   +'</div></td>';
+  tb.appendChild(hdr);
+  if(!scRows.length){
+   var empty=document.createElement('tr');
+   empty.innerHTML='<td colspan="'+cols+'" style="padding:10px 14px;font-size:12px;color:#9ca3af;font-style:italic">No articles in this sub-category.</td>';
+   tb.appendChild(empty);
+  }
+  scRows.forEach(renderRow);
+ });
+ if(uncategorized.length){
+  var uhdr=document.createElement('tr');
+  uhdr.innerHTML='<td colspan="'+cols+'" style="background:#fafafa;padding:9px 14px;border-top:2px solid #e5e7eb;border-bottom:1px solid #e5e7eb">'
+   +'<span style="font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:.5px">📂 Uncategorized</span>'
+   +'<span style="font-size:10px;color:#9ca3af;margin-left:8px">'+uncategorized.length+' articles</span></td>';
+  tb.appendChild(uhdr);
+  uncategorized.forEach(renderRow);
+ }
 }
 </script>
 <!-- Game Link Modal -->
@@ -2595,6 +2711,10 @@ function deleteCustomTab(id){
  <div style="margin-bottom:18px">
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Notes</div>
   <textarea id="asgn-notes" rows="2" placeholder="Optional notes…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;resize:none"></textarea>
+ </div>
+ <div style="margin-bottom:18px;display:none">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Sub-Category</div>
+  <select id="asgn-subcat" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none"><option value="">— None —</option></select>
  </div>
  <div style="display:flex;gap:8px">
   <button onclick="saveAssign()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
@@ -2748,6 +2868,20 @@ function deleteCustomTab(id){
 </div>
 
 <!-- Add Tab modal -->
+<!-- Sub-Category Modal -->
+<div id="subcat-overlay" onclick="closeAddSubCat()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9300"></div>
+<div id="subcat-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9301;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px">📁 Add Sub-Category</div>
+ <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Sub-categories group articles inside a tab into labelled sections.</div>
+ <div style="margin-bottom:18px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Sub-Category Name *</div>
+  <input id="subcat-name-inp" type="text" placeholder="e.g. Complaints, Refunds, Delivery Issues…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewSubCat()">
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveNewSubCat()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Sub-Category</button>
+  <button onclick="closeAddSubCat()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
 <div id="addtab-overlay" onclick="closeAddTab()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
 <div id="addtab-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
  <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:16px">+ Create New Tab</div>
