@@ -2038,59 +2038,72 @@ function parseFallback(text){
  return Object.values(merged);
 }
 
-async function load(){
- let usedFallback=false;
- // 1. Try live coverage sheet
- try{
-  const resp=await fetch(COVERAGE_URL+'&t='+Date.now(),{cache:'no-store'});
-  if(!resp.ok)throw new Error('HTTP '+resp.status);
-  const text=await resp.text();
-  DATA=parseCoverageCsv(text);
-  if(!DATA.length)throw new Error('No coverage rows parsed');
- }catch(e){
-  usedFallback=true;
-  DATA=parseFallback(FALLBACK_CSV);
- }
- // 2. Try data.json (all sheets — primary source)
- try{
-  const respJ=await fetch(DATA_JSON_URL+'?t='+Date.now(),{cache:'no-store'});
-  if(respJ.ok){
-   const json=await respJ.json();
-   SHEET_TABS=json.tabs||[];
-   // Merge ALL sheet tabs into PROG so every tab's articles appear in Progress stats
-   PROG=[];
-   var rowToCsv=function(r){return r.map(function(c){var s=String(c==null?'':c);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');};
-   SHEET_TABS.forEach(function(tab){
-    if(tab.rows&&tab.rows.length){
-     var csv=tab.rows.map(rowToCsv).join('\n');
-     var tabProg=parseProgressCsv(csv);
-     var tn=tab.name.trim().toLowerCase().replace(/\s/g,'');
-     var sopOvr=null;
-     if(tn.indexOf('univers')>-1)sopOvr={label:'Universal',color:'#10b981'};
-     else if(tn.indexOf('vip')>-1)sopOvr={label:'VIP',color:'#8318d8'};
-     else if(tn.indexOf('tkt')>-1||tn.indexOf('ticket')>-1)sopOvr={label:'TKT',color:'#411514'};
-     tabProg=tabProg.map(function(r){var row=Object.assign({},r,{_tab:tab.name.trim()});if(sopOvr)row._sop=sopOvr;return row;});
-     PROG=PROG.concat(tabProg);
-    }
-   });
+function _fetchWithTimeout(url,ms){
+ return new Promise(function(res,rej){
+  var done=false;
+  var t=setTimeout(function(){if(!done){done=true;rej(new Error('timeout'));}},ms);
+  fetch(url,{cache:'no-store'}).then(function(r){if(!done){done=true;clearTimeout(t);res(r);}}).catch(function(e){if(!done){done=true;clearTimeout(t);rej(e);}});
+ });
+}
+function _parseTabs(json){
+ var tabs=json.tabs||[];
+ var prog=[];
+ var rowToCsv=function(r){return r.map(function(c){var s=String(c==null?'':c);return(s.indexOf(',')>-1||s.indexOf('"')>-1||s.indexOf('\n')>-1)?'"'+s.replace(/"/g,'""')+'"':s;}).join(',');};
+ tabs.forEach(function(tab){
+  if(tab.rows&&tab.rows.length){
+   var csv=tab.rows.map(rowToCsv).join('\n');
+   var tabProg=parseProgressCsv(csv);
+   var tn=tab.name.trim().toLowerCase().replace(/\s/g,'');
+   var sopOvr=null;
+   if(tn.indexOf('univers')>-1)sopOvr={label:'Universal',color:'#10b981'};
+   else if(tn.indexOf('vip')>-1)sopOvr={label:'VIP',color:'#8318d8'};
+   else if(tn.indexOf('tkt')>-1||tn.indexOf('ticket')>-1)sopOvr={label:'TKT',color:'#411514'};
+   tabProg=tabProg.map(function(r){var row=Object.assign({},r,{_tab:tab.name.trim()});if(sopOvr)row._sop=sopOvr;return row;});
+   prog=prog.concat(tabProg);
   }
- }catch(e){}
- // Fall back to tracker.csv if JSON not yet available
- if(!PROG.length&&PROGRESS_URL){
-  try{
-   const resp2=await fetch(PROGRESS_URL+'?t='+Date.now(),{cache:'no-store'});
-   if(resp2.ok){const t2=await resp2.text();if(!t2.trim().startsWith('<')){PROG=parseProgressCsv(t2);}}
-  }catch(e){}
- }
- if(!PROG.length)PROG=FALLBACK_PROG;
- // 3. Build owner map; supplement with FALLBACK_CSV for any article not in PROG
+ });
+ return {tabs:tabs,prog:prog};
+}
+async function load(){
+ // Show dashboard immediately from embedded fallback — no blank screen
+ DATA=parseFallback(FALLBACK_CSV);
+ PROG=FALLBACK_PROG;
  buildOwners();
- parseFallback(FALLBACK_CSV).forEach(r=>{const k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
+ parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
  await loadAssignments();
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
  build();
  renderCustomTabNav();
+ // Now fetch live data in the background (8s timeout per request)
+ _refreshLiveData();
+}
+async function _refreshLiveData(){
+ var liveData=null,liveProg=null,liveTabs=null;
+ try{
+  var resp=await _fetchWithTimeout(COVERAGE_URL+'&t='+Date.now(),8000);
+  if(resp.ok){var text=await resp.text();var d=parseCoverageCsv(text);if(d.length)liveData=d;}
+ }catch(e){}
+ try{
+  var respJ=await _fetchWithTimeout(DATA_JSON_URL+'?t='+Date.now(),8000);
+  if(respJ.ok){var json=await respJ.json();var parsed=_parseTabs(json);liveTabs=parsed.tabs;liveProg=parsed.prog;}
+ }catch(e){}
+ if(!liveProg&&PROGRESS_URL){
+  try{
+   var resp2=await _fetchWithTimeout(PROGRESS_URL+'?t='+Date.now(),8000);
+   if(resp2.ok){var t2=await resp2.text();if(!t2.trim().startsWith('<')){liveProg=parseProgressCsv(t2);}}
+  }catch(e){}
+ }
+ var updated=false;
+ if(liveData&&liveData.length){DATA=liveData;updated=true;}
+ if(liveProg&&liveProg.length){PROG=liveProg;updated=true;}
+ if(liveTabs)SHEET_TABS=liveTabs;
+ if(updated){
+  buildOwners();
+  parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
+  buildRows();applyAssignments();
+  build();
+ }
 }
 load();
 setInterval(handleRefresh,5*60*1000);
