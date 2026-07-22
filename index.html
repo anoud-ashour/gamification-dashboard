@@ -2263,11 +2263,9 @@ async function attemptManagerLogin(){
  var err=$('mgr-login-err');
  if(!email||!pw){if(err){err.textContent='Enter your email and password.';err.style.display='block';}if(btn){btn.disabled=false;btn.textContent='Login';}return;}
  // If assignments not loaded yet, fetch them now before checking credentials
- if(!ASSIGNMENTS.managers||ASSIGNMENTS.managers.length===0){
-  if(btn)btn.textContent='Loading credentials…';
-  try{await Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,6000);})]);}catch(e){}
-  if(btn)btn.textContent='Checking…';
- }
+ if(btn)btn.textContent='Loading credentials…';
+ try{await Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,8000);})]);}catch(e){}
+ if(btn)btn.textContent='Checking…';
  var hash=await mgHash(email,pw);
  var mgrs=ASSIGNMENTS.managers||[];
  var found=mgrs.find(function(m){return m.email.toLowerCase()===email&&m.hash===hash;});
@@ -2877,7 +2875,10 @@ function cycleSecItemStatus(secId,itemId){
  </div>
  <div style="margin-bottom:16px">
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Password</div>
-  <input id="mgr-login-pw" type="password" placeholder="••••••••" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')attemptManagerLogin()" onfocus="this.style.borderColor='#8318d8'" onblur="this.style.borderColor='var(--border)'">
+ <div style="position:relative">
+  <input id="mgr-login-pw" type="password" placeholder="••••••••" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px 46px 11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')attemptManagerLogin()" onfocus="this.style.borderColor='#8318d8'" onblur="this.style.borderColor='var(--border)';">
+  <button type="button" onclick="var p=$('mgr-login-pw');p.type=p.type==='password'?'text':'password';this.textContent=p.type==='password'?'👁':'🙈'" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:4px;line-height:1;color:#9ca3af">👁</button>
+ </div>
  </div>
  <div id="mgr-login-err" style="display:none;font-size:12px;color:#dc2626;background:#fee2e2;padding:9px 12px;border-radius:8px;margin-bottom:14px;font-weight:600"></div>
  <button id="mgr-login-btn" onclick="attemptManagerLogin()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px">Login</button>
