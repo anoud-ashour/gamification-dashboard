@@ -2345,7 +2345,27 @@ function saveAssign(){membersBuilt=false;
  else{renderTable();}
 }
 
-function clearAssign(){
+
+function saveAssignAndNotify(){
+ if(!_mgrEditKey)return;
+ var member=$('asgn-member').value;
+ var artTitle=$('asgn-title').textContent;
+ var lobLabel=$('asgn-lob-label').textContent;
+ var deadline=$('asgn-deadline').value;
+ var priority=$('asgn-priority').value;
+ var notes=$('asgn-notes').value;
+ saveAssign();
+ var emailMap={'amal':'amal.eldakroury@talabat.com','anoud':'anoud.shehata@talabat.com','dalia':'dalia.adel@talabat.com'};
+ var key=(member||'').trim().split(' ')[0].toLowerCase();
+ var emailAddr=emailMap[key];
+ if(!emailAddr){alert('No email configured for "'+member+'". Assignment saved.');return;}
+ var dl=deadline?'\nDeadline: '+deadline:'';
+ var pr=priority&&priority!='None'?'\nPriority: '+priority:'';
+ var nt=notes?'\nNotes: '+notes:'';
+ var subj=encodeURIComponent('[Dashboard] Article Assigned to You: '+artTitle);
+ var body=encodeURIComponent('Hi '+member.split(' ')[0]+',\n\nYou have been assigned the following article on the Gamification KB Dashboard:\n\nArticle: '+artTitle+'\nLOB: '+lobLabel+dl+pr+nt+'\n\nPlease log in to review your assignment:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager');
+ window.open('mailto:'+emailAddr+'?subject='+subj+'&body='+body);
+}function clearAssign(){
  if(!_mgrEditKey)return;
  delete ASSIGNMENTS.overrides[_mgrEditKey];
  _assignPending=true;
@@ -2704,11 +2724,14 @@ function cycleSecItemStatus(secId,itemId){
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Sub-Category</div>
   <select id="asgn-subcat" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none"><option value="">— None —</option></select>
  </div>
- <div style="display:flex;gap:8px">
-  <button onclick="saveAssign()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
-  <button onclick="clearAssign()" style="padding:10px 16px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:13px;font-weight:700;cursor:pointer">Clear</button>
-  <button onclick="closeAssignModal()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
- </div>
+  <div style="display:flex;gap:8px;margin-bottom:6px">
+   <button onclick="saveAssignAndNotify()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">💌 Save &amp; Notify</button>
+   <button onclick="saveAssign()" style="padding:10px 16px;border-radius:10px;border:1.5px solid #8318d8;background:none;color:#8318d8;font-size:13px;font-weight:700;cursor:pointer">Save Only</button>
+  </div>
+  <div style="display:flex;gap:8px">
+   <button onclick="clearAssign()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">Clear</button>
+   <button onclick="closeAssignModal()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
+  </div>
 </div>
 
 <!-- Add article modal -->
