@@ -2065,18 +2065,17 @@ function _parseTabs(json){
  return {tabs:tabs,prog:prog};
 }
 async function load(){
- // Step 1: render immediately from embedded fallback — never blank
- try{
-  DATA=parseFallback(FALLBACK_CSV);
-  PROG=FALLBACK_PROG;
-  buildOwners();
-  parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
- }catch(e){DATA=[];PROG=[];}
- $('status').classList.add('hide');
- $('app').classList.remove('hide');
- try{build();}catch(e){}
- try{renderCustomTabNav();}catch(e){}
- // Step 2: load assignments + live data in background, re-render when ready
+ var _st=document.getElementById('status');
+ var _ap=document.getElementById('app');
+ var _errs=[];
+ try{DATA=parseFallback(FALLBACK_CSV);}catch(e){DATA=[];_errs.push('parseFallback:'+e.message);}
+ try{PROG=FALLBACK_PROG;buildOwners();}catch(e){PROG=[];_errs.push('buildOwners:'+e.message);}
+ try{parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});}catch(e){_errs.push('OWNER:'+e.message);}
+ if(_st){_st.style.display='none';}
+ if(_ap){_ap.style.display='block';_ap.classList.remove('hide');}
+ if(_errs.length){console.warn('load errors:',_errs);}
+ try{build();}catch(e){console.error('build:',e);}
+ try{renderCustomTabNav();}catch(e){console.error('renderNav:',e);}
  try{await Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,4000);})]);}catch(e){}
  try{build();renderCustomTabNav();}catch(e){}
  _refreshLiveData();
