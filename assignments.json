@@ -1,7 +1,24 @@
 {
-  "overrides": {},
+  "overrides": {
+    "missing item(s) complaints::default": {
+      "member": "Amal",
+      "ar": 1,
+      "en": 1,
+      "deadline": "",
+      "priority": "",
+      "notes": ""
+    },
+    "test::default": {
+      "member": "Anoud",
+      "ar": 0,
+      "en": 0,
+      "deadline": "",
+      "priority": "",
+      "notes": "test test"
+    }
+  },
   "extra": [],
-  "lastUpdated": "2026-07-22T10:18:11.746Z",
+  "lastUpdated": "2026-07-22T10:58:54.297Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -9,9 +26,11 @@
     },
     {
       "email": "rawan.kamaleldin@talabat.com",
-      "hash": "589d4dfad314b3cd3edb20e2c29017d549d0600a12e6e48d59b22f44c7b83f87"
+      "hash": "63cecce565f6adef200977dbe716f2673075040513d0f6ad450bc832231b1a44"
     }
   ],
   "customTabs": [],
-  "memberStatus": {}
+  "memberStatus": {},
+  "subCategories": {},
+  "articleSubCat": {}
 }
