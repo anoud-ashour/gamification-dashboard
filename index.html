@@ -600,9 +600,7 @@ function buildOverview(){
    +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
    +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+tot+' article'+(tot!==1?'s':'')+' tracked</div>'
    +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
-   +'<div style="width:''+covP+''%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
-   +(managerMode?'<div style="margin-top:10px;display:flex;gap:6px" onclick="event.stopPropagation()"><button onclick="deleteCustomTab(\''+ct.id+\'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑 Delete LOB</button></div>':'')
-   +'</div>';
+   +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
    +'</div>';
  });
  // Custom Sections cards in Overview
