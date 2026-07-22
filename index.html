@@ -2469,6 +2469,8 @@ function saveNewArticleAndNotify(){
 
 function renderCustomTabNav(){
  var secs=$('custom-tab-secs');
+ // Remove any previously injected custom tab buttons from the nav bar
+ document.querySelectorAll('.tab[data-ctab]').forEach(function(b){b.remove();});
  // Remove old custom tab sections
  document.querySelectorAll('.custom-tab-section').forEach(function(s){s.remove();});
  // Custom LOBs do NOT get nav tab buttons — navigate via Overview cards like Default/TPRO/TKT
