@@ -217,7 +217,6 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <input type="text" id="search" placeholder="🔍 Search by article, member name, or LOB…">
 <select id="fJourney"><option value="">All journeys</option></select>
 <select id="fState"><option value="">All rows</option><option value="gaps">Only with gaps</option><option value="full">Only complete</option></select>
-<button id="group-journey-btn" onclick="toggleGroupByJourney()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">📂 Group by Journey</button>
 </div>
 <div class="legend">
 <span><span class="dot" style="background:var(--green)"></span>Has content</span>
@@ -480,7 +479,6 @@ var GAME_LINKS={};try{GAME_LINKS=JSON.parse(localStorage.getItem('gameDashLinks'
 Object.keys(MG_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=MG_LINKS_DEFAULT[k];});
 Object.keys(ART_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=ART_LINKS_DEFAULT[k];});
 var editLinksMode=false;
-var groupByJourney=false;
 // ---- Sheet 2: production status tracker ----
 const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
@@ -601,24 +599,6 @@ function buildOverview(){
    +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+tot+' article'+(tot!==1?'s':'')+' tracked</div>'
    +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
    +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
-   +'</div>';
- });
- // Custom Sections cards in Overview
- (ASSIGNMENTS.customSections||[]).forEach(function(csec){
-  var secItems=csec.items||[];
-  var secDone=secItems.filter(function(it){return it.status==='Done';}).length;
-  var secPct=secItems.length>0?Math.round((secDone/secItems.length)*100):0;
-  var secCol=csec.color||'#6366f1';
-  html+='<div onclick="setTab(\'updates\')" style="'+cs+';border-left:5px solid '+secCol+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-   +'<div style="font-size:22px;font-weight:900;color:var(--dark);line-height:1.2">'+csec.name+'</div>'
-   +'<span style="font-size:18px;color:'+secCol+';opacity:.6;flex:none;padding-top:2px">›</span></div>'
-   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
-   +'<div style="font-size:36px;font-weight:900;color:'+secCol+';line-height:1;letter-spacing:-1px">'+secPct+'%</div>'
-   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">done</div></div>'
-   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+secDone+' / '+secItems.length+' item'+(secItems.length!==1?'s':'')+' complete</div>'
-   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
-   +'<div style="width:'+secPct+'%;height:100%;background:'+secCol+';border-radius:4px"></div></div>'
    +'</div>';
  });
  if(managerMode){
@@ -797,7 +777,7 @@ function buildMembers(){
   {name:'TPRO',ar:'vip_ar',en:'vip_en'},
   {name:'Ticketing',ar:'tkt_ar',en:'tkt_en'},
  ];
- const members=[...new Set(DATA.map(r=>ownerOf(r.article)))].sort((a,b)=>((a==='Unassigned')-(b==='Unassigned'))||a.localeCompare(b));
+  const members=[...new Set([...DATA.map(r=>ownerOf(r.article)),...(ASSIGNMENTS.extra||[]).map(function(e){return e.member||'Unassigned';})].filter(Boolean))].sort((a,b)=>((a==='Unassigned')-(b==='Unassigned'))||a.localeCompare(b));
  const stats=members.map(m=>{
   const rr=DATA.filter(r=>ownerOf(r.article)===m);
   const stages=[...new Set(rr.map(r=>r.journey))];
@@ -825,7 +805,8 @@ function buildMembers(){
   // count = coverage-sheet articles + any PROG-only articles not yet in coverage sheet
   const dataKeys=new Set(rr.map(r=>nrm(mergeArtName(r.article))));
   const uniOnly=pr.filter(r=>!dataKeys.has(nrm(mergeArtName(r.article)))).length;
-  return {m,stage:stages.join(', ')||'—',count:rr.length+uniOnly,full,lobs,pr};
+   const extraCount=(ASSIGNMENTS.extra||[]).filter(function(e){return (e.member||'Unassigned')===m;}).length;
+   return {m,stage:stages.join(', ')||'—',count:rr.length+uniOnly+extraCount,full,lobs,pr};
  }).sort((a,b)=>b.full-a.full||b.count-a.count);
  const tb=$('mem-cards');tb.innerHTML='';
  stats.forEach(s=>{
@@ -977,11 +958,9 @@ function renderTable(){
    +'<th style="min-width:120px">Coverage</th>';
   $('tbl-title').textContent='All LOBs — Coverage Matrix';
   var elb=$('edit-links-btn');if(elb)elb.style.display='none';
-  var gjb=$('group-journey-btn');if(gjb)gjb.style.display='none';
   renderAllLops();
   return;
  }
- var gjb=$('group-journey-btn');if(gjb)gjb.style.display='inline-block';
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
   +'<th>Arabic</th><th>English</th><th>LOB %</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
@@ -1023,23 +1002,7 @@ function renderTable(){
    +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':'');
   tb.appendChild(tr);shown++;
  }
- if(groupByJourney&&!fj){
-  var journeyOrder=['Post Delivery','Live Orders','Across Journey','General'];
-  var journeyMap={};
-  filteredRows.forEach(function(r){var j=r.journey||'General';if(!journeyMap[j])journeyMap[j]=[];journeyMap[j].push(r);});
-  var jkeys=Object.keys(journeyMap).sort(function(a,b){var ia=journeyOrder.indexOf(a),ib=journeyOrder.indexOf(b);if(ia===-1)ia=99;if(ib===-1)ib=99;return ia-ib;});
-  jkeys.forEach(function(jname){
-   var jrows=journeyMap[jname];
-   var jDone=jrows.filter(function(r){return r.ar&&r.en;}).length;
-   var jSlug=jname.replace(/\s+/g,'_');
-   var hdr=document.createElement('tr');
-   hdr.innerHTML='<td colspan="'+(managerMode?9:8)+'" style="background:#f8f4ff;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#6366f1;cursor:pointer;border-top:2px solid #e0e7ff" onclick="this.parentElement.parentElement.querySelectorAll(\'.jgroup-'+jSlug+'\').forEach(function(r){r.style.display=r.style.display===\'none\'?\'table-row\':\'none\'})">&#9658; '+jname+' <span style="font-weight:400;opacity:.7;font-size:10px;text-transform:none">('+jrows.length+' articles, '+jDone+' complete)</span></td>';
-   tb.appendChild(hdr);
-   jrows.forEach(function(r){renderRow(r);tb.lastChild.classList.add('jgroup-'+jSlug);});
-  });
- }else{
   filteredRows.forEach(renderRow);
- }
  if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
  if(managerMode){
   var addRow=document.createElement('tr');
@@ -1585,11 +1548,6 @@ function glCell(gkey,lang){
  }
  return '<td></td>';
 }
-function toggleGroupByJourney(){
- groupByJourney=!groupByJourney;
- var btn=$('group-journey-btn');
- if(btn){btn.style.background=groupByJourney?'#6366f1':'none';btn.style.color=groupByJourney?'#fff':'#6366f1';btn.textContent=groupByJourney?'📂 Ungroup':'📂 Group by Journey';}
- renderTable();
 }
 function toggleEditLinksMode(){
  editLinksMode=!editLinksMode;
@@ -2361,7 +2319,7 @@ function closeAssignModal(){
  $('asgn-overlay').style.display='none';$('asgn-modal').style.display='none';_mgrEditKey='';
 }
 
-function saveAssign(){
+function saveAssign(){membersBuilt=false;
  if(!_mgrEditKey)return;
  var ov={};
  ov.member=$('asgn-member').value;
@@ -2446,7 +2404,7 @@ function saveNewArticle(){
  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- closeAddArticle();buildRows();applyAssignments();
+ closeAddArticle();buildRows();applyAssignments();membersBuilt=false;
  // Navigate to the LOB tab where the article was added so it's immediately visible
  if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
   else if(lob==='uni'){setTab('progress');}
