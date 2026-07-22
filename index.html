@@ -584,10 +584,9 @@ function buildOverview(){
  (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
   var tid='ctab-'+ct.id;
   var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
-  var arD=ctRows.filter(function(r){return (r.ar||0)>0;}).length;
-  var enD=ctRows.filter(function(r){return (r.en||0)>0;}).length;
+  var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
   var tot=ctRows.length;
-  var covP=tot>0?Math.round(((arD+enD)/(tot*2))*100):0;
+  var covP=tot>0?Math.round((ctDone/tot)*100):0;
   var eid='ovkpi-ctab-'+ct.id;
   html+='<div onclick="setTab(\''+tid+'\')" style="'+cs+';border-left:5px solid #6366f1" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
@@ -596,15 +595,12 @@ function buildOverview(){
    +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
    +'<div id="'+eid+'" style="font-size:36px;font-weight:900;color:#6366f1;line-height:1;letter-spacing:-1px">0%</div>'
    +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
-   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+tot+' article'+(tot!==1?'s':'')+' tracked</div>'
+   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+ctDone+' / '+tot+' done</div>'
    +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
    +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
    +'</div>';
  });
  if(managerMode){
-  html+='<div onclick="openAddCustomSection()" style="'+cs+';border:2px dashed #6366f1;display:flex;align-items:center;justify-content:center;min-height:140px;box-shadow:none" onmouseover="this.style.background=\'#f5f3ff\'" onmouseout="this.style.background=\'var(--card)\'">'
-   +'<div style="font-size:13px;font-weight:800;color:#6366f1">+ Add Section</div>'
-   +'</div>';
    html+='<div onclick="openAddTab()" style="'+cs+';border:2px dashed #10b981;display:flex;align-items:center;justify-content:center;min-height:140px;box-shadow:none" onmouseover="this.style.background=\'#f0fdf4\'" onmouseout="this.style.background=\'var(--card)\'">'
     +'<div style="font-size:13px;font-weight:800;color:#10b981">+ Add New LOB</div>'
     +'</div>';
@@ -616,10 +612,9 @@ function buildOverview(){
  (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
   var tid='ctab-'+ct.id;
   var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
-  var arD=ctRows.filter(function(r){return (r.ar||0)>0;}).length;
-  var enD=ctRows.filter(function(r){return (r.en||0)>0;}).length;
+  var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
   var tot=ctRows.length;
-  var covP=tot>0?Math.round(((arD+enD)/(tot*2))*100):0;
+  var covP=tot>0?Math.round((ctDone/tot)*100):0;
   countUp($('ovkpi-ctab-'+ct.id),covP,'%');
  });
 }
