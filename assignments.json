@@ -1,15 +1,17 @@
 {
-    "overrides":  {
-
-                  },
-    "extra":  [
-
-              ],
-    "lastUpdated":  "",
-    "managers":  [
-                     {
-                         "hash":  "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
-                         "email":  "anoud.shehata@talabat.com"
-                     }
-                 ]
+  "overrides": {},
+  "extra": [],
+  "lastUpdated": "2026-07-22T08:07:47.435Z",
+  "managers": [
+    {
+      "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
+      "email": "anoud.shehata@talabat.com"
+    },
+    {
+      "email": "rawan.kamaleldin@talabat.com",
+      "hash": "5cf7ab26b1a4b6a751c175e170cd6327495d57cf517c05a41927ec2495a35da2"
+    }
+  ],
+  "customTabs": [],
+  "memberStatus": {}
 }
