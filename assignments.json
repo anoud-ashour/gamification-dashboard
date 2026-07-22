@@ -1,15 +1,11 @@
 {
   "overrides": {},
   "extra": [],
-  "lastUpdated": "2026-07-22T08:43:42.183Z",
+  "lastUpdated": "2026-07-22T08:44:00.845Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
       "email": "anoud.shehata@talabat.com"
-    },
-    {
-      "email": "rawan.kamaleldin@talabat.com",
-      "hash": "8acfaad58df82871403de48986e4ea35484f3ef185797319c1ed961b3c3f5184"
     }
   ],
   "customTabs": [],
