@@ -603,6 +603,29 @@ function buildOverview(){
    +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
    +'</div>';
  });
+ // Custom Sections cards in Overview
+ (ASSIGNMENTS.customSections||[]).forEach(function(csec){
+  var secItems=csec.items||[];
+  var secDone=secItems.filter(function(it){return it.status==='Done';}).length;
+  var secPct=secItems.length>0?Math.round((secDone/secItems.length)*100):0;
+  var secCol=csec.color||'#6366f1';
+  html+='<div onclick="setTab(\'updates\')" style="'+cs+';border-left:5px solid '+secCol+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:22px;font-weight:900;color:var(--dark);line-height:1.2">'+csec.name+'</div>'
+   +'<span style="font-size:18px;color:'+secCol+';opacity:.6;flex:none;padding-top:2px">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
+   +'<div style="font-size:36px;font-weight:900;color:'+secCol+';line-height:1;letter-spacing:-1px">'+secPct+'%</div>'
+   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">done</div></div>'
+   +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+secDone+' / '+secItems.length+' item'+(secItems.length!==1?'s':'')+' complete</div>'
+   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
+   +'<div style="width:'+secPct+'%;height:100%;background:'+secCol+';border-radius:4px"></div></div>'
+   +'</div>';
+ });
+ if(managerMode){
+  html+='<div onclick="openAddCustomSection()" style="'+cs+';border:2px dashed #6366f1;display:flex;align-items:center;justify-content:center;min-height:140px;box-shadow:none" onmouseover="this.style.background=\'#f5f3ff\'" onmouseout="this.style.background=\'var(--card)\'">'
+   +'<div style="font-size:13px;font-weight:800;color:#6366f1">+ Add Section</div>'
+   +'</div>';
+ }
  html+='</div>';
  el.innerHTML=html;
  lops.forEach(function(c){countUp($('ovkpi-'+c.id),c.p,'%');});
@@ -1012,15 +1035,13 @@ function renderTable(){
    jrows.forEach(function(r){renderRow(r);tb.lastChild.classList.add('jgroup-'+jSlug);});
   });
  }else{
-  _renderSubCatRows(filteredRows,tb,renderRow,managerMode,activeTab);
+  filteredRows.forEach(renderRow);
  }
  if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
  if(managerMode){
   var addRow=document.createElement('tr');
-  var safeTab=activeTab.replace(/'/g,"\\'");
   addRow.innerHTML='<td colspan="9" style="padding:10px;text-align:center;border-top:1px solid var(--border)">'
-   +'<button onclick="openAddArticle()" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px">+ Add Article</button>'
-   +'<button onclick="openAddSubCat(\''+safeTab+'\')" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Sub-Category</button>'
+   +'<button onclick="openAddArticle()" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>'
    +'</td>';
   tb.appendChild(addRow);
  }
@@ -1453,6 +1474,67 @@ function buildUpdateProjects(){
   el.insertAdjacentHTML('beforeend',cth);
   countUp($(kpiId),ctPct,'%');
  });
+ // Custom Sections in Update Projects
+ (ASSIGNMENTS.customSections||[]).forEach(function(csec){
+  var secItems=csec.items||[];
+  var secDone=secItems.filter(function(it){return it.status==='Done';}).length;
+  var secPct=secItems.length>0?Math.round((secDone/secItems.length)*100):0;
+  var secCol=csec.color||'#6366f1';
+  var wrapId='cssec-wrap-'+csec.id;var iconId='cssec-icon-'+csec.id;
+  var safeSecId=csec.id.replace(/'/g,"\\'");
+  var tog='var w=document.getElementById(\''+wrapId+'\');var ic=document.getElementById(\''+iconId+'\');if(w){var op=w.style.display===\'none\';w.style.display=op?\'block\':\'none\';if(ic)ic.style.transform=op?\'rotate(90deg)\':\'\'}';
+  var csh='<div style="margin-top:24px">';
+  csh+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 14px">'
+   +'<div onclick="'+tog+'" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+secCol+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:380px" '
+   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
+   +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">'+csec.name+'</div>'
+   +'<span id="'+iconId+'" style="font-size:20px;color:'+secCol+';font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
+   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
+   +'<div style="font-size:32px;font-weight:900;color:'+secCol+';line-height:1;letter-spacing:-1px">'+secPct+'%</div>'
+   +'<div style="font-size:12px;color:var(--muted);font-weight:600">items done</div></div>'
+   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px">'+secDone+' / '+secItems.length+' item'+(secItems.length!==1?'s':'')+' complete</div>'
+   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
+   +'<div style="width:'+secPct+'%;height:100%;background:'+secCol+';border-radius:3px"></div></div>'
+   +(managerMode?'<div style="margin-top:10px;display:flex;gap:6px" onclick="event.stopPropagation()">'
+    +'<button onclick="renameCustomSection(\''+safeSecId+'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer">✏️ Rename</button>'
+    +'<button onclick="deleteCustomSection(\''+safeSecId+'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑 Delete</button>'
+    +'</div>':'')
+   +'</div></div>';
+  csh+='<div id="'+wrapId+'" style="display:none"><div class="card">';
+  if(managerMode){csh+='<div style="margin-bottom:10px"><button onclick="openAddSecItem(\''+safeSecId+'\')" style="padding:6px 16px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Item</button></div>';}
+  if(!secItems.length){
+   csh+='<div style="padding:18px;color:var(--muted);font-size:13px;text-align:center">No items yet.'+(managerMode?' Click &quot;+ Add Item&quot; to add one.':'')+'</div>';
+  }else{
+   csh+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
+   csh+='<thead><tr>'
+    +'<th style="background:'+secCol+';color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800">Item / Project</th>'
+    +'<th style="background:'+secCol+';color:#fff;padding:10px 10px;text-align:center;font-size:12px;font-weight:800">Assignee</th>'
+    +'<th style="background:'+secCol+';color:#fff;padding:10px 10px;text-align:center;font-size:12px;font-weight:800">Status</th>'
+    +(managerMode?'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:11px;font-weight:800">Actions</th>':'')
+    +'</tr></thead><tbody>';
+   secItems.forEach(function(it,idx){
+    var bg=idx%2===0?'var(--card)':'#faf8f5';
+    var mc=MEMCOLS[it.assignee]||'#e7ddcf';var mtxt=MEMCOLS[it.assignee]?'#fff':'#7c6f63';
+    var safeItId=it.id.replace(/'/g,"\\'");
+    csh+='<tr style="background:'+bg+'">'
+     +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
+     +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(it.assignee||'—')+'</span></td>'
+     +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)">'
+     +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status))
+     +'</td>'
+     +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><button onclick="deleteSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button></td>':'')
+     +'</tr>';
+   });
+   csh+='</tbody></table></div>';
+  }
+  csh+='</div></div></div>';
+  el.insertAdjacentHTML('beforeend',csh);
+ });
+ if(managerMode){
+  el.insertAdjacentHTML('beforeend','<div style="margin-top:16px"><button onclick="openAddCustomSection()" style="padding:8px 20px;border-radius:10px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:13px;font-weight:800;cursor:pointer">+ Add New Section</button></div>');
+ }
 }
 function toggleDoTable(){
  var wrap=$('do-table-wrap');var icon=$('do-toggle-icon');if(!wrap)return;
@@ -2124,7 +2206,7 @@ var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGI
 var GH_WRITE_TOKEN=atob(_tk.join(''));
 var ASSIGN_REPO='anoud-ashour/gamification-dashboard';
 var ASSIGN_FILE='assignments.json';
-var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{},subCategories:{},articleSubCat:{}};
+var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{},subCategories:{},articleSubCat:{},customSections:[]};
 var managerMode=false;
 var _managerEmail='';
 var _assignPending=false;
@@ -2464,7 +2546,6 @@ function buildCustomTab(tabId){
  if(managerMode){
   h+='<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">';
   h+='<button onclick="openAddArticleToTab(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>';
-  h+='<button onclick="openAddSubCat(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Sub-Category</button>';
   if(ct)h+='<button onclick="deleteCustomTab(\''+ct.id+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">🗑 Delete Tab</button>';
   h+='</div>';
  }
@@ -2499,13 +2580,12 @@ function buildCustomTab(tabId){
   emptyTr.innerHTML='<td colspan="'+(managerMode?7:6)+'" class="empty" style="padding:20px;text-align:center">No articles yet.'+(managerMode?' Click "+ Add Article" to add one.':'')+'</td>';
   ctTb.appendChild(emptyTr);
  }else{
-  _renderSubCatRows(ctRows,ctTb,ctRenderRow,managerMode,tabId);
+   ctRows.forEach(ctRenderRow);
  }
  if(managerMode){
   var addTr=document.createElement('tr');
   addTr.innerHTML='<td colspan="'+(managerMode?7:6)+'" style="padding:10px;text-align:center;border-top:1px solid var(--border)">'
    +'<button onclick="openAddArticleToTab(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer;margin-right:8px">+ Add Article</button>'
-   +'<button onclick="openAddSubCat(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Sub-Category</button>'
    +'</td>';
   ctTb.appendChild(addTr);
  }
@@ -2544,93 +2624,70 @@ function deleteCustomTab(id){
  setTab('overview');
 }
 
-// ===== SUB-CATEGORIES =====
-function getSubCatsForLob(lobId){return (ASSIGNMENTS.subCategories||{})[lobId]||[];}
-function getArticleSubCat(artKey,lobId){return ((ASSIGNMENTS.articleSubCat||{})[artKey+'::'+lobId])||'';}
-function setArticleSubCat(artKey,lobId,subCatId){
- if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};
- if(subCatId)ASSIGNMENTS.articleSubCat[artKey+'::'+lobId]=subCatId;
- else delete ASSIGNMENTS.articleSubCat[artKey+'::'+lobId];
+// ===== CUSTOM SECTIONS (Update Projects + Overview) =====
+function _secStatusBadge(s){
+ var ss=s||'Pending';
+ var cfg={'Done':['#dcfce7','#16a34a'],'In Progress':['#fef3c7','#d97706'],'Pending':['#f3f4f6','#6b7280'],'Blocked':['#fee2e2','#dc2626']};
+ var c=cfg[ss]||cfg['Pending'];
+ return '<span style="display:inline-block;padding:2px 9px;border-radius:7px;font-size:10px;font-weight:800;background:'+c[0]+';color:'+c[1]+'">'+ss+'</span>';
 }
-var _subCatTargetLob='';
-function openAddSubCat(lobId){
- _subCatTargetLob=lobId;
- var el=$('subcat-name-inp');if(el)el.value='';
- $('subcat-overlay').style.display='block';$('subcat-modal').style.display='block';
- setTimeout(function(){var e=$('subcat-name-inp');if(e)e.focus();},80);
+function _secNextStatus(s){var order=['Pending','In Progress','Done','Blocked'];return order[(order.indexOf(s||'Pending')+1)%order.length];}
+var _addSecItemTarget='';
+function openAddCustomSection(){
+ $('custsec-name-inp').value='';$('custsec-color-inp').value='#6366f1';
+ $('custsec-overlay').style.display='block';$('custsec-modal').style.display='block';
+ setTimeout(function(){var e=$('custsec-name-inp');if(e)e.focus();},80);
 }
-function closeAddSubCat(){$('subcat-overlay').style.display='none';$('subcat-modal').style.display='none';}
-function saveNewSubCat(){
- var name=($('subcat-name-inp').value||'').trim();
- if(!name)return;
- if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};
- if(!ASSIGNMENTS.subCategories[_subCatTargetLob])ASSIGNMENTS.subCategories[_subCatTargetLob]=[];
- var id=Date.now().toString(36);
- ASSIGNMENTS.subCategories[_subCatTargetLob].push({id:id,name:name});
+function closeAddCustomSection(){$('custsec-overlay').style.display='none';$('custsec-modal').style.display='none';}
+function saveNewCustomSection(){
+ var name=($('custsec-name-inp').value||'').trim();if(!name)return;
+ var color=$('custsec-color-inp').value||'#6366f1';
+ if(!ASSIGNMENTS.customSections)ASSIGNMENTS.customSections=[];
+ ASSIGNMENTS.customSections.push({id:Date.now().toString(36),name:name,color:color,items:[]});
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- closeAddSubCat();
- if(_subCatTargetLob.indexOf('ctab-')===0)buildCustomTab(_subCatTargetLob);
- else{renderTable();}
+ closeAddCustomSection();buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
-function deleteSubCat(lobId,subCatId){
- if(!confirm('Delete this sub-category? Articles will become uncategorized.'))return;
- if(ASSIGNMENTS.subCategories&&ASSIGNMENTS.subCategories[lobId])
-  ASSIGNMENTS.subCategories[lobId]=ASSIGNMENTS.subCategories[lobId].filter(function(c){return c.id!==subCatId;});
- Object.keys(ASSIGNMENTS.articleSubCat||{}).forEach(function(k){if(ASSIGNMENTS.articleSubCat[k]===subCatId)delete ASSIGNMENTS.articleSubCat[k];});
+function deleteCustomSection(secId){
+ if(!confirm('Delete this section and all its items?'))return;
+ ASSIGNMENTS.customSections=(ASSIGNMENTS.customSections||[]).filter(function(s){return s.id!==secId;});
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- if(lobId.indexOf('ctab-')===0)buildCustomTab(lobId);
- else renderTable();
+ buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
-function renameSubCat(lobId,subCatId){
- var sc=(getSubCatsForLob(lobId)).find(function(c){return c.id===subCatId;});
- if(!sc)return;
- var newName=prompt('Rename sub-category:',sc.name);
- if(!newName||!newName.trim())return;
- sc.name=newName.trim();
+function renameCustomSection(secId){
+ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec)return;
+ var n=prompt('Rename section:',sec.name);if(!n||!n.trim())return;
+ sec.name=n.trim();_assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ buildUpdateProjects();if(activeTab==='overview')buildOverview();
+}
+function openAddSecItem(secId){
+ _addSecItemTarget=secId;
+ $('secitem-text-inp').value='';$('secitem-assignee-inp').value='';$('secitem-status-sel').value='Pending';
+ $('secitem-overlay').style.display='block';$('secitem-modal').style.display='block';
+ setTimeout(function(){var e=$('secitem-text-inp');if(e)e.focus();},80);
+}
+function closeAddSecItem(){$('secitem-overlay').style.display='none';$('secitem-modal').style.display='none';}
+function saveNewSecItem(){
+ var text=($('secitem-text-inp').value||'').trim();if(!text)return;
+ var assignee=($('secitem-assignee-inp').value||'').trim();
+ var status=$('secitem-status-sel').value||'Pending';
+ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===_addSecItemTarget;});if(!sec)return;
+ if(!sec.items)sec.items=[];
+ sec.items.push({id:Date.now().toString(36),text:text,status:status,assignee:assignee});
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- if(lobId.indexOf('ctab-')===0)buildCustomTab(lobId);
- else renderTable();
+ closeAddSecItem();buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
-function _renderSubCatRows(rows,tb,renderRow,managerMode,lobId){
- var subCats=getSubCatsForLob(lobId);
- if(!subCats.length){rows.forEach(renderRow);return;}
- var grouped={};var uncategorized=[];
- subCats.forEach(function(sc){grouped[sc.id]=[];});
- rows.forEach(function(r){
-  var artKey=r.article.toLowerCase().trim();
-  var scId=getArticleSubCat(artKey,lobId);
-  if(scId&&grouped[scId]!==undefined)grouped[scId].push(r);
-  else uncategorized.push(r);
- });
- var cols=managerMode?9:8;
- subCats.forEach(function(sc){
-  var scRows=grouped[sc.id]||[];
-  var scDone=scRows.filter(function(r){return r.ar&&r.en;}).length;
-  var hdr=document.createElement('tr');
-  var safeId=sc.id.replace(/'/g,"\\'");var safeLob=lobId.replace(/'/g,"\\'");
-  hdr.innerHTML='<td colspan="'+cols+'" style="background:linear-gradient(90deg,#f5f3ff,#faf9ff);padding:9px 14px;border-top:2px solid #e0e7ff;border-bottom:1px solid #e0e7ff">'
-   +'<div style="display:flex;align-items:center;gap:8px">'
-   +'<span style="font-size:12px;font-weight:800;color:#6366f1;letter-spacing:.5px">📁 '+sc.name+'</span>'
-   +'<span style="font-size:10px;color:#9ca3af;font-weight:500">'+scRows.length+' articles · '+scDone+' complete</span>'
-   +(managerMode?'<button onclick="renameSubCat(\''+safeLob+'\',\''+safeId+'\')" style="margin-left:auto;padding:2px 8px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:10px;cursor:pointer">✏️ Rename</button>'
-    +'<button onclick="deleteSubCat(\''+safeLob+'\',\''+safeId+'\')" style="padding:2px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:10px;cursor:pointer">🗑</button>':'')
-   +'</div></td>';
-  tb.appendChild(hdr);
-  if(!scRows.length){
-   var empty=document.createElement('tr');
-   empty.innerHTML='<td colspan="'+cols+'" style="padding:10px 14px;font-size:12px;color:#9ca3af;font-style:italic">No articles in this sub-category.</td>';
-   tb.appendChild(empty);
-  }
-  scRows.forEach(renderRow);
- });
- if(uncategorized.length){
-  var uhdr=document.createElement('tr');
-  uhdr.innerHTML='<td colspan="'+cols+'" style="background:#fafafa;padding:9px 14px;border-top:2px solid #e5e7eb;border-bottom:1px solid #e5e7eb">'
-   +'<span style="font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:.5px">📂 Uncategorized</span>'
-   +'<span style="font-size:10px;color:#9ca3af;margin-left:8px">'+uncategorized.length+' articles</span></td>';
-  tb.appendChild(uhdr);
-  uncategorized.forEach(renderRow);
- }
+function deleteSecItem(secId,itemId){
+ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
+ sec.items=sec.items.filter(function(it){return it.id!==itemId;});
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ buildUpdateProjects();if(activeTab==='overview')buildOverview();
+}
+function cycleSecItemStatus(secId,itemId){
+ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
+ var item=sec.items.find(function(it){return it.id===itemId;});if(!item)return;
+ item.status=_secNextStatus(item.status);
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
 </script>
 <!-- Game Link Modal -->
@@ -2869,17 +2926,48 @@ function _renderSubCatRows(rows,tb,renderRow,managerMode,lobId){
 
 <!-- Add Tab modal -->
 <!-- Sub-Category Modal -->
-<div id="subcat-overlay" onclick="closeAddSubCat()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9300"></div>
-<div id="subcat-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9301;box-shadow:0 20px 60px rgba(0,0,0,.25)">
- <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px">📁 Add Sub-Category</div>
- <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Sub-categories group articles inside a tab into labelled sections.</div>
- <div style="margin-bottom:18px">
-  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Sub-Category Name *</div>
-  <input id="subcat-name-inp" type="text" placeholder="e.g. Complaints, Refunds, Delivery Issues…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewSubCat()">
+<!-- Add Custom Section modal -->
+<div id="custsec-overlay" onclick="closeAddCustomSection()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9300"></div>
+<div id="custsec-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9301;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px">+ Add Section</div>
+ <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Create a collapsible section in Update Projects and Overview.</div>
+ <div style="margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Section Name *</div>
+  <input id="custsec-name-inp" type="text" placeholder="e.g. Q3 Updates, New Articles…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewCustomSection()">
+ </div>
+ <div style="margin-bottom:18px;display:flex;align-items:center;gap:10px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280">Color</div>
+  <input id="custsec-color-inp" type="color" value="#6366f1" style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px">
  </div>
  <div style="display:flex;gap:8px">
-  <button onclick="saveNewSubCat()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Sub-Category</button>
-  <button onclick="closeAddSubCat()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+  <button onclick="saveNewCustomSection()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Section</button>
+  <button onclick="closeAddCustomSection()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
+<!-- Add Section Item modal -->
+<div id="secitem-overlay" onclick="closeAddSecItem()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9310"></div>
+<div id="secitem-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9311;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px">+ Add Item</div>
+ <div style="margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Item / Project Name *</div>
+  <input id="secitem-text-inp" type="text" placeholder="e.g. Update SOP for returns…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewSecItem()">
+ </div>
+ <div style="margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Assignee</div>
+  <input id="secitem-assignee-inp" type="text" placeholder="e.g. Amal, Anoud, Dalia…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="margin-bottom:18px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Status</div>
+  <select id="secitem-status-sel" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:#fff">
+   <option value="Pending">Pending</option>
+   <option value="In Progress">In Progress</option>
+   <option value="Done">Done</option>
+   <option value="Blocked">Blocked</option>
+  </select>
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveNewSecItem()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Item</button>
+  <button onclick="closeAddSecItem()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
 <div id="addtab-overlay" onclick="closeAddTab()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
