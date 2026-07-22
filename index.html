@@ -2065,17 +2065,20 @@ function _parseTabs(json){
  return {tabs:tabs,prog:prog};
 }
 async function load(){
- // Show dashboard immediately from embedded fallback — no blank screen
- DATA=parseFallback(FALLBACK_CSV);
- PROG=FALLBACK_PROG;
- buildOwners();
- parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
- await loadAssignments();
+ // Step 1: render immediately from embedded fallback — never blank
+ try{
+  DATA=parseFallback(FALLBACK_CSV);
+  PROG=FALLBACK_PROG;
+  buildOwners();
+  parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
+ }catch(e){DATA=[];PROG=[];}
  $('status').classList.add('hide');
  $('app').classList.remove('hide');
- build();
- renderCustomTabNav();
- // Now fetch live data in the background (8s timeout per request)
+ try{build();}catch(e){}
+ try{renderCustomTabNav();}catch(e){}
+ // Step 2: load assignments + live data in background, re-render when ready
+ try{await Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,4000);})]);}catch(e){}
+ try{build();renderCustomTabNav();}catch(e){}
  _refreshLiveData();
 }
 async function _refreshLiveData(){
