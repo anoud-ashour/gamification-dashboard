@@ -2200,7 +2200,13 @@ async function attemptManagerLogin(){
  }
 }
 
-function _enterManagerMode(){
+
+function showToast(msg,duration){
+ var t=document.getElementById('dashboard-toast');
+ if(!t){t=document.createElement('div');t.id='dashboard-toast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:99999;pointer-events:none;opacity:0;transition:opacity .3s';document.body.appendChild(t);}
+ t.textContent=msg;t.style.opacity='1';
+ clearTimeout(t._timer);t._timer=setTimeout(function(){t.style.opacity='0';},duration||3000);
+}function _enterManagerMode(){
  managerMode=true;
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent='✓ Manager';btn.style.background='#8318d8';btn.style.color='#fff';btn.style.borderColor='#8318d8';}
@@ -2428,7 +2434,7 @@ function saveNewArticle(){
  closeAddArticle();buildRows();applyAssignments();membersBuilt=false;
  // Navigate to the LOB tab where the article was added so it's immediately visible
  if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
-  else if(lob==='uni'){setTab('progress');}
+  else if(lob==='uni'){setTab('all');}
  else{setTab(lob);}
 }
 
