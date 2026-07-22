@@ -121,8 +121,8 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="tabs">
 <button class="tab active" data-tab="overview">Overview</button>
 <button class="tab" data-tab="all">All LOBs</button>
-<button class="tab" data-tab="default" style="display:none">Default</button>
-<button class="tab" data-tab="tpro" style="display:none">TPRO</button>
+<button class="tab" data-tab="default" style="display:none">Default <span style="font-size:9px;opacity:.75;font-weight:600">LC</span></button>
+<button class="tab" data-tab="tpro" style="display:none">TPRO <span style="font-size:9px;opacity:.75;font-weight:600">tPro</span></button>
 <button class="tab" data-tab="tkt" style="display:none">Ticketing</button>
 <button class="tab" data-tab="members">Members</button>
 <button class="tab" data-tab="progress">📋 Progress</button>
@@ -217,6 +217,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <input type="text" id="search" placeholder="🔍 Search by article, member name, or LOB…">
 <select id="fJourney"><option value="">All journeys</option></select>
 <select id="fState"><option value="">All rows</option><option value="gaps">Only with gaps</option><option value="full">Only complete</option></select>
+<button id="group-journey-btn" onclick="toggleGroupByJourney()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">📂 Group by Journey</button>
 </div>
 <div class="legend">
 <span><span class="dot" style="background:var(--green)"></span>Has content</span>
@@ -479,6 +480,7 @@ var GAME_LINKS={};try{GAME_LINKS=JSON.parse(localStorage.getItem('gameDashLinks'
 Object.keys(MG_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=MG_LINKS_DEFAULT[k];});
 Object.keys(ART_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=ART_LINKS_DEFAULT[k];});
 var editLinksMode=false;
+var groupByJourney=false;
 // ---- Sheet 2: production status tracker ----
 const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
@@ -707,8 +709,9 @@ function buildWorkload(){
   var avAuto=lsl.indexOf('annual')>-1?'Annual Leave':lsl.indexOf('casual')>-1?'Casual Leave':(lsl.indexOf('no show')>-1||lsl.indexOf('noshow')>-1)?'No Show':lsl.indexOf('sick')>-1?'Sick Leave':'Present';
   // Apply manual overrides
   var ov=(ASSIGNMENTS.memberStatus||{})[m]||{};
-  var wsLabel=ov.workload||wsAuto;
   var avLabel=ov.availability||avAuto;
+  var inactiveAvStatuses=['Annual Leave','Sick Leave','Casual Leave','No Show'];
+  var wsLabel=ov.workload||((!ov.workload&&inactiveAvStatuses.indexOf(avLabel)>-1)?'Inactive':wsAuto);
   var ws=WL_STYLES[wsLabel]||{color:'#6b7280',bg:'#f3f4f6'};
   var av=AV_STYLES[avLabel]||{color:'#16a34a',bg:'#dcfce7'};
   var isManualWl=!!ov.workload;var isManualAv=!!ov.availability;
@@ -948,28 +951,35 @@ function renderTable(){
    +'<th style="min-width:120px">Coverage</th>';
   $('tbl-title').textContent='All LOBs — Coverage Matrix';
   var elb=$('edit-links-btn');if(elb)elb.style.display='none';
+  var gjb=$('group-journey-btn');if(gjb)gjb.style.display='none';
   renderAllLops();
   return;
  }
+ var gjb=$('group-journey-btn');if(gjb)gjb.style.display='inline-block';
  th.innerHTML='<th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
   +'<th>Arabic</th><th>English</th><th>LOB %</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
   +(managerMode?'<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>':'');
- $('tbl-title').textContent=sopById(activeTab).name+' LOB — Article Coverage';
+ var sopNameLabel={'default':'Default (LC)','tpro':'TPRO (tPro)','tkt':'Ticketing'}[activeTab]||sopById(activeTab).name;
+ $('tbl-title').textContent=sopNameLabel+' LOB — Article Coverage';
  var elb=$('edit-links-btn');
  if(elb){elb.style.display='inline-block';elb.textContent=editLinksMode?'✓ Done Editing':'🎮 Edit Links';elb.style.background=editLinksMode?'var(--orange)':'none';elb.style.color=editLinksMode?'#fff':'var(--orange)';}
  var eab=$('export-art-btn');if(eab)eab.style.display='inline-block';
  var mgrBtn=$('mgr-mode-btn');if(mgrBtn)mgrBtn.style.display='inline-block';
  const q=$('search').value.toLowerCase().trim(),fj=$('fJourney').value,fs=$('fState').value;
  const tb=$('tbl').querySelector('tbody');tb.innerHTML='';let shown=0;
+ var filteredRows=[];
  ROWS.forEach(r=>{
   if(r.sopId!==activeTab)return;
-  if(r.ar===0&&r.en===0)return;
+  if(!r._extra&&!managerMode&&r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
   if(fs==='gaps'&&full)return;if(fs==='full'&&!full)return;
+  filteredRows.push(r);
+ });
+ function renderRow(r){
   const sp=pct(r.ar+r.en,2);
   const tr=document.createElement('tr');
   tr.title=r.article+' — '+r.member+' · '+r.sopName+': AR '+(r.ar?'✓':'✕')+' / EN '+(r.en?'✓':'✕');
@@ -986,7 +996,23 @@ function renderTable(){
    +glCell(gkey,'ar')+glCell(gkey,'en')
    +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':'');
   tb.appendChild(tr);shown++;
- });
+ }
+ if(groupByJourney&&!fj){
+  var journeyOrder=['Post Delivery','Live Orders','Across Journey','General'];
+  var journeyMap={};
+  filteredRows.forEach(function(r){var j=r.journey||'General';if(!journeyMap[j])journeyMap[j]=[];journeyMap[j].push(r);});
+  var jkeys=Object.keys(journeyMap).sort(function(a,b){var ia=journeyOrder.indexOf(a),ib=journeyOrder.indexOf(b);if(ia===-1)ia=99;if(ib===-1)ib=99;return ia-ib;});
+  jkeys.forEach(function(jname){
+   var jrows=journeyMap[jname];
+   var jDone=jrows.filter(function(r){return r.ar&&r.en;}).length;
+   var hdr=document.createElement('tr');
+   hdr.innerHTML='<td colspan="'+(managerMode?9:8)+'" style="background:#f8f4ff;padding:8px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#6366f1;cursor:pointer;border-top:2px solid #e0e7ff" onclick="this.parentElement.querySelectorAll(\'.jgroup-'+jname.replace(/\s+/g,\'_\')+'\').forEach(function(r){r.style.display=r.style.display===\'none\'?\'table-row\':\'none\'})">▸ '+jname+' <span style="font-weight:400;opacity:.7;font-size:10px;text-transform:none">('+jrows.length+' articles · '+jDone+' complete)</span></td>';
+   tb.appendChild(hdr);
+   jrows.forEach(function(r){renderRow(r);tb.lastChild.classList.add('jgroup-'+jname.replace(/\s+/g,'_'));});
+  });
+ }else{
+  filteredRows.forEach(renderRow);
+ }
  if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
  if(managerMode){var addRow=document.createElement('tr');addRow.innerHTML='<td colspan="9" style="padding:10px;text-align:center"><button onclick="openAddArticle()" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button></td>';tb.appendChild(addRow);}
  $('rowcount').textContent=shown+' rows';
@@ -1503,6 +1529,12 @@ function glCell(gkey,lang){
   return '<td style="text-align:center"><span onclick="editGameLink(\''+ek+'\')" title="Add '+lang.toUpperCase()+' link" style="font-size:16px;cursor:pointer;opacity:.25;filter:grayscale(1)">🎮</span></td>';
  }
  return '<td></td>';
+}
+function toggleGroupByJourney(){
+ groupByJourney=!groupByJourney;
+ var btn=$('group-journey-btn');
+ if(btn){btn.style.background=groupByJourney?'#6366f1':'none';btn.style.color=groupByJourney?'#fff':'#6366f1';btn.textContent=groupByJourney?'📂 Ungroup':'📂 Group by Journey';}
+ renderTable();
 }
 function toggleEditLinksMode(){
  editLinksMode=!editLinksMode;
@@ -2212,8 +2244,9 @@ async function addManagerAccess(){
  else ASSIGNMENTS.managers.push({email:email,hash:hash});
  $('mgr-new-email').value='';$('mgr-new-pw').value='';
  if(err)err.style.display='none';
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ _assignPending=true;
  renderManagerList();
+ saveAssignments();
 }
 function removeManagerAt(i){
  if((ASSIGNMENTS.managers[i]||{}).email.toLowerCase()===_managerEmail){alert('Cannot remove yourself.');return;}
@@ -2272,7 +2305,11 @@ function saveAssign(){
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAssignModal();
- buildRows();applyAssignments();renderTable();
+ buildRows();applyAssignments();
+ if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='members'){buildWorkload();}
+ else{renderTable();}
 }
 
 function clearAssign(){
@@ -2281,7 +2318,11 @@ function clearAssign(){
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAssignModal();
- buildRows();applyAssignments();renderTable();
+ buildRows();applyAssignments();
+ if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='members'){buildWorkload();}
+ else{renderTable();}
 }
 
 async function saveAssignments(){
@@ -2307,19 +2348,36 @@ async function saveAssignments(){
 function openAddArticle(){
  $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
  $('addart-deadline').value='';$('addart-priority').value='';$('addart-notes').value='';
+ var sel=$('addart-lob');
+ sel.innerHTML='<option value="default">Default (LC)</option>'
+  +'<option value="tpro">TPRO (tPro)</option>'
+  +'<option value="tkt">Ticketing</option>'
+  +'<option value="updates">Update Projects</option>';
+ (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+  var o=document.createElement('option');o.value='ctab-'+ct.id;o.textContent=ct.name;sel.appendChild(o);
+ });
+ var newOpt=document.createElement('option');newOpt.value='__new_lob__';newOpt.textContent='+ Create New LOB…';sel.appendChild(newOpt);
+ // Pre-select based on active tab
+ var pre=activeTab;if(pre==='all'||pre==='overview'||pre==='members'||pre==='progress'||pre==='minigames')pre='default';
+ var found=false;for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===pre){found=true;break;}}
+ if(found)sel.value=pre;
  $('addart-overlay').style.display='block';$('addart-modal').style.display='block';
 }
 function closeAddArticle(){$('addart-overlay').style.display='none';$('addart-modal').style.display='none';}
 function saveNewArticle(){
  var name=($('addart-name').value||'').trim();
  var lob=$('addart-lob').value;
- if(!name){return;}
+ if(!name)return;
+ if(lob==='__new_lob__'){closeAddArticle();openAddTab();return;}
  var id=Date.now().toString(36);
  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,notes:$('addart-notes').value});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddArticle();buildRows();applyAssignments();
- if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}else if(activeTab==='updates'){buildUpdateProjects();}else{renderTable();}
+ // Navigate to the LOB tab where the article was added so it's immediately visible
+ if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
+ else if(lob==='updates'){setTab('updates');}
+ else{setTab(lob);}
 }
 function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
@@ -2405,16 +2463,9 @@ function buildCustomTab(tabId){
 }
 
 function openAddArticleToTab(tabId){
- var sel=$('addart-lob');if(!sel)return;
- var found=false;
- for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===tabId){found=true;break;}}
- if(!found){
-  var ct=(ASSIGNMENTS.customTabs||[]).find(function(c){return 'ctab-'+c.id===tabId;});
-  var opt=document.createElement('option');opt.value=tabId;opt.textContent=ct?ct.name:tabId;
-  sel.appendChild(opt);
- }
- sel.value=tabId;
  openAddArticle();
+ var sel=$('addart-lob');
+ if(sel){for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===tabId){sel.value=tabId;break;}}}
 }
 
 function openAddTab(){
