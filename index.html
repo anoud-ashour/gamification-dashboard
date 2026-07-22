@@ -2392,14 +2392,6 @@ function openAssignEdit(artKey,lob){
  $('asgn-priority').value=ov.priority||'';
  $('asgn-notes').value=ov.notes||'';
  // Populate sub-category dropdown
- var subCats=getSubCatsForLob(lob);
- var scSel=$('asgn-subcat');
- if(scSel){
-  scSel.innerHTML='<option value="">— None —</option>';
-  subCats.forEach(function(sc){var o=document.createElement('option');o.value=sc.id;o.textContent=sc.name;scSel.appendChild(o);});
-  scSel.value=getArticleSubCat(artKey,lob);
-  scSel.parentElement.style.display=subCats.length?'block':'none';
- }
  $('asgn-overlay').style.display='block';$('asgn-modal').style.display='block';
 }
 
@@ -2420,7 +2412,6 @@ function saveAssign(){
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
  var artKeyStr=parts.slice(0,-1).join('::');var lobStr=parts[parts.length-1];
- var scSel=$('asgn-subcat');if(scSel)setArticleSubCat(artKeyStr,lobStr,scSel.value);
  // Sync back to extra article if applicable
  var ex=ASSIGNMENTS.extra.find(function(e){return e.article.toLowerCase().trim()===artKeyStr&&e.lob===lobStr;});
  if(ex){ex.member=ov.member;ex.ar=ov.ar;ex.en=ov.en;ex.deadline=ov.deadline;ex.priority=ov.priority;ex.notes=ov.notes;}
