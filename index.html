@@ -625,6 +625,9 @@ function buildOverview(){
   html+='<div onclick="openAddCustomSection()" style="'+cs+';border:2px dashed #6366f1;display:flex;align-items:center;justify-content:center;min-height:140px;box-shadow:none" onmouseover="this.style.background=\'#f5f3ff\'" onmouseout="this.style.background=\'var(--card)\'">'
    +'<div style="font-size:13px;font-weight:800;color:#6366f1">+ Add Section</div>'
    +'</div>';
+   html+='<div onclick="openAddTab()" style="'+cs+';border:2px dashed #10b981;display:flex;align-items:center;justify-content:center;min-height:140px;box-shadow:none" onmouseover="this.style.background=\'#f0fdf4\'" onmouseout="this.style.background=\'var(--card)\'">'
+    +'<div style="font-size:13px;font-weight:800;color:#10b981">+ Add New LOB</div>'
+    +'</div>';
  }
  html+='</div>';
  el.innerHTML=html;
@@ -2579,7 +2582,7 @@ function _secStatusBadge(s){
  var c=cfg[ss]||cfg['Pending'];
  return '<span style="display:inline-block;padding:2px 9px;border-radius:7px;font-size:10px;font-weight:800;background:'+c[0]+';color:'+c[1]+'">'+ss+'</span>';
 }
-function _secNextStatus(s){var order=['Pending','In Progress','Done','Blocked'];return order[(order.indexOf(s||'Pending')+1)%order.length];}
+function _secNextStatus(s){var order=['Pending','In Progress','Done'];return order[(order.indexOf(s||'Pending')+1)%order.length];}
 var _addSecItemTarget='';
 function openAddCustomSection(){
  $('custsec-name-inp').value='';$('custsec-color-inp').value='#6366f1';
@@ -2794,10 +2797,6 @@ function cycleSecItemStatus(secId,itemId){
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Deadline</div>
   <input id="addart-deadline" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
  </div>
- <div style="margin-bottom:18px">
-  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Notes</div>
-  <textarea id="addart-notes" rows="2" placeholder="Optional notes…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;resize:none"></textarea>
- </div>
  <div style="display:flex;gap:8px">
   <button onclick="saveNewArticle()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Article</button>
   <button onclick="closeAddArticle()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
@@ -2960,7 +2959,7 @@ function cycleSecItemStatus(secId,itemId){
     <option value="Pending">Pending</option>
     <option value="In Progress">In Progress</option>
     <option value="Done">Done</option>
-    <option value="Blocked">Blocked</option>
+    
    </select>
   </div>
  </div>
