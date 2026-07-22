@@ -2353,7 +2353,13 @@ function saveAssign(){membersBuilt=false;
 }
 
 
-function saveAssignAndNotify(){
+
+function _sendDashboardEmail(emailAddr,subj,bodyText,member){
+ showToast('Sending email to '+member+'...',2000);
+ fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbyor1WIRTao2dCltDISGrtwk3rZ49bK2CViScDHlFquxPqjiyVoTE1oZRawW5_6jnuF1A/exec',{method:'POST',body:JSON.stringify({to:emailAddr,subject:subj,body:bodyText}),mode:'no-cors'})
+  .then(function(){showToast('Email sent to '+member+' ✓',3000);})
+  .catch(function(){showToast('Could not reach email service.',4000);});
+}function saveAssignAndNotify(){
  if(!_mgrEditKey)return;
  var member=$('asgn-member').value;
  var artTitle=$('asgn-title').textContent;
@@ -2369,9 +2375,9 @@ function saveAssignAndNotify(){
  var dl=deadline?'\nDeadline: '+deadline:'';
  var pr=priority&&priority!='None'?'\nPriority: '+priority:'';
  var nt=notes?'\nNotes: '+notes:'';
- var subj=encodeURIComponent('[Dashboard] Article Assigned to You: '+artTitle);
- var body=encodeURIComponent('Hi '+member.split(' ')[0]+',\n\nYou have been assigned the following article on the Gamification KB Dashboard:\n\nArticle: '+artTitle+'\nLOB: '+lobLabel+dl+pr+nt+'\n\nPlease log in to review your assignment:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager');
- window.open('mailto:'+emailAddr+'?subject='+subj+'&body='+body);
+ var subj='[Dashboard] Article Assigned to You: '+artTitle;
+ var bodyText='Hi '+member.split(' ')[0]+',\n\nYou have been assigned the following article on the Gamification KB Dashboard:\n\nArticle: '+artTitle+'\nLOB: '+lobLabel+dl+pr+nt+'\n\nPlease log in to review your assignment:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager';
+ _sendDashboardEmail(emailAddr,subj,bodyText,member);
 }function clearAssign(){
  if(!_mgrEditKey)return;
  delete ASSIGNMENTS.overrides[_mgrEditKey];
@@ -2450,9 +2456,9 @@ function saveNewArticleAndNotify(){
  var emailAddr=emailMap[key];
  if(!emailAddr){alert('No email configured for '+member+'. Assignment saved.');return;}
  var dl=deadline?'\nDeadline: '+deadline:'';
- var subj=encodeURIComponent('[Dashboard] New Article Assigned: '+name);
- var body=encodeURIComponent('Hi '+member.split(' ')[0]+',\n\nYou have been assigned a new article on the Gamification KB Dashboard:\n\nArticle: '+name+'\nLOB: '+lobLabel+dl+'\n\nPlease log in to review:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager');
- window.open('mailto:'+emailAddr+'?subject='+subj+'&body='+body);
+ var subj='[Dashboard] New Article Assigned: '+name;
+ var bodyText='Hi '+member.split(' ')[0]+',\n\nYou have been assigned a new article on the Gamification KB Dashboard:\n\nArticle: '+name+'\nLOB: '+lobLabel+dl+'\n\nPlease log in to review:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager';
+ _sendDashboardEmail(emailAddr,subj,bodyText,member);
 }function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.id!==id;});
