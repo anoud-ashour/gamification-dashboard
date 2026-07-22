@@ -600,7 +600,9 @@ function buildOverview(){
    +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
    +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+tot+' article'+(tot!==1?'s':'')+' tracked</div>'
    +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
-   +'<div style="width:'+covP+'%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
+   +'<div style="width:''+covP+''%;height:100%;background:#6366f1;border-radius:4px"></div></div>'
+   +(managerMode?'<div style="margin-top:10px;display:flex;gap:6px" onclick="event.stopPropagation()"><button onclick="deleteCustomTab(\''+ct.id+\'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑 Delete LOB</button></div>':'')
+   +'</div>';
    +'</div>';
  });
  // Custom Sections cards in Overview
@@ -1421,59 +1423,6 @@ function buildUpdateProjects(){
  html+='</tbody></table></div></div></div>';
  el.innerHTML=html;
  countUp($('do-kpi-main'),overallPct,'%');
- // Custom LOB sections in Update Projects
- (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
-  var tid='ctab-'+ct.id;
-  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
-  if(!ctRows.length)return;
-  var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
-  var ctPct=pct(ctDone,ctRows.length||1);
-  var wrapId='ctupt-wrap-'+ct.id;var iconId='ctupt-icon-'+ct.id;var kpiId='ctupt-kpi-'+ct.id;
-  var toggle='var w=document.getElementById(\''+wrapId+'\');var ic=document.getElementById(\''+iconId+'\');if(w){var op=w.style.display===\'none\';w.style.display=op?\'block\':\'none\';if(ic)ic.style.transform=op?\'rotate(90deg)\':\'\'}';
-  var cth='<div style="margin-top:24px">';
-  cth+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 14px">'
-   +'<div onclick="'+toggle+'" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid #6366f1;box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:340px" '
-   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
-   +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">'+ct.name+'</div>'
-   +'<span id="'+iconId+'" style="font-size:20px;color:#6366f1;font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
-   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
-   +'<div id="'+kpiId+'" style="font-size:32px;font-weight:900;color:#6366f1;line-height:1;letter-spacing:-1px">0%</div>'
-   +'<div style="font-size:12px;color:var(--muted);font-weight:600">overall coverage</div></div>'
-   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px">'+ctDone+' / '+ctRows.length+' articles done</div>'
-   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
-   +'<div style="width:'+ctPct+'%;height:100%;background:#6366f1;border-radius:3px"></div></div>'
-   +'</div></div>';
-  cth+='<div id="'+wrapId+'" style="display:none"><div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
-  cth+='<thead><tr>'
-   +'<th style="background:#6366f1;color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800">Article</th>'
-   +'<th style="background:#6366f1;color:#fff;padding:10px 10px;text-align:center;font-size:13px;font-weight:800">Assignee</th>'
-   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">AR</th>'
-   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">EN</th>'
-   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Priority</th>'
-   +'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Deadline</th>'
-   +(managerMode?'<th style="background:#6366f1;color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">✏️</th>':'')
-   +'</tr></thead><tbody>';
-  ctRows.forEach(function(r,i){
-   var bg=i%2===0?'var(--card)':'#faf8f5';
-   var mc=MEMCOLS[r.member]||'#e7ddcf';var mtxt=MEMCOLS[r.member]?'#fff':'#7c6f63';
-   var prBg=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':r._priority==='low'?'#e0f2fe;color:#0369a1':'transparent;color:var(--muted)';
-   var ek7=r.article.toLowerCase().trim().replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-   cth+='<tr style="background:'+bg+'">'
-    +'<td style="padding:9px 14px;font-size:12px;font-weight:700;border-bottom:1px solid var(--border)">'+r.article+'</td>'
-    +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>'
-    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+cell(r.ar||0)+'</td>'
-    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+cell(r.en||0)+'</td>'
-    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><span style="font-size:10px;padding:2px 8px;border-radius:5px;font-weight:700;background:'+prBg+'">'+(r._priority||'—')+'</span></td>'
-    +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)">'+(r._deadline||'—')+'</td>'
-    +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><button onclick="openAssignEdit(\''+ek7+'\',\''+tid+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer">✏️</button></td>':'')
-    +'</tr>';
-  });
-  cth+='</tbody></table></div></div></div></div>';
-  el.insertAdjacentHTML('beforeend',cth);
-  countUp($(kpiId),ctPct,'%');
- });
  // Custom Sections in Update Projects
  (ASSIGNMENTS.customSections||[]).forEach(function(csec){
   var secItems=csec.items||[];
@@ -1508,25 +1457,39 @@ function buildUpdateProjects(){
    csh+='<div style="padding:18px;color:var(--muted);font-size:13px;text-align:center">No items yet.'+(managerMode?' Click &quot;+ Add Item&quot; to add one.':'')+'</div>';
   }else{
    csh+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
-   csh+='<thead><tr>'
-    +'<th style="background:'+secCol+';color:#fff;padding:10px 14px;text-align:left;font-size:13px;font-weight:800">Item / Project</th>'
-    +'<th style="background:'+secCol+';color:#fff;padding:10px 10px;text-align:center;font-size:12px;font-weight:800">Assignee</th>'
-    +'<th style="background:'+secCol+';color:#fff;padding:10px 10px;text-align:center;font-size:12px;font-weight:800">Status</th>'
-    +(managerMode?'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:11px;font-weight:800">Actions</th>':'')
-    +'</tr></thead><tbody>';
-   secItems.forEach(function(it,idx){
-    var bg=idx%2===0?'var(--card)':'#faf8f5';
-    var mc=MEMCOLS[it.assignee]||'#e7ddcf';var mtxt=MEMCOLS[it.assignee]?'#fff':'#7c6f63';
-    var safeItId=it.id.replace(/'/g,"\\'");
-    csh+='<tr style="background:'+bg+'">'
-     +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
-     +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(it.assignee||'—')+'</span></td>'
-     +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)">'
-     +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status))
-     +'</td>'
-     +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)"><button onclick="deleteSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button></td>':'')
-     +'</tr>';
-   });
+    csh+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
+    csh+='<thead><tr>'
+     +'<th style="background:'+secCol+';color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:800">Item / Project</th>'
+     +'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">LOB</th>'
+     +'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Language</th>'
+     +'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Timeline</th>'
+     +'<th style="background:'+secCol+';color:#fff;padding:10px 10px;text-align:center;font-size:12px;font-weight:800">Assignee</th>'
+     +'<th style="background:'+secCol+';color:#fff;padding:10px 10px;text-align:center;font-size:12px;font-weight:800">Status</th>'
+     +(managerMode?'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:11px;font-weight:800">Actions</th>':'')
+     +'</tr></thead><tbody>';
+    secItems.forEach(function(it,idx){
+     var bg=idx%2===0?'var(--card)':'#faf8f5';
+     var mc=MEMCOLS[it.assignee]||'#e7ddcf';var mtxt=MEMCOLS[it.assignee]?'#fff':'#7c6f63';
+     var safeItId=it.id.replace(/'/g,"\\'");
+     var tl=it.startDate&&it.endDate?(it.startDate+' → '+it.endDate):it.startDate?it.startDate+'…':it.endDate?'…'+it.endDate:'—';
+     var langBadge=it.lang==='Arabic'?'<span style="padding:2px 7px;border-radius:5px;background:#fef3c7;color:#d97706;font-size:10px;font-weight:800">AR</span>'
+      :it.lang==='English'?'<span style="padding:2px 7px;border-radius:5px;background:#e0f2fe;color:#0369a1;font-size:10px;font-weight:800">EN</span>'
+      :'<span style="padding:2px 7px;border-radius:5px;background:#f3f4f6;color:#374151;font-size:10px;font-weight:800">AR+EN</span>';
+     csh+='<tr style="background:'+bg+'">'
+      +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
+      +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)">'+(it.lob||'—')+'</td>'
+      +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+langBadge+'</td>'
+      +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">'+tl+'</td>'
+      +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(it.assignee||'—')+'</span></td>'
+      +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)">'
+      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status))
+      +'</td>'
+      +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'
+       +'<button onclick="openEditSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 7px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer;margin-right:3px">✏️</button>'
+       +'<button onclick="deleteSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 7px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>'
+       +'</td>':'')
+      +'</tr>';
+    });
    csh+='</tbody></table></div>';
   }
   csh+='</div></div></div>';
@@ -2234,7 +2197,7 @@ function applyAssignments(){
  ASSIGNMENTS.extra.forEach(function(e){
   if(!e.article||!e.lob)return;
   var sop=sopById(e.lob);
-  if(!sop&&e.lob.indexOf('ctab-')!==0)return;
+   if(!sop&&e.lob.indexOf('ctab-')!==0&&e.lob!=='uni')return;
   var sd=sop||{name:e.lob,cls:'',id:e.lob};
   var exists=ROWS.some(function(r){return r._extraId===e.id;});
   if(!exists)ROWS.push({sopId:e.lob,sopName:sd.name,cls:sd.cls||'',article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
@@ -2460,16 +2423,15 @@ function openAddArticle(){
  $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
  $('addart-deadline').value='';$('addart-priority').value='';$('addart-notes').value='';
  var sel=$('addart-lob');
- sel.innerHTML='<option value="default">Default (LC)</option>'
-  +'<option value="tpro">TPRO (tPro)</option>'
-  +'<option value="tkt">Ticketing</option>'
-  +'<option value="updates">Update Projects</option>';
+  sel.innerHTML='<option value="default">Default (LC)</option>'
+   +'<option value="tpro">TPRO (tPro)</option>'
+   +'<option value="tkt">Ticketing</option>'
+   +'<option value="uni">Universal</option>';
  (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
   var o=document.createElement('option');o.value='ctab-'+ct.id;o.textContent=ct.name;sel.appendChild(o);
  });
- var newOpt=document.createElement('option');newOpt.value='__new_lob__';newOpt.textContent='+ Create New LOB…';sel.appendChild(newOpt);
  // Pre-select based on active tab
- var pre=activeTab;if(pre==='all'||pre==='overview'||pre==='members'||pre==='progress'||pre==='minigames')pre='default';
+  var pre=activeTab;if(pre==='all'||pre==='overview'||pre==='members'||pre==='progress'||pre==='minigames'||pre==='updates')pre='default';
  var found=false;for(var i=0;i<sel.options.length;i++){if(sel.options[i].value===pre){found=true;break;}}
  if(found)sel.value=pre;
  $('addart-overlay').style.display='block';$('addart-modal').style.display='block';
@@ -2479,7 +2441,6 @@ function saveNewArticle(){
  var name=($('addart-name').value||'').trim();
  var lob=$('addart-lob').value;
  if(!name)return;
- if(lob==='__new_lob__'){closeAddArticle();openAddTab();return;}
  var id=Date.now().toString(36);
  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,notes:$('addart-notes').value});
  _assignPending=true;
@@ -2487,7 +2448,7 @@ function saveNewArticle(){
  closeAddArticle();buildRows();applyAssignments();
  // Navigate to the LOB tab where the article was added so it's immediately visible
  if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
- else if(lob==='updates'){setTab('updates');}
+  else if(lob==='uni'){setTab('progress');}
  else{setTab(lob);}
 }
 function deleteExtraArticle(id){
@@ -2648,9 +2609,23 @@ function renameCustomSection(secId){
  sec.name=n.trim();_assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
+var _addSecItemTarget='';var _editSecItemId='';
 function openAddSecItem(secId){
- _addSecItemTarget=secId;
+ _addSecItemTarget=secId;_editSecItemId='';
  $('secitem-text-inp').value='';$('secitem-assignee-inp').value='';$('secitem-status-sel').value='Pending';
+ $('secitem-start-inp').value='';$('secitem-end-inp').value='';$('secitem-lang-sel').value='Both';$('secitem-lob-inp').value='';
+ $('secitem-modal-title').textContent='+ Add Item';$('secitem-save-btn').textContent='Add Item';
+ $('secitem-overlay').style.display='block';$('secitem-modal').style.display='block';
+ setTimeout(function(){var e=$('secitem-text-inp');if(e)e.focus();},80);
+}
+function openEditSecItem(secId,itemId){
+ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
+ var item=sec.items.find(function(it){return it.id===itemId;});if(!item)return;
+ _addSecItemTarget=secId;_editSecItemId=itemId;
+ $('secitem-text-inp').value=item.text||'';$('secitem-assignee-inp').value=item.assignee||'';
+ $('secitem-status-sel').value=item.status||'Pending';$('secitem-start-inp').value=item.startDate||'';
+ $('secitem-end-inp').value=item.endDate||'';$('secitem-lang-sel').value=item.lang||'Both';$('secitem-lob-inp').value=item.lob||'';
+ $('secitem-modal-title').textContent='Edit Item';$('secitem-save-btn').textContent='Save Changes';
  $('secitem-overlay').style.display='block';$('secitem-modal').style.display='block';
  setTimeout(function(){var e=$('secitem-text-inp');if(e)e.focus();},80);
 }
@@ -2659,14 +2634,22 @@ function saveNewSecItem(){
  var text=($('secitem-text-inp').value||'').trim();if(!text)return;
  var assignee=($('secitem-assignee-inp').value||'').trim();
  var status=$('secitem-status-sel').value||'Pending';
+ var startDate=$('secitem-start-inp').value;var endDate=$('secitem-end-inp').value;
+ var lang=$('secitem-lang-sel').value||'Both';var lob=($('secitem-lob-inp').value||'').trim();
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===_addSecItemTarget;});if(!sec)return;
  if(!sec.items)sec.items=[];
- sec.items.push({id:Date.now().toString(36),text:text,status:status,assignee:assignee});
+ if(_editSecItemId){
+  var item=sec.items.find(function(it){return it.id===_editSecItemId;});
+  if(item){item.text=text;item.assignee=assignee;item.status=status;item.startDate=startDate;item.endDate=endDate;item.lang=lang;item.lob=lob;}
+ }else{
+  sec.items.push({id:Date.now().toString(36),text:text,status:status,assignee:assignee,startDate:startDate,endDate:endDate,lang:lang,lob:lob});
+ }
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddSecItem();buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
 function deleteSecItem(secId,itemId){
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
+ if(!confirm('Delete this item?'))return;
  sec.items=sec.items.filter(function(it){return it.id!==itemId;});
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  buildUpdateProjects();if(activeTab==='overview')buildOverview();
@@ -2938,27 +2921,53 @@ function cycleSecItemStatus(secId,itemId){
 </div>
 <!-- Add Section Item modal -->
 <div id="secitem-overlay" onclick="closeAddSecItem()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9310"></div>
-<div id="secitem-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9311;box-shadow:0 20px 60px rgba(0,0,0,.25)">
- <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px">+ Add Item</div>
- <div style="margin-bottom:14px">
+<div id="secitem-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:480px;max-width:93vw;z-index:9311;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:92vh;overflow-y:auto">
+ <div id="secitem-modal-title" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:14px">+ Add Item</div>
+ <div style="margin-bottom:12px">
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Item / Project Name *</div>
   <input id="secitem-text-inp" type="text" placeholder="e.g. Update SOP for returns…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewSecItem()">
  </div>
- <div style="margin-bottom:14px">
-  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Assignee</div>
-  <input id="secitem-assignee-inp" type="text" placeholder="e.g. Amal, Anoud, Dalia…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Start Date</div>
+   <input id="secitem-start-inp" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">End Date</div>
+   <input id="secitem-end-inp" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+  </div>
  </div>
- <div style="margin-bottom:18px">
-  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Status</div>
-  <select id="secitem-status-sel" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:#fff">
-   <option value="Pending">Pending</option>
-   <option value="In Progress">In Progress</option>
-   <option value="Done">Done</option>
-   <option value="Blocked">Blocked</option>
-  </select>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Language</div>
+   <select id="secitem-lang-sel" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:#fff">
+    <option value="Both">Arabic + English</option>
+    <option value="Arabic">Arabic Only</option>
+    <option value="English">English Only</option>
+   </select>
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">LOB</div>
+   <input id="secitem-lob-inp" type="text" placeholder="e.g. Default, TPRO…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+  </div>
+ </div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Assignee</div>
+   <input id="secitem-assignee-inp" type="text" placeholder="e.g. Amal, Anoud…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Status</div>
+   <select id="secitem-status-sel" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:#fff">
+    <option value="Pending">Pending</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Done">Done</option>
+    <option value="Blocked">Blocked</option>
+   </select>
+  </div>
  </div>
  <div style="display:flex;gap:8px">
-  <button onclick="saveNewSecItem()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Item</button>
+  <button id="secitem-save-btn" onclick="saveNewSecItem()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Item</button>
   <button onclick="closeAddSecItem()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
