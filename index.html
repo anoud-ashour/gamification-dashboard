@@ -2422,7 +2422,7 @@ async function saveAssignments(){
 
 function openAddArticle(){
  $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
- $('addart-deadline').value='';$('addart-priority').value='';$('addart-notes').value='';
+ $('addart-deadline').value='';$('addart-priority').value='';
  var sel=$('addart-lob');
   sel.innerHTML='<option value="default">Default (LC)</option>'
    +'<option value="tpro">TPRO (tPro)</option>'
@@ -2443,7 +2443,7 @@ function saveNewArticle(){
  var lob=$('addart-lob').value;
  if(!name)return;
  var id=Date.now().toString(36);
- ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,notes:$('addart-notes').value});
+ ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddArticle();buildRows();applyAssignments();
