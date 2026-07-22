@@ -2208,6 +2208,7 @@ function _enterManagerMode(){
  var el=$('mgr-email-label');if(el)el.textContent='👤 '+_managerEmail;
  renderCustomTabNav();
  buildWorkload();
+  if(activeTab==='overview'){buildOverview();}
  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
  else{renderTable();}
@@ -2224,6 +2225,7 @@ function toggleManagerMode(){
   var bar=$('mgr-save-bar');if(bar)bar.style.display='none';
   renderCustomTabNav();
   buildWorkload();
+  if(activeTab==='overview'){buildOverview();}
   if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
   else if(activeTab==='updates'){buildUpdateProjects();}
   else{renderTable();}
@@ -2429,7 +2431,23 @@ function saveNewArticle(){
   else if(lob==='uni'){setTab('progress');}
  else{setTab(lob);}
 }
-function deleteExtraArticle(id){
+
+function saveNewArticleAndNotify(){
+ var name=($('addart-name').value||'').trim();if(!name)return;
+ var member=$('addart-member').value;
+ var lobSel=$('addart-lob');
+ var lobLabel=lobSel.options[lobSel.selectedIndex].textContent;
+ var deadline=$('addart-deadline').value;
+ saveNewArticle();
+ var emailMap={'amal':'amal.eldakroury@talabat.com','anoud':'anoud.shehata@talabat.com','dalia':'dalia.adel@talabat.com'};
+ var key=(member||'').trim().split(' ')[0].toLowerCase();
+ var emailAddr=emailMap[key];
+ if(!emailAddr){alert('No email configured for '+member+'. Assignment saved.');return;}
+ var dl=deadline?'\nDeadline: '+deadline:'';
+ var subj=encodeURIComponent('[Dashboard] New Article Assigned: '+name);
+ var body=encodeURIComponent('Hi '+member.split(' ')[0]+',\n\nYou have been assigned a new article on the Gamification KB Dashboard:\n\nArticle: '+name+'\nLOB: '+lobLabel+dl+'\n\nPlease log in to review:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager');
+ window.open('mailto:'+emailAddr+'?subject='+subj+'&body='+body);
+}function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.id!==id;});
  delete ASSIGNMENTS.overrides[Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);})];
@@ -2777,10 +2795,13 @@ function cycleSecItemStatus(secId,itemId){
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Deadline</div>
   <input id="addart-deadline" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
  </div>
- <div style="display:flex;gap:8px">
-  <button onclick="saveNewArticle()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Add Article</button>
-  <button onclick="closeAddArticle()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
- </div>
+  <div style="display:flex;gap:8px;margin-bottom:6px">
+   <button onclick="saveNewArticleAndNotify()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">&#128140; Add &amp; Notify</button>
+   <button onclick="saveNewArticle()" style="padding:10px 16px;border-radius:10px;border:1.5px solid #8318d8;background:none;color:#8318d8;font-size:13px;font-weight:700;cursor:pointer">Add Only</button>
+  </div>
+  <div style="display:flex;gap:8px">
+   <button onclick="closeAddArticle()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
+  </div>
 </div>
 <!-- Member Status Edit modal -->
 <div id="ms-overlay" onclick="closeMemberStatus()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
