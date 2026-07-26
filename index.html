@@ -1978,7 +1978,7 @@ function build(){
 var _refreshTimer=null;
 function startCountdown(){
  if(_refreshTimer)clearInterval(_refreshTimer);
- var next=Date.now()+5*60*1000;
+ var next=Date.now()+1*60*1000;
  function tick(){
   var rem=Math.max(0,next-Date.now());
   var m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
@@ -2201,7 +2201,7 @@ async function _refreshLiveData(){
  }
 }
 load();
-setInterval(handleRefresh,5*60*1000);
+setInterval(handleRefresh,1*60*1000);
 
 // ===== MANAGER MODE =====
 var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGIxaU9U','c3NwcXhSSm','1XWklnTVlC','aHByejBYVm','VnV0lJRERv','Q0dVNU9XREZaU3F0MnpBVEN6'];
