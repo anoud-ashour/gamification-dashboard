@@ -25,10 +25,19 @@
       "deadline": "",
       "priority": "",
       "notes": ""
+    },
+    "change order details::uni": {
+      "member": "Anoud",
+      "ar": 0,
+      "en": 1,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "notes": ""
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-26T13:28:33.709Z",
+  "lastUpdated": "2026-07-26T13:30:09.362Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -80,6 +89,15 @@
       "lob": "Universal",
       "startDate": "",
       "assignedAt": "2026-07-26T13:28:28.201Z"
+    },
+    {
+      "id": "ms1u54bk",
+      "key": "change order details::uni",
+      "article": "Change Order Details",
+      "member": "Anoud",
+      "lob": "Universal",
+      "startDate": "",
+      "assignedAt": "2026-07-26T13:30:09.056Z"
     }
   ]
 }
