@@ -7,14 +7,6 @@
       "deadline": "",
       "priority": "",
       "notes": ""
-    },
-    "test::default": {
-      "member": "Anoud",
-      "ar": 0,
-      "en": 0,
-      "deadline": "",
-      "priority": "",
-      "notes": "test test"
     }
   },
   "extra": [
@@ -29,21 +21,9 @@
       "deadline": "2026-07-27",
       "priority": "high",
       "status": "Not Started"
-    },
-    {
-      "id": "ms1m512d",
-      "article": "test",
-      "lob": "default",
-      "member": "Dalia",
-      "journey": "test",
-      "ar": 0,
-      "en": 0,
-      "deadline": "2026-07-27",
-      "priority": "high",
-      "status": "Not Started"
     }
   ],
-  "lastUpdated": "2026-07-26T09:46:10.135Z",
+  "lastUpdated": "2026-07-26T09:46:59.846Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
