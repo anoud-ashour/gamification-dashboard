@@ -1482,7 +1482,7 @@ function buildUniHtml(tabName,safeId){
  var h='<div class="card"><h3>'+tabName+'</h3>'
   +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
-  +'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>'
+  +(managerMode?'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>':'')
   +'<button onclick="toggleManagerMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #8318d8;background:'+mgrBg+';color:'+mgrCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+mgrLabel+'</button>'
   +'</div>'
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
@@ -1976,7 +1976,7 @@ function build(){
 var _refreshTimer=null;
 function startCountdown(){
  if(_refreshTimer)clearInterval(_refreshTimer);
- var next=Date.now()+1*60*1000;
+ var next=Date.now()+3*60*1000;
  function tick(){
   var rem=Math.max(0,next-Date.now());
   var m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
@@ -2199,7 +2199,7 @@ async function _refreshLiveData(){
  }
 }
 load();
-setInterval(handleRefresh,1*60*1000);
+setInterval(handleRefresh,3*60*1000);
 
 // ===== MANAGER MODE =====
 var _tk=['Z2l0aHViX3','BhdF8xMUNJ','U0RDU0EwN3','FxNFlVNnlj','TGJvX3NUZn','RTRGIxaU9U','c3NwcXhSSm','1XWklnTVlC','aHByejBYVm','VnV0lJRERv','Q0dVNU9XREZaU3F0MnpBVEN6'];
