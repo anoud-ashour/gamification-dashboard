@@ -1761,60 +1761,57 @@ function buildMiniGames(){
   mgh+='</div></div></div>';
   el.insertAdjacentHTML('beforeend',mgh);
  });
- // Custom MG sections (created via + Add New Section)
- (ASSIGNMENTS.customMGSections||[]).forEach(function(cs,csIdx){
-  var col=MG_COLORS[(MG_CATS.length+csIdx)%MG_COLORS.length];
-  var icon=MG_ICONS[(MG_CATS.length+csIdx)%MG_ICONS.length];
-  var colLight=col+'22';
-  var wid='mgcs-wrap-'+cs.id; var iid='mgcs-icon-'+cs.id;
-  var toggle='var w=document.getElementById(\''+wid+'\');var ic=document.getElementById(\''+iid+'\');if(w){var op=w.style.display===\'none\';w.style.display=op?\'block\':\'none\';if(ic)ic.style.transform=op?\'rotate(90deg)\':\'\'}';
-  var catLinked=0;
-  for(var i=1;i<=cs.games;i++){if(GAME_LINKS[mgKey(cs.name,i)])catLinked++;}
-  var catPct=cs.games>0?Math.round((catLinked/cs.games)*100):0;
-  var mgh='<div style="margin-top:20px">';
-  // Summary card
-  mgh+='<div onclick="'+toggle+'" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+col+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s;max-width:340px;margin-bottom:14px" '
-   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\'">'
-   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">🎮 '+cs.name+'</div>'
-   +'<span id="'+iid+'" style="font-size:20px;color:'+col+';font-weight:900;transition:transform .2s">›</span></div>'
-   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:8px">'+catLinked+' / '+cs.games+' links added</div>'
-   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:10px;overflow:hidden">'
-   +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px"></div></div>'
-   +(managerMode?'<div style="margin-top:10px"><span onclick="event.stopPropagation();deleteMGSection(\''+cs.id+'\')" style="font-size:11px;color:#dc2626;font-weight:700;cursor:pointer;background:#fee2e2;padding:3px 10px;border-radius:6px">🗑 Delete</span></div>':'')
-   +'</div>';
-  // Expandable game grid
-  mgh+='<div id="'+wid+'" style="display:none;background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)">'
-   +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
-   +'<div style="width:38px;height:38px;border-radius:10px;background:'+colLight+';display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
-   +'<div><div style="font-size:13px;font-weight:800;color:var(--dark)">'+cs.name+'</div>'
-   +'<div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:1px">'+catLinked+' / '+cs.games+' linked</div></div></div>'
-   +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
-   +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px;transition:width .5s ease"></div></div>'
-   +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
-  for(var gi=1;gi<=cs.games;gi++){
-   var gkey=mgKey(cs.name,gi);
-   var gurl=GAME_LINKS[gkey]||'';
-   var safeGKey=gkey.replace(/'/g,"\\'");
-   var glabel=cs.games===1?'Game Link':'Game '+gi;
-   if(gurl){
-    mgh+='<a href="'+gurl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:'+col+';color:#fff;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;transition:opacity .15s" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">🎮 '+glabel+'</a>';
-    if(editLinksMode)mgh+='<span onclick="mgEditLink(\''+safeGKey+'\')" style="display:inline-flex;align-items:center;padding:6px 10px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';
-   }else if(editLinksMode){
-    mgh+='<span onclick="mgEditLink(\''+safeGKey+'\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed '+col+';color:'+col+';border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:'+colLight+'">+ '+glabel+'</span>';
-   }else{
-    mgh+='<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:20px;font-size:12px;font-weight:600">🎮 '+glabel+'</span>';
+ // Custom MG sections — rendered as compact cards in a grid (same style as MG_CATS)
+ var customSecs=ASSIGNMENTS.customMGSections||[];
+ if(customSecs.length){
+  var csGrid=document.createElement('div');
+  csGrid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px';
+  customSecs.forEach(function(cs,csIdx){
+   var col=MG_COLORS[(MG_CATS.length+csIdx)%MG_COLORS.length];
+   var icon=MG_ICONS[(MG_CATS.length+csIdx)%MG_ICONS.length];
+   var colLight=col+'22';
+   var catLinked=0;
+   for(var i=1;i<=cs.games;i++){if(GAME_LINKS[mgKey(cs.name,i)])catLinked++;}
+   var catPct=cs.games>0?Math.round((catLinked/cs.games)*100):0;
+   var card=document.createElement('div');
+   card.style.cssText='background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)';
+   var ch='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+    +'<div style="width:38px;height:38px;border-radius:10px;background:'+colLight+';display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
+    +'<div style="flex:1;min-width:0">'
+    +'<div style="font-size:13px;font-weight:800;color:var(--dark);line-height:1.3">'+cs.name+'</div>'
+    +'<div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:1px">'+catLinked+' / '+cs.games+' linked</div>'
+    +'</div>'
+    +(managerMode?'<span onclick="deleteMGSection(\''+cs.id+'\')" title="Delete" style="font-size:15px;cursor:pointer;flex:none;opacity:.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5">🗑</span>':'')
+    +'</div>'
+    +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
+    +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px;transition:width .5s ease"></div></div>'
+    +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
+   for(var gi=1;gi<=cs.games;gi++){
+    var gkey=mgKey(cs.name,gi);
+    var gurl=GAME_LINKS[gkey]||'';
+    var safeGKey=gkey.replace(/'/g,"\\'");
+    var glabel=cs.games===1?'Game Link':'Game '+gi;
+    if(gurl){
+     ch+='<a href="'+gurl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:'+col+';color:#fff;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;transition:opacity .15s" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">🎮 '+glabel+'</a>';
+     if(editLinksMode)ch+='<span onclick="mgEditLink(\''+safeGKey+'\')" style="display:inline-flex;align-items:center;padding:6px 10px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';
+    }else if(editLinksMode){
+     ch+='<span onclick="mgEditLink(\''+safeGKey+'\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed '+col+';color:'+col+';border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:'+colLight+'">+ '+glabel+'</span>';
+    }else{
+     ch+='<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:20px;font-size:12px;font-weight:600">🎮 '+glabel+'</span>';
+    }
    }
-  }
-  mgh+='</div></div></div>';
-  el.insertAdjacentHTML('beforeend',mgh);
- });
+   ch+='</div>';
+   card.innerHTML=ch;
+   csGrid.appendChild(card);
+  });
+  el.appendChild(csGrid);
+ }
  if(managerMode){
   var addSecDiv=document.createElement('div');
   addSecDiv.onclick=function(){openAddMGSection();};
   addSecDiv.onmouseover=function(){this.style.background='#f5f3ff';};
   addSecDiv.onmouseout=function(){this.style.background='transparent';};
-  addSecDiv.style.cssText='margin-top:20px;padding:22px;border:2px dashed #6366f1;border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6366f1;font-size:13px;font-weight:800;background:transparent;transition:background .15s';
+  addSecDiv.style.cssText='margin-top:16px;display:inline-block;padding:9px 20px;border:2px dashed #6366f1;border-radius:12px;cursor:pointer;color:#6366f1;font-size:12px;font-weight:800;background:transparent;transition:background .15s';
   addSecDiv.textContent='+ Add New Section';
   el.appendChild(addSecDiv);
  }
