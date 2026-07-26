@@ -1177,8 +1177,13 @@ function renderMbTable(){
  rows.forEach(function(r){
   var cells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
    if(cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';}))return;
+  // Also hide Universal articles that are fully covered per override (ar=1,en=1 or status=Done)
+  var _mbArt=(r.article||'').toLowerCase().trim();
+  if(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1){var _mbOvD=Object.keys(ASSIGNMENTS.overrides).some(function(k){var _i=k.lastIndexOf('::');if(_i<0)return false;if(k.slice(0,_i)!==_mbArt)return false;var _o=ASSIGNMENTS.overrides[k];return _o&&(_o.status&&statusOf(_o.status)==='Done'||(_o.ar===1&&_o.en===1));});if(_mbOvD)return;}
   var done=cells.filter(function(v){return statusOf(v)==='Done';}).length;
-  var p=cells.length?Math.round(done/cells.length*100):0;
+  // Use ROWS coverage (ar/en) for Universal articles — status cells give wrong effort when all set to same value by override
+  var _mbUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_mbArt&&row.sopId==='uni';});
+  var p=_mbUniRow?Math.round((_mbUniRow.ar+_mbUniRow.en)/2*100):(cells.length?Math.round(done/cells.length*100):0);
   var st=artStatusOverall(cells);
   var col=MEMCOLS[r.member]||'#9ca3af';
   var parts=(r.member||'').trim().split(/\s+/);
@@ -1204,9 +1209,12 @@ function renderSopTable(){
   var allCells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
   var overall=artStatusOverall(allCells);
    if(allCells.length>0&&allCells.every(function(v){return statusOf(v)==='Done';}))return;
+  var _spArt=(r.article||'').toLowerCase().trim();
+  if(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1){var _spOvD=Object.keys(ASSIGNMENTS.overrides).some(function(k){var _i=k.lastIndexOf('::');if(_i<0)return false;if(k.slice(0,_i)!==_spArt)return false;var _o=ASSIGNMENTS.overrides[k];return _o&&(_o.status&&statusOf(_o.status)==='Done'||(_o.ar===1&&_o.en===1));});if(_spOvD)return;}
   if(sopfFilter&&overall!==sopfFilter)return;
   var done=allCells.filter(function(v){return statusOf(v)==='Done';}).length;
-  var p=allCells.length?Math.round(done/allCells.length*100):0;
+  var _spUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_spArt&&row.sopId==='uni';});
+  var p=_spUniRow?Math.round((_spUniRow.ar+_spUniRow.en)/2*100):(allCells.length?Math.round(done/allCells.length*100):0);
   var due=parseDate(r.vip_end)||parseDate(r.def_end)||null;
   var dueStr=due?due.toLocaleDateString(undefined,{month:'short',day:'numeric'}):'—';
   var col=MEMCOLS[r.member]||'#9ca3af';
