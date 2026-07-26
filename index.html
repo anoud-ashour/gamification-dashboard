@@ -2263,7 +2263,7 @@ var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{}
 var managerMode=false;
 var _managerEmail='';
 var _assignPending=false;
-var _mgrEditKey='';
+var _mgrEditKey='';var _mgrEditExtraId='';
 
 async function loadAssignments(){
  try{
@@ -2470,6 +2470,7 @@ function openAssignEdit(artKey,lob){
  _mgrEditKey=artKey+'::'+lob;
  var ov=ASSIGNMENTS.overrides[_mgrEditKey]||{};
  var row=ROWS.find(function(r){return r.article.toLowerCase().trim()===artKey&&r.sopId===lob;});
+ _mgrEditExtraId=row&&row._extraId?row._extraId:'';
  $('asgn-title').textContent=row?row.article:artKey;
  var lobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing','uni':'Universal','updates':'Update Projects'}[lob]||((ASSIGNMENTS.customTabs||[]).find(function(c){return 'ctab-'+c.id===lob;})||{name:lob}).name;
  $('asgn-lob-label').textContent=lobLabel;
@@ -2480,12 +2481,25 @@ function openAssignEdit(artKey,lob){
  $('asgn-deadline').value=ov.deadline||'';
  $('asgn-priority').value=ov.priority||'';
  $('asgn-notes').value=ov.notes||'';
- // Populate sub-category dropdown
+ // Show Status & Delete only for extra articles (ones added via Add Article)
+ var isExtra=!!_mgrEditExtraId;
+ var srEl=$('asgn-status-row');var drEl=$('asgn-delete-row');
+ if(srEl)srEl.style.display=isExtra?'block':'none';
+ if(drEl)drEl.style.display=isExtra?'block':'none';
+ if(isExtra&&$('asgn-status')){
+  var ex=ASSIGNMENTS.extra.find(function(e){return e.id===_mgrEditExtraId;});
+  $('asgn-status').value=(ex&&ex.status)||'Not Started';
+ }
  $('asgn-overlay').style.display='block';$('asgn-modal').style.display='block';
 }
 
 function closeAssignModal(){
- $('asgn-overlay').style.display='none';$('asgn-modal').style.display='none';_mgrEditKey='';
+ $('asgn-overlay').style.display='none';$('asgn-modal').style.display='none';_mgrEditKey='';_mgrEditExtraId='';
+}
+function deleteFromAssignModal(){
+ var eid=_mgrEditExtraId;
+ closeAssignModal();
+ if(eid)deleteExtraArticle(eid);
 }
 
 // Notifications — stored in localStorage so they survive auto-refresh and are instant
@@ -2583,14 +2597,20 @@ function saveAssign(){membersBuilt=false;
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
  var artKeyStr=parts.slice(0,-1).join('::');var lobStr=parts[parts.length-1];
- // Sync back to extra article if applicable
+ // Sync back to extra article if applicable (including status)
  var ex=ASSIGNMENTS.extra.find(function(e){return e.article.toLowerCase().trim()===artKeyStr&&e.lob===lobStr;});
- if(ex){ex.member=ov.member;ex.ar=ov.ar;ex.en=ov.en;ex.deadline=ov.deadline;ex.priority=ov.priority;ex.notes=ov.notes;}
+ if(ex){ex.member=ov.member;ex.ar=ov.ar;ex.en=ov.en;ex.deadline=ov.deadline;ex.priority=ov.priority;ex.notes=ov.notes;
+  var stEl=$('asgn-status');var stRow=$('asgn-status-row');
+  if(stEl&&stRow&&stRow.style.display!=='none')ex.status=stEl.value;
+ }
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAssignModal();
- buildRows();applyAssignments();
- if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ buildRows();applyAssignments();progressBuilt=false;
+ buildOverview();
+ var isUniAct=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
+ if(isUniAct){var pS=new Set();var uR=PROG.filter(function(r){if(!r.article||r.article==='—')return false;var k=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();if(pS.has(k))return false;pS.add(k);return true;});window._uniRows=uR;if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,uR);}
+ else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
  else if(activeTab==='members'){buildWorkload();}
  else{renderTable();}
@@ -3060,13 +3080,26 @@ function cycleSecItemStatus(secId,itemId){
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Sub-Category</div>
   <select id="asgn-subcat" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none"><option value="">— None —</option></select>
  </div>
+ <div id="asgn-status-row" style="margin-bottom:14px;display:none">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Progress Status</div>
+  <select id="asgn-status" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+   <option value="Not Started">Not Started</option>
+   <option value="In Progress">In Progress</option>
+   <option value="On Review">On Review</option>
+   <option value="Pending Modification">Pending Modification</option>
+   <option value="Done">Done</option>
+  </select>
+ </div>
   <div style="display:flex;gap:8px;margin-bottom:6px">
    <button onclick="saveAssignAndNotify()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">💌 Save &amp; Notify</button>
    <button onclick="saveAssign()" style="padding:10px 16px;border-radius:10px;border:1.5px solid #8318d8;background:none;color:#8318d8;font-size:13px;font-weight:700;cursor:pointer">Save Only</button>
   </div>
-  <div style="display:flex;gap:8px">
+  <div style="display:flex;gap:8px;margin-bottom:6px">
    <button onclick="clearAssign()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">Clear</button>
    <button onclick="closeAssignModal()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
+  </div>
+  <div id="asgn-delete-row" style="display:none">
+   <button onclick="deleteFromAssignModal()" style="width:100%;padding:9px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:13px;font-weight:800;cursor:pointer">🗑️ Delete This Article</button>
   </div>
 </div>
 
