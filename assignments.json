@@ -22,11 +22,10 @@
       "member": "Amal",
       "ar": 1,
       "en": 1,
-      "startDate": "",
-      "deadline": "",
+      "startDate": "2026-07-25",
+      "deadline": "2026-07-27",
       "priority": "",
-      "notes": "",
-      "status": "Done"
+      "notes": ""
     },
     "change order details::uni": {
       "member": "Anoud",
@@ -40,7 +39,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-26T14:26:45.112Z",
+  "lastUpdated": "2026-07-26T14:27:46.175Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -89,15 +88,6 @@
       "assignedAt": "2026-07-26T12:50:41.243Z"
     },
     {
-      "id": "ms1u2yi1",
-      "key": "rider reports cst wrong address/pinpoint::uni",
-      "article": "Rider Reports CST Wrong Address/Pinpoint",
-      "member": "Amal",
-      "lob": "Universal",
-      "startDate": "",
-      "assignedAt": "2026-07-26T13:28:28.201Z"
-    },
-    {
       "id": "ms1u54bk",
       "key": "change order details::uni",
       "article": "Change Order Details",
@@ -105,6 +95,15 @@
       "lob": "Universal",
       "startDate": "",
       "assignedAt": "2026-07-26T13:30:09.056Z"
+    },
+    {
+      "id": "ms1w77ms",
+      "key": "rider reports cst wrong address/pinpoint::uni",
+      "article": "Rider Reports CST Wrong Address/Pinpoint",
+      "member": "Amal",
+      "lob": "Universal",
+      "startDate": "2026-07-25",
+      "assignedAt": "2026-07-26T14:27:45.893Z"
     }
   ]
 }
