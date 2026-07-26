@@ -20,18 +20,6 @@
   },
   "extra": [
     {
-      "id": "ms1rohyt",
-      "article": "test",
-      "lob": "uni",
-      "member": "Anoud",
-      "journey": "test",
-      "ar": 0,
-      "en": 0,
-      "deadline": "2026-07-27",
-      "priority": "high",
-      "status": "In Progress"
-    },
-    {
       "id": "ms1s4rt4",
       "article": "test",
       "lob": "uni",
@@ -44,7 +32,7 @@
       "status": "In Progress"
     }
   ],
-  "lastUpdated": "2026-07-26T12:33:55.446Z",
+  "lastUpdated": "2026-07-26T12:34:18.131Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
