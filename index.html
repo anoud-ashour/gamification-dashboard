@@ -1568,7 +1568,7 @@ function buildUniHtml(tabName,safeId,uniRows){
    +'<td style="text-align:center;padding:10px 6px">'+cell(enDone?1:0)+'</td>'
    +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+p+'%</span></td>'
    +glCellForLob(gkey,'ar','uni')+glCellForLob(gkey,'en','uni')
-   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button></td>':'')
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block;margin-top:2px">✕ remove</span>':'')+'</td>':'')
    +'</tr>';
  });
  if(!uniRows.length)h+='<tr><td colspan="'+(managerMode?8:7)+'" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
@@ -2689,6 +2689,7 @@ function saveNewArticle(){
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddArticle();buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
  buildOverview();
+ saveAssignments();
  // Navigate to the LOB tab where the article was added so it's immediately visible
  if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
   else if(lob==='uni'){setTab('all');}
@@ -2712,11 +2713,20 @@ function saveNewArticleAndNotify(){
 }function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.id!==id;});
- delete ASSIGNMENTS.overrides[Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);})];
- _assignPending=true;
- var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- buildRows();applyAssignments();
- if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}else if(activeTab==='updates'){buildUpdateProjects();}else{renderTable();}
+ var ovKey=Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);});
+ if(ovKey)delete ASSIGNMENTS.overrides[ovKey];
+ buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
+ buildOverview();
+ saveAssignments();
+ var isUniActive=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
+ if(isUniActive){
+  var pSeen2=new Set();
+  var uniRows2=PROG.filter(function(r){if(!r.article||r.article==='—')return false;var k2=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();if(pSeen2.has(k2))return false;pSeen2.add(k2);return true;});
+  window._uniRows=uniRows2;
+  if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,uniRows2);
+ }else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else{renderTable();}
 }
 
 function renderCustomTabNav(){
