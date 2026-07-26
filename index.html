@@ -2454,13 +2454,12 @@ var _NOTIF_KEY='gd_notifs';
 function _getNotifs(){try{return JSON.parse(localStorage.getItem(_NOTIF_KEY)||'[]');}catch(e){return [];}}
 function _setNotifs(arr){try{localStorage.setItem(_NOTIF_KEY,JSON.stringify(arr));}catch(e){}}
 function _mergeNotifs(serverArr){
- var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
  var local=_getNotifs();
  var byKey={};
  local.forEach(function(n){if(n&&n.key)byKey[n.key]=n;});
- // Only bring back server notifications that are newer than last-read timestamp
+ // Always merge all server notifications — lastSeen only controls badge/highlight, not visibility
  (serverArr||[]).forEach(function(n){
-  if(n&&n.key&&new Date(n.assignedAt).getTime()>lastSeen)byKey[n.key]=n;
+  if(n&&n.key)byKey[n.key]=n;
  });
  var merged=[];for(var k in byKey){merged.push(byKey[k]);}
  merged.sort(function(a,b){return new Date(b.assignedAt)-new Date(a.assignedAt);});
