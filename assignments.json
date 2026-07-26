@@ -31,9 +31,21 @@
       "priority": "low",
       "status": "In Progress",
       "notes": ""
+    },
+    {
+      "id": "ms1pob1e",
+      "article": "test",
+      "lob": "tkt",
+      "member": "Dalia",
+      "journey": "test",
+      "ar": 0,
+      "en": 0,
+      "deadline": "2026-07-27",
+      "priority": "high",
+      "status": "In Progress"
     }
   ],
-  "lastUpdated": "2026-07-26T11:23:17.384Z",
+  "lastUpdated": "2026-07-26T11:25:07.572Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -67,6 +79,15 @@
       "lob": "Universal",
       "startDate": "2026-07-26",
       "assignedAt": "2026-07-26T11:23:16.629Z"
+    },
+    {
+      "id": "ms1pob1i",
+      "key": "test::tkt",
+      "article": "test",
+      "member": "Dalia",
+      "lob": "Ticketing",
+      "startDate": "2026-07-26",
+      "assignedAt": "2026-07-26T11:25:06.150Z"
     }
   ]
 }
