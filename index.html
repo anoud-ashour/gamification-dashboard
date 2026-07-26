@@ -1651,12 +1651,9 @@ function buildMiniGames(){
   +'</div></div>';
  // Expandable content
  html+='<div id="mg-table-wrap" style="display:none">'
-  +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px">'
-  +(managerMode?'<div onclick="openAddTab(\'tab\')" style="padding:7px 18px;border-radius:10px;border:2px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:5px">+ Add New Section</div>':'<div></div>')
-  +'<div style="display:flex;gap:8px">'
+  +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px">'
   +(managerMode&&editLinksMode?'<button onclick="exportMgLinks()" style="padding:7px 16px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer">📋 Export Links</button>':'')
   +(managerMode?'<button onclick="toggleMgEditMode()" style="padding:7px 16px;border-radius:8px;border:1.5px solid '+PU+';background:'+(editLinksMode?PU:'none')+';color:'+(editLinksMode?'#fff':PU)+';font-size:12px;font-weight:800;cursor:pointer">'+(editLinksMode?'✓ Done':'✏️ Edit Links')+'</button>':'')
-  +'</div>'
   +'</div>'
   +'<div id="mg-export-box" style="display:none;margin-bottom:16px;background:#f0fdf4;border:1.5px solid #16a34a;border-radius:12px;padding:14px">'
   +'<div style="font-size:11px;font-weight:800;color:#16a34a;margin-bottom:8px;text-transform:uppercase">Copy this and send to update the dashboard:</div>'
@@ -1713,7 +1710,7 @@ function buildMiniGames(){
  el.innerHTML=html;
  countUp($('mg-stat-total'),totalGames,'');
  // Custom LOB article game links
- (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
+ (ASSIGNMENTS.customTabs||[]).filter(function(ct){return ct.type==='tab';}).forEach(function(ct){
   var tid='ctab-'+ct.id;
   var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
   if(!ctRows.length)return;
@@ -1764,6 +1761,15 @@ function buildMiniGames(){
   mgh+='</div></div></div>';
   el.insertAdjacentHTML('beforeend',mgh);
  });
+ if(managerMode){
+  var addSecDiv=document.createElement('div');
+  addSecDiv.onclick=function(){openAddTab('tab');};
+  addSecDiv.onmouseover=function(){this.style.background='#f5f3ff';};
+  addSecDiv.onmouseout=function(){this.style.background='transparent';};
+  addSecDiv.style.cssText='margin-top:20px;padding:22px;border:2px dashed #6366f1;border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6366f1;font-size:13px;font-weight:800;background:transparent;transition:background .15s';
+  addSecDiv.textContent='+ Add New Section';
+  el.appendChild(addSecDiv);
+ }
 }
 var _mgEditKey='';
 function toggleMgTable(){
