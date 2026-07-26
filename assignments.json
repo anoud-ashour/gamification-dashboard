@@ -18,21 +18,8 @@
       "notes": ""
     }
   },
-  "extra": [
-    {
-      "id": "ms1qyony",
-      "article": "test",
-      "lob": "uni",
-      "member": "Anoud",
-      "journey": "test",
-      "ar": 0,
-      "en": 0,
-      "deadline": "2026-07-29",
-      "priority": "high",
-      "status": "In Progress"
-    }
-  ],
-  "lastUpdated": "2026-07-26T12:01:34.701Z",
+  "extra": [],
+  "lastUpdated": "2026-07-26T12:01:42.588Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
