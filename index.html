@@ -795,7 +795,7 @@ function buildMembers(){
    if(!r.article)return false;
    const mn=mergeArtName(r.article);const k=nrm(mn);
    if(pSeen.has(k))return false;
-   const ow=r._extraId?(r.member||'Unassigned'):(OWNER[k]||'Unassigned');if(ow!==m)return false;
+   const ow=r._extraId?(r.member||'Unassigned'):(OWNER[k]||r.member||'Unassigned');if(ow!==m)return false;
    pSeen.add(k);return true;
   });
   lobs.push({name:'Universal',
@@ -2249,18 +2249,21 @@ function applyAssignments(){
   if(ov.priority)r._priority=ov.priority;
   if(ov.notes)r._notes=ov.notes;
  });
- // Apply status overrides to PROG entries for tracker (non-extra) articles
+ // Apply member and status overrides to PROG entries for tracker (non-extra) articles
  Object.keys(ASSIGNMENTS.overrides).forEach(function(k){
   var ov=ASSIGNMENTS.overrides[k];
-  if(!ov||!ov.status)return;
+  if(!ov)return;
   var lastDbl=k.lastIndexOf('::');if(lastDbl<0)return;
-  var artKey=k.slice(0,lastDbl);var sopId=k.slice(lastDbl+2);var st=ov.status;
+  var artKey=k.slice(0,lastDbl);var sopId=k.slice(lastDbl+2);
   PROG.forEach(function(p){
    if(p._extraId)return;
    if((p.article||'').toLowerCase().trim()!==artKey)return;
-   if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
-   else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
-   else{p.def_ar=st;p.def_en=st;}
+   if(ov.member)p.member=ov.member;
+   if(ov.status){var st=ov.status;
+    if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
+    else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
+    else{p.def_ar=st;p.def_en=st;}
+   }
   });
  });
  // Remove previously injected extra-article PROG entries to prevent accumulation across calls
