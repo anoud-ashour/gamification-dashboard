@@ -2517,9 +2517,8 @@ function closeNotifPanel(){
 function markNotifsRead(){
  var now=Date.now();
  try{localStorage.setItem('notif_last_seen',now.toString());}catch(e){}
- _setNotifs([]);
  buildNotifBadge();
- closeNotifPanel();
+ openNotifPanel();
 }
 
 function saveAssign(){membersBuilt=false;
