@@ -16,10 +16,19 @@
       "deadline": "2026-07-28",
       "priority": "high",
       "notes": ""
+    },
+    "rider reports cst wrong address/pinpoint::uni": {
+      "member": "Amal",
+      "ar": 1,
+      "en": 1,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "notes": ""
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-26T12:52:30.490Z",
+  "lastUpdated": "2026-07-26T13:28:28.678Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -62,6 +71,15 @@
       "lob": "Universal",
       "startDate": "2026-07-26",
       "assignedAt": "2026-07-26T12:50:41.243Z"
+    },
+    {
+      "id": "ms1u2yi1",
+      "key": "rider reports cst wrong address/pinpoint::uni",
+      "article": "Rider Reports CST Wrong Address/Pinpoint",
+      "member": "Amal",
+      "lob": "Universal",
+      "startDate": "",
+      "assignedAt": "2026-07-26T13:28:28.201Z"
     }
   ]
 }
