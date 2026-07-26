@@ -31,7 +31,7 @@
       "status": "Not Started"
     },
     {
-      "id": "ms1m2qu4",
+      "id": "ms1m512d",
       "article": "test",
       "lob": "default",
       "member": "Dalia",
@@ -43,7 +43,7 @@
       "status": "Not Started"
     }
   ],
-  "lastUpdated": "2026-07-26T09:44:24.955Z",
+  "lastUpdated": "2026-07-26T09:46:10.135Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -61,13 +61,13 @@
   "customMGSections": [],
   "notifications": [
     {
-      "id": "ms1m2qua",
+      "id": "ms1m512g",
       "key": "test::default",
       "article": "test",
       "member": "Dalia",
       "lob": "Default (LC)",
       "startDate": "2026-07-26",
-      "assignedAt": "2026-07-26T09:44:21.346Z"
+      "assignedAt": "2026-07-26T09:46:07.912Z"
     }
   ]
 }
