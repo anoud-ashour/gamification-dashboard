@@ -1958,6 +1958,7 @@ function build(){
  const fj=$('fJourney');
  fj.innerHTML='<option value="">All journeys</option>';
  js.forEach(j=>{const o=document.createElement('option');o.value=j;o.textContent=j;fj.appendChild(o);});
+ if(!js.includes('Universal')){const uO=document.createElement('option');uO.value='Universal';uO.textContent='Universal';fj.appendChild(uO);}
  $('ts').textContent='Last synced: '+new Date().toLocaleString();
  startCountdown();
  // Rebuild active tab with fresh data
