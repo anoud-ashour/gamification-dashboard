@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -2216,9 +2216,12 @@ var _mgrEditKey='';
 
 async function loadAssignments(){
  try{
-  var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
+  var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE+'?t='+Date.now();
+  var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json'};
+  var r=await fetch(apiUrl,{headers:hdrs,cache:'no-store'});
   if(r.ok){
-   var j=await r.json();ASSIGNMENTS=j;
+   var sj=await r.json();
+   var j=JSON.parse(atob(sj.content.replace(/\n/g,'')));ASSIGNMENTS=j;
    if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};
    if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];
    if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];
@@ -2622,6 +2625,7 @@ function saveNewArticle(){
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddArticle();buildRows();applyAssignments();membersBuilt=false;
+ buildOverview();
  // Navigate to the LOB tab where the article was added so it's immediately visible
  if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
   else if(lob==='uni'){setTab('all');}
