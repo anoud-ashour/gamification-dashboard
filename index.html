@@ -555,8 +555,8 @@ function buildOverview(){
   {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,cssCol:'var(--purple)',tab:'tpro',p:pct(_pD,_pR.length),done:_pD,total:_pR.length},
   {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',tab:'tkt',p:pct(_tD,_tR.length),done:_tD,total:_tR.length},
  ];
- var uniR=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
- var uniDone=uniR.filter(function(r){var cells=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(isStatusValue);return cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';});}).length;
+ var uniR=ROWS.filter(function(r){return r.sopId==='uni';});
+ var uniDone=uniR.filter(function(r){return r.ar>0&&r.en>0;}).length;
  var uniP=pct(uniDone,uniR.length);
  var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:4px 0">';
@@ -1472,64 +1472,15 @@ function toggleDoTable(){
  if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
 
-function buildUniHtml(tabName,safeId,uniRows){
+function buildUniHtml(tabName,safeId){
  var elLabel=editLinksMode?'✓ Done Editing':'🎮 Edit Links';
  var elBg=editLinksMode?'var(--orange)':'none';var elCol=editLinksMode?'#fff':'var(--orange)';
  var mgrLabel=managerMode?'✓ Exit Manager':'👩‍💼 Manager';
  var mgrBg=managerMode?'#8318d8':'none';var mgrCol=managerMode?'#fff':'#8318d8';
- // --- Compute stats ---
- var totalUni=uniRows.length,doneUni=0,inProgUni=0,notStartedUni=0;
- var memStats={};
- uniRows.forEach(function(r){
-  var arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
-  var enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
-  var arDone=arCells.length>0&&arCells.every(function(v){return statusOf(v)==='Done';});
-  var enDone=enCells.length>0&&enCells.every(function(v){return statusOf(v)==='Done';});
-  var p=Math.round(([arDone,enDone].filter(Boolean).length/2)*100);
-  var allCells=arCells.concat(enCells);
-  if(p===100)doneUni++;
-  else if(allCells.length>0)inProgUni++;
-  else notStartedUni++;
-  var uniOv=ASSIGNMENTS.overrides[(r.article||'').toLowerCase().trim()+'::uni']||{};
-  var mem=uniOv.member||r.member||'Unassigned';
-  if(!memStats[mem])memStats[mem]={total:0,done:0,inProg:0};
-  memStats[mem].total++;
-  if(p===100)memStats[mem].done++;
-  else if(allCells.length>0)memStats[mem].inProg++;
- });
- var statCard=function(val,label,bg,border,col,sub){
-  return '<div style="flex:1;min-width:90px;background:'+bg+';border-radius:12px;padding:14px 16px;border:1px solid '+border+';text-align:center">'
-   +'<div style="font-size:24px;font-weight:900;color:'+col+'">'+val+'</div>'
-   +'<div style="font-size:11px;font-weight:700;color:'+col+';opacity:.85;margin-top:2px">'+label+'</div>'
-   +(sub?'<div style="font-size:11px;font-weight:600;color:'+col+';opacity:.55;margin-top:1px">'+sub+'</div>':'')
-   +'</div>';
- };
- var statsHtml='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">'
-  +statCard(totalUni,'Total Articles','var(--card)','var(--border)','var(--dark)','')
-  +statCard(doneUni,'Done','#f0fdf4','#bbf7d0','#16a34a',pct(doneUni,totalUni)+'%')
-  +statCard(inProgUni,'In Progress','#fff7ed','#fed7aa','#ea580c',pct(inProgUni,totalUni)+'%')
-  +statCard(notStartedUni,'Not Started','var(--card)','var(--border)','var(--muted)','')
-  +'</div>';
- var mems=Object.keys(memStats).sort();
- if(mems.length>0){
-  statsHtml+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">';
-  mems.forEach(function(m){
-   var ms=memStats[m];
-   var col=MEMCOLS[m]||'#9ca3af';
-   var dp=pct(ms.done,ms.total);
-   statsHtml+='<div style="display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:8px 14px;border:1px solid var(--border)">'
-    +'<span style="background:'+col+';color:#fff;border-radius:8px;padding:2px 10px;font-size:12px;font-weight:700">'+m+'</span>'
-    +'<span style="font-size:13px;font-weight:800;color:var(--dark)">'+ms.done+'/'+ms.total+'</span>'
-    +'<span style="font-size:11px;color:var(--muted)">done</span>'
-    +(ms.inProg?'<span style="font-size:11px;font-weight:700;color:#ea580c">'+ms.inProg+' in progress</span>':'')
-    +'<span style="font-size:12px;font-weight:800;color:'+(dp===100?'#16a34a':dp>=50?'#f59e0b':'#dc2626')+'">'+dp+'%</span>'
-    +'</div>';
-  });
-  statsHtml+='</div>';
- }
+ var rows=ROWS.filter(function(r){return r.sopId==='uni';});
+ var colCount=managerMode?9:8;
  var h='<div class="card"><h3>'+tabName+'</h3>'
-  +statsHtml
-  +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px">'
+  +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
   +'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>'
   +'<button onclick="toggleManagerMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #8318d8;background:'+mgrBg+';color:'+mgrCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+mgrLabel+'</button>'
@@ -1537,6 +1488,7 @@ function buildUniHtml(tabName,safeId,uniRows){
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
   +'<thead><tr>'
   +'<th class="l" style="min-width:200px">ARTICLE</th>'
+  +'<th class="l">JOURNEY</th>'
   +'<th class="l">MEMBER</th>'
   +'<th style="text-align:center">ARABIC</th>'
   +'<th style="text-align:center">ENGLISH</th>'
@@ -1545,33 +1497,28 @@ function buildUniHtml(tabName,safeId,uniRows){
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
   +(managerMode?'<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>':'')
   +'</tr></thead><tbody>';
- uniRows.forEach(function(r){
-  var arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
-  var enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
-  var arDone=arCells.length>0&&arCells.every(function(v){return statusOf(v)==='Done';});
-  var enDone=enCells.length>0&&enCells.every(function(v){return statusOf(v)==='Done';});
-  var p=Math.round(([arDone,enDone].filter(Boolean).length/2)*100);
-  var col=MEMCOLS[r.member]||'#9ca3af';var tcol=MEMCOLS[r.member]?'#fff':'#7c6f63';
+ rows.forEach(function(r){
+  var sp=pct(r.ar+r.en,2);
+  var pCol=sp===100?'#16a34a':sp>=50?'#f59e0b':'#dc2626';
   var mm=(r.member||'').replace(/'/g,'');
-  var pCol=p===100?'#16a34a':p>=50?'#f59e0b':'#dc2626';
-  var gkey=r.article.toLowerCase().trim();
-  var uniOv=ASSIGNMENTS.overrides[gkey+'::uni']||{};
-  var dispMember=uniOv.member||r.member||'—';
+  var gkey=(r.article||'').toLowerCase().trim();
   var artLabel=r.article;
-  if(uniOv.priority){var pc2=uniOv.priority==='high'?'#fee2e2;color:#dc2626':uniOv.priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pc2+'">'+uniOv.priority.toUpperCase()+'</span>';}
-  if(uniOv.deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+uniOv.deadline+'</span>';
+  if(r._priority){var pc2=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pc2+'">'+r._priority.toUpperCase()+'</span>';}
+  if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
   var ek3=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   h+='<tr>'
    +'<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>'
-   +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[dispMember]||'#e7ddcf')+';color:'+(MEMCOLS[dispMember]?'#fff':'#7c6f63')+';cursor:pointer">'+dispMember+'</span></td>'
-   +'<td style="text-align:center;padding:10px 6px">'+cell(arDone?1:0)+'</td>'
-   +'<td style="text-align:center;padding:10px 6px">'+cell(enDone?1:0)+'</td>'
-   +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+p+'%</span></td>'
+   +'<td style="padding:10px 14px;font-size:13px;color:var(--muted)">'+(r.journey||'Universal')+'</td>'
+   +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+';cursor:pointer">'+(r.member||'—')+'</span></td>'
+   +'<td style="text-align:center;padding:10px 6px">'+cell(r.ar)+'</td>'
+   +'<td style="text-align:center;padding:10px 6px">'+cell(r.en)+'</td>'
+   +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+sp+'%</span></td>'
    +glCellForLob(gkey,'ar','uni')+glCellForLob(gkey,'en','uni')
    +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block;margin-top:2px">✕ remove</span>':'')+'</td>':'')
    +'</tr>';
  });
- if(!uniRows.length)h+='<tr><td colspan="'+(managerMode?8:7)+'" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
+ if(!rows.length)h+='<tr><td colspan="'+colCount+'" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
+ if(managerMode)h+='<tr><td colspan="9" style="padding:10px;text-align:center;border-top:1px solid var(--border)"><button onclick="openAddArticleToTab(\'uni\')" style="padding:6px 18px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button></td></tr>';
  h+='</tbody></table></div></div>';
  return h;
 }
