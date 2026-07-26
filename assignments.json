@@ -21,9 +21,21 @@
       "deadline": "2026-07-28",
       "priority": "high",
       "status": "In Progress"
+    },
+    {
+      "id": "ms1ocb0e",
+      "article": "test",
+      "lob": "uni",
+      "member": "Dalia",
+      "journey": "test",
+      "ar": 0,
+      "en": 0,
+      "deadline": "2026-07-28",
+      "priority": "medium",
+      "status": "In Progress"
     }
   ],
-  "lastUpdated": "2026-07-26T10:26:19.393Z",
+  "lastUpdated": "2026-07-26T10:47:46.919Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -48,6 +60,15 @@
       "lob": "Default (LC)",
       "startDate": "2026-07-26",
       "assignedAt": "2026-07-26T10:26:05.465Z"
+    },
+    {
+      "id": "ms1ocb0k",
+      "key": "test::uni",
+      "article": "test",
+      "member": "Dalia",
+      "lob": "Universal",
+      "startDate": "2026-07-26",
+      "assignedAt": "2026-07-26T10:47:46.628Z"
     }
   ]
 }
