@@ -2269,10 +2269,15 @@ function applyAssignments(){
    if(p._extraId)return;
    if((p.article||'').toLowerCase().trim()!==artKey)return;
    if(ov.member)p.member=ov.member;
-   if(ov.status){var st=ov.status;
+   var st=ov.status||'';
+   if(sopId==='uni'){
+    // Per-language: ar=1→Done, en=1→Done; otherwise use override status or keep tracker value
+    if(typeof ov.ar!=='undefined')p.vip_ar=(ov.ar===1)?'Done':(st||(isStatusValue(p.vip_ar)?p.vip_ar:'In Progress'));
+    if(typeof ov.en!=='undefined')p.vip_en=(ov.en===1)?'Done':(st||(isStatusValue(p.vip_en)?p.vip_en:'In Progress'));
+    // Leave def_ar/def_en/tkt_ar/tkt_en untouched — unused for Universal tracker articles
+   } else if(st){
     if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
     else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
-    else if(sopId==='uni'){p.vip_ar=st;p.vip_en=st;p.def_ar=st;p.def_en=st;p.tkt_ar=st;p.tkt_en=st;}
     else{p.def_ar=st;p.def_en=st;}
    }
   });
