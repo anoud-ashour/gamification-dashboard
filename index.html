@@ -2249,6 +2249,20 @@ function applyAssignments(){
   if(ov.priority)r._priority=ov.priority;
   if(ov.notes)r._notes=ov.notes;
  });
+ // Apply status overrides to PROG entries for tracker (non-extra) articles
+ Object.keys(ASSIGNMENTS.overrides).forEach(function(k){
+  var ov=ASSIGNMENTS.overrides[k];
+  if(!ov||!ov.status)return;
+  var lastDbl=k.lastIndexOf('::');if(lastDbl<0)return;
+  var artKey=k.slice(0,lastDbl);var sopId=k.slice(lastDbl+2);var st=ov.status;
+  PROG.forEach(function(p){
+   if(p._extraId)return;
+   if((p.article||'').toLowerCase().trim()!==artKey)return;
+   if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
+   else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
+   else{p.def_ar=st;p.def_en=st;}
+  });
+ });
  // Remove previously injected extra-article PROG entries to prevent accumulation across calls
  PROG=PROG.filter(function(r){return !r._extraId;});
  ASSIGNMENTS.extra.forEach(function(e){
@@ -2531,6 +2545,8 @@ function saveAssign(){membersBuilt=false;
  ov.deadline=$('asgn-deadline').value;
  ov.priority=$('asgn-priority').value;
  ov.notes=$('asgn-notes').value;
+ var _stEl=$('asgn-status');var _stRow=$('asgn-status-row');
+ if(_stEl&&_stRow&&_stRow.style.display!=='none'){ov.status=_stEl.value;}
  ASSIGNMENTS.overrides[_mgrEditKey]=ov;
  // Always create notification when a member is assigned, always auto-save to GitHub
  if(ov.member){
