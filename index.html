@@ -1225,7 +1225,8 @@ function buildProgress(){
  ['psop','pmem'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  const noMsgEl=$('sec-progress').querySelector('.prog-empty-msg');if(noMsgEl)noMsgEl.remove();
  if(!PROG.length){const d=document.createElement('div');d.className='sub prog-empty-msg';d.textContent='No status rows found in the tracker sheet.';$('sec-progress').querySelector('.card').prepend(d);}
- let done=0,tot=0;PROG.forEach(r=>PCELLS.forEach(k=>{tot++;if(statusOf(r[k])==='Done')done++;}));
+ const tot=PROG.length;
+ const done=PROG.filter(r=>{const cells=PCELLS.map(k=>r[k]).filter(isStatusValue);return cells.length>0&&cells.every(v=>statusOf(v)==='Done');}).length;
  $('p-done').textContent=pct(done,tot)+'%';
  $('p-prog').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-rev').textContent=PROG.filter(r=>PCELLS.some(k=>statusOf(r[k])==='On Review')&&!PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
