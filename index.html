@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -1100,6 +1100,8 @@ function renderProgress(){
   const activeCells=PCELLS.filter(k=>isStatusValue(r[k]));
   const isDone=activeCells.length>0&&activeCells.every(k=>statusOf(r[k])==='Done');
   if(isDone)return; // hide fully-done articles — they show ✓ on member cards instead
+  // For Universal tracker articles: also hide if override marks coverage complete (ar=1,en=1) or status=Done
+  if(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1){var _al=(r.article||'').toLowerCase().trim();var _ovDone=Object.keys(ASSIGNMENTS.overrides).some(function(k){var _i=k.lastIndexOf('::');if(_i<0)return false;if(k.slice(0,_i)!==_al)return false;var _o=ASSIGNMENTS.overrides[k];return _o&&(_o.status&&statusOf(_o.status)==='Done'||(_o.ar===1&&_o.en===1));});if(_ovDone)return;}
   const exceeded=e&&!isDone&&e<today;
   const al=alertOf(r),idle=idleOf(r,7);const cls=al==='overdue'?'overdue':(idle?'idle':'');
   const mm=(r.member||'').replace(/'/g,'');
@@ -2447,14 +2449,14 @@ function openAssignEdit(artKey,lob){
  $('asgn-deadline').value=ov.deadline||'';
  $('asgn-priority').value=ov.priority||'';
  $('asgn-notes').value=ov.notes||'';
- // Show Status & Delete only for extra articles (ones added via Add Article)
+ // Show Status for all articles; Delete only for extra articles
  var isExtra=!!_mgrEditExtraId;
  var srEl=$('asgn-status-row');var drEl=$('asgn-delete-row');
- if(srEl)srEl.style.display=isExtra?'block':'none';
+ if(srEl)srEl.style.display='block';
  if(drEl)drEl.style.display=isExtra?'block':'none';
- if(isExtra&&$('asgn-status')){
-  var ex=ASSIGNMENTS.extra.find(function(e){return e.id===_mgrEditExtraId;});
-  $('asgn-status').value=(ex&&ex.status)||'Not Started';
+ if($('asgn-status')){
+  if(isExtra){var ex=ASSIGNMENTS.extra.find(function(e){return e.id===_mgrEditExtraId;});$('asgn-status').value=(ex&&ex.status)||'Not Started';}
+  else{var initSt=ov.status||'';if(!initSt){var pe=PROG.find(function(p){return !p._extraId&&(p.article||'').toLowerCase().trim()===artKey;});if(pe){var ac=PCELLS.filter(function(k){return isStatusValue(pe[k]);});if(ac.length&&ac.every(function(k){return statusOf(pe[k])==='Done';}))initSt='Done';else if(ac.some(function(k){return statusOf(pe[k])==='In Progress';}))initSt='In Progress';else if(ac.some(function(k){return statusOf(pe[k])==='On Review';}))initSt='On Review';else if(ac.some(function(k){return statusOf(pe[k])==='Pending Modification';}))initSt='Pending Modification';else if(ac.length)initSt='In Progress';}}$('asgn-status').value=initSt||'Not Started';}
  }
  $('asgn-overlay').style.display='block';$('asgn-modal').style.display='block';
 }
