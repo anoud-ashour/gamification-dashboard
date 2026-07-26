@@ -1483,6 +1483,7 @@ function buildUniHtml(tabName,safeId){
   +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
   +(managerMode?'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>':'')
+  +(managerMode?'<button onclick="exportArticleLinks()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">📋 Export Links</button>':'')
   +'<button onclick="toggleManagerMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #8318d8;background:'+mgrBg+';color:'+mgrCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+mgrLabel+'</button>'
   +'</div>'
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
@@ -2827,7 +2828,34 @@ function addBulkRow(){
   +'<td style="padding:4px 5px"><input type="date" class="bk-dl" style="'+inp+'"></td>'
   +'<td style="padding:4px 5px;text-align:center"><button onclick="removeBulkRow(this)" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:16px;padding:3px 6px;border-radius:6px;line-height:1">✕</button></td>';
  tbody.appendChild(row);
+ var artInp=row.querySelector('.bk-art');
+ if(artInp)artInp.addEventListener('paste',_bulkArtPaste);
  _renumberBulkRows();
+}
+function _bulkArtPaste(e){
+ var text=(e.clipboardData||window.clipboardData).getData('text');
+ var lines=text.split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
+ if(lines.length<=1)return;
+ e.preventDefault();
+ var tbody=$('bulk-tbody');
+ var currentRow=this.closest('tr');
+ var lobVal=currentRow.querySelector('.bk-lob').value;
+ var memVal=currentRow.querySelector('.bk-mem').value;
+ var jourVal=currentRow.querySelector('.bk-jour').value;
+ var prioVal=currentRow.querySelector('.bk-prio').value;
+ var statVal=currentRow.querySelector('.bk-stat').value;
+ this.value=lines[0];
+ for(var i=1;i<lines.length;i++){
+  addBulkRow();
+  var nr=tbody.rows[tbody.rows.length-1];
+  nr.querySelector('.bk-art').value=lines[i];
+  nr.querySelector('.bk-lob').value=lobVal;
+  nr.querySelector('.bk-mem').value=memVal;
+  nr.querySelector('.bk-jour').value=jourVal;
+  nr.querySelector('.bk-prio').value=prioVal;
+  nr.querySelector('.bk-stat').value=statVal;
+ }
+ _updateBulkCount();
 }
 function removeBulkRow(btn){
  var tr=btn.closest('tr');if(tr)tr.parentNode.removeChild(tr);
