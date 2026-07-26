@@ -1761,15 +1761,84 @@ function buildMiniGames(){
   mgh+='</div></div></div>';
   el.insertAdjacentHTML('beforeend',mgh);
  });
+ // Custom MG sections (created via + Add New Section)
+ (ASSIGNMENTS.customMGSections||[]).forEach(function(cs,csIdx){
+  var col=MG_COLORS[(MG_CATS.length+csIdx)%MG_COLORS.length];
+  var icon=MG_ICONS[(MG_CATS.length+csIdx)%MG_ICONS.length];
+  var colLight=col+'22';
+  var wid='mgcs-wrap-'+cs.id; var iid='mgcs-icon-'+cs.id;
+  var toggle='var w=document.getElementById(\''+wid+'\');var ic=document.getElementById(\''+iid+'\');if(w){var op=w.style.display===\'none\';w.style.display=op?\'block\':\'none\';if(ic)ic.style.transform=op?\'rotate(90deg)\':\'\'}';
+  var catLinked=0;
+  for(var i=1;i<=cs.games;i++){if(GAME_LINKS[mgKey(cs.name,i)])catLinked++;}
+  var catPct=cs.games>0?Math.round((catLinked/cs.games)*100):0;
+  var mgh='<div style="margin-top:20px">';
+  // Summary card
+  mgh+='<div onclick="'+toggle+'" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+col+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s;max-width:340px;margin-bottom:14px" '
+   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\'">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">🎮 '+cs.name+'</div>'
+   +'<span id="'+iid+'" style="font-size:20px;color:'+col+';font-weight:900;transition:transform .2s">›</span></div>'
+   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:8px">'+catLinked+' / '+cs.games+' links added</div>'
+   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:10px;overflow:hidden">'
+   +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px"></div></div>'
+   +(managerMode?'<div style="margin-top:10px"><span onclick="event.stopPropagation();deleteMGSection(\''+cs.id+'\')" style="font-size:11px;color:#dc2626;font-weight:700;cursor:pointer;background:#fee2e2;padding:3px 10px;border-radius:6px">🗑 Delete</span></div>':'')
+   +'</div>';
+  // Expandable game grid
+  mgh+='<div id="'+wid+'" style="display:none;background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)">'
+   +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+   +'<div style="width:38px;height:38px;border-radius:10px;background:'+colLight+';display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
+   +'<div><div style="font-size:13px;font-weight:800;color:var(--dark)">'+cs.name+'</div>'
+   +'<div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:1px">'+catLinked+' / '+cs.games+' linked</div></div></div>'
+   +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
+   +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px;transition:width .5s ease"></div></div>'
+   +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
+  for(var gi=1;gi<=cs.games;gi++){
+   var gkey=mgKey(cs.name,gi);
+   var gurl=GAME_LINKS[gkey]||'';
+   var safeGKey=gkey.replace(/'/g,"\\'");
+   var glabel=cs.games===1?'Game Link':'Game '+gi;
+   if(gurl){
+    mgh+='<a href="'+gurl+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:'+col+';color:#fff;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none;transition:opacity .15s" onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">🎮 '+glabel+'</a>';
+    if(editLinksMode)mgh+='<span onclick="mgEditLink(\''+safeGKey+'\')" style="display:inline-flex;align-items:center;padding:6px 10px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';
+   }else if(editLinksMode){
+    mgh+='<span onclick="mgEditLink(\''+safeGKey+'\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed '+col+';color:'+col+';border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:'+colLight+'">+ '+glabel+'</span>';
+   }else{
+    mgh+='<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:20px;font-size:12px;font-weight:600">🎮 '+glabel+'</span>';
+   }
+  }
+  mgh+='</div></div></div>';
+  el.insertAdjacentHTML('beforeend',mgh);
+ });
  if(managerMode){
   var addSecDiv=document.createElement('div');
-  addSecDiv.onclick=function(){openAddTab('tab');};
+  addSecDiv.onclick=function(){openAddMGSection();};
   addSecDiv.onmouseover=function(){this.style.background='#f5f3ff';};
   addSecDiv.onmouseout=function(){this.style.background='transparent';};
   addSecDiv.style.cssText='margin-top:20px;padding:22px;border:2px dashed #6366f1;border-radius:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6366f1;font-size:13px;font-weight:800;background:transparent;transition:background .15s';
   addSecDiv.textContent='+ Add New Section';
   el.appendChild(addSecDiv);
  }
+}
+function openAddMGSection(){
+ var n=$('addmgsec-name');if(n)n.value='';
+ var g=$('addmgsec-games');if(g)g.value='4';
+ $('addmgsec-overlay').style.display='block';$('addmgsec-modal').style.display='block';
+ setTimeout(function(){var e=$('addmgsec-name');if(e)e.focus();},80);
+}
+function closeAddMGSection(){$('addmgsec-overlay').style.display='none';$('addmgsec-modal').style.display='none';}
+function saveNewMGSection(){
+ var name=($('addmgsec-name').value||'').trim();if(!name)return;
+ var games=Math.max(1,Math.min(20,parseInt($('addmgsec-games').value)||4));
+ if(!ASSIGNMENTS.customMGSections)ASSIGNMENTS.customMGSections=[];
+ ASSIGNMENTS.customMGSections.push({id:Date.now().toString(36),name:name,games:games});
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ closeAddMGSection();buildMiniGames();
+}
+function deleteMGSection(id){
+ if(!confirm('Delete this section and its game links?'))return;
+ ASSIGNMENTS.customMGSections=(ASSIGNMENTS.customMGSections||[]).filter(function(s){return s.id!==id;});
+ _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ buildMiniGames();
 }
 var _mgEditKey='';
 function toggleMgTable(){
@@ -2143,7 +2212,7 @@ var _mgrEditKey='';
 async function loadAssignments(){
  try{
   var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
-  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};}
+  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};if(!ASSIGNMENTS.customMGSections)ASSIGNMENTS.customMGSections=[];}
  }catch(e){}
 }
 
@@ -3057,6 +3126,22 @@ function cycleSecItemStatus(secId,itemId){
  <div style="display:flex;gap:8px">
   <button onclick="saveNewTab()" id="addtab-save-btn" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create LOB</button>
   <button onclick="closeAddTab()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
+<div id="addmgsec-overlay" onclick="closeAddMGSection()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
+<div id="addmgsec-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:16px">+ Add New Section</div>
+ <div style="margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Section Name *</div>
+  <input id="addmgsec-name" type="text" placeholder="e.g. Customer Journey Games…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewMGSection()">
+ </div>
+ <div style="margin-bottom:20px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Number of Games</div>
+  <input id="addmgsec-games" type="number" min="1" max="20" value="4" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveNewMGSection()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Section</button>
+  <button onclick="closeAddMGSection()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
 </body></html>
