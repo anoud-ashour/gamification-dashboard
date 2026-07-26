@@ -20,19 +20,6 @@
   },
   "extra": [
     {
-      "id": "ms1ocb0e",
-      "article": "test",
-      "lob": "uni",
-      "member": "Dalia",
-      "journey": "test",
-      "ar": 0,
-      "en": 0,
-      "deadline": "2026-07-27",
-      "priority": "low",
-      "status": "In Progress",
-      "notes": ""
-    },
-    {
       "id": "ms1q8q9f",
       "article": "test",
       "lob": "uni",
@@ -57,7 +44,7 @@
       "status": "In Progress"
     }
   ],
-  "lastUpdated": "2026-07-26T12:01:11.849Z",
+  "lastUpdated": "2026-07-26T12:01:31.681Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
