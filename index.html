@@ -2500,12 +2500,13 @@ function saveAssign(){membersBuilt=false;
  ov.priority=$('asgn-priority').value;
  ov.notes=$('asgn-notes').value;
  ASSIGNMENTS.overrides[_mgrEditKey]=ov;
- // Create/update notification entry when member + startDate are set
+ // Create/update notification and auto-save to GitHub so all browsers see it
  if(ov.member&&ov.startDate){
   var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
   var lobLabel=$('asgn-lob-label').textContent||'';
   _pushNotif({id:Date.now().toString(36),key:_mgrEditKey,article:artTitle,member:ov.member,lob:lobLabel,startDate:ov.startDate,assignedAt:new Date().toISOString()});
   buildNotifBadge();
+  saveAssignments();
  }
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
@@ -2629,6 +2630,7 @@ function saveNewArticleAndNotify(){
   var notifKey=name.toLowerCase().trim()+'::'+lob;
   _pushNotif({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate,assignedAt:new Date().toISOString()});
   buildNotifBadge();
+  saveAssignments();
  }
 }function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
