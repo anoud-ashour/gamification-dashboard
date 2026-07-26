@@ -1477,7 +1477,58 @@ function buildUniHtml(tabName,safeId,uniRows){
  var elBg=editLinksMode?'var(--orange)':'none';var elCol=editLinksMode?'#fff':'var(--orange)';
  var mgrLabel=managerMode?'✓ Exit Manager':'👩‍💼 Manager';
  var mgrBg=managerMode?'#8318d8':'none';var mgrCol=managerMode?'#fff':'#8318d8';
+ // --- Compute stats ---
+ var totalUni=uniRows.length,doneUni=0,inProgUni=0,notStartedUni=0;
+ var memStats={};
+ uniRows.forEach(function(r){
+  var arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
+  var enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
+  var arDone=arCells.length>0&&arCells.every(function(v){return statusOf(v)==='Done';});
+  var enDone=enCells.length>0&&enCells.every(function(v){return statusOf(v)==='Done';});
+  var p=Math.round(([arDone,enDone].filter(Boolean).length/2)*100);
+  var allCells=arCells.concat(enCells);
+  if(p===100)doneUni++;
+  else if(allCells.length>0)inProgUni++;
+  else notStartedUni++;
+  var uniOv=ASSIGNMENTS.overrides[(r.article||'').toLowerCase().trim()+'::uni']||{};
+  var mem=uniOv.member||r.member||'Unassigned';
+  if(!memStats[mem])memStats[mem]={total:0,done:0,inProg:0};
+  memStats[mem].total++;
+  if(p===100)memStats[mem].done++;
+  else if(allCells.length>0)memStats[mem].inProg++;
+ });
+ var statCard=function(val,label,bg,border,col,sub){
+  return '<div style="flex:1;min-width:90px;background:'+bg+';border-radius:12px;padding:14px 16px;border:1px solid '+border+';text-align:center">'
+   +'<div style="font-size:24px;font-weight:900;color:'+col+'">'+val+'</div>'
+   +'<div style="font-size:11px;font-weight:700;color:'+col+';opacity:.85;margin-top:2px">'+label+'</div>'
+   +(sub?'<div style="font-size:11px;font-weight:600;color:'+col+';opacity:.55;margin-top:1px">'+sub+'</div>':'')
+   +'</div>';
+ };
+ var statsHtml='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">'
+  +statCard(totalUni,'Total Articles','var(--card)','var(--border)','var(--dark)','')
+  +statCard(doneUni,'Done','#f0fdf4','#bbf7d0','#16a34a',pct(doneUni,totalUni)+'%')
+  +statCard(inProgUni,'In Progress','#fff7ed','#fed7aa','#ea580c',pct(inProgUni,totalUni)+'%')
+  +statCard(notStartedUni,'Not Started','var(--card)','var(--border)','var(--muted)','')
+  +'</div>';
+ var mems=Object.keys(memStats).sort();
+ if(mems.length>0){
+  statsHtml+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">';
+  mems.forEach(function(m){
+   var ms=memStats[m];
+   var col=MEMCOLS[m]||'#9ca3af';
+   var dp=pct(ms.done,ms.total);
+   statsHtml+='<div style="display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:8px 14px;border:1px solid var(--border)">'
+    +'<span style="background:'+col+';color:#fff;border-radius:8px;padding:2px 10px;font-size:12px;font-weight:700">'+m+'</span>'
+    +'<span style="font-size:13px;font-weight:800;color:var(--dark)">'+ms.done+'/'+ms.total+'</span>'
+    +'<span style="font-size:11px;color:var(--muted)">done</span>'
+    +(ms.inProg?'<span style="font-size:11px;font-weight:700;color:#ea580c">'+ms.inProg+' in progress</span>':'')
+    +'<span style="font-size:12px;font-weight:800;color:'+(dp===100?'#16a34a':dp>=50?'#f59e0b':'#dc2626')+'">'+dp+'%</span>'
+    +'</div>';
+  });
+  statsHtml+='</div>';
+ }
  var h='<div class="card"><h3>'+tabName+'</h3>'
+  +statsHtml
   +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px">'
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
   +'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>'
