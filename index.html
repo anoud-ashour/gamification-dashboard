@@ -2500,14 +2500,14 @@ function saveAssign(){membersBuilt=false;
  ov.priority=$('asgn-priority').value;
  ov.notes=$('asgn-notes').value;
  ASSIGNMENTS.overrides[_mgrEditKey]=ov;
- // Create/update notification and auto-save to GitHub so all browsers see it
- if(ov.member&&ov.startDate){
+ // Always create notification when a member is assigned, always auto-save to GitHub
+ if(ov.member){
   var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
   var lobLabel=$('asgn-lob-label').textContent||'';
-  _pushNotif({id:Date.now().toString(36),key:_mgrEditKey,article:artTitle,member:ov.member,lob:lobLabel,startDate:ov.startDate,assignedAt:new Date().toISOString()});
+  _pushNotif({id:Date.now().toString(36),key:_mgrEditKey,article:artTitle,member:ov.member,lob:lobLabel,startDate:ov.startDate||'',assignedAt:new Date().toISOString()});
   buildNotifBadge();
-  saveAssignments();
  }
+ saveAssignments();
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
  var artKeyStr=parts.slice(0,-1).join('::');var lobStr=parts[parts.length-1];
@@ -2563,7 +2563,10 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
  else{renderTable();}
 }
 
+var _savingNow=false;
 async function saveAssignments(){
+ if(_savingNow){setTimeout(saveAssignments,1500);return;}
+ _savingNow=true;
  var saveBtn=$('mgr-save-btn');
  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…';}
  try{
@@ -2581,6 +2584,7 @@ async function saveAssignments(){
    if(saveBtn){saveBtn.textContent='✓ Saved!';setTimeout(function(){saveBtn.textContent='💾 Save Changes';saveBtn.disabled=false;},2500);}
   }else{throw new Error('Failed');}
  }catch(e){if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='⚠️ Retry Save';}}
+ finally{_savingNow=false;}
 }
 
 function openAddArticle(){
@@ -2626,12 +2630,12 @@ function saveNewArticleAndNotify(){
  var lob=lobSel.value;
  var startDate=($('addart-startdate')?$('addart-startdate').value:'')||'';
  saveNewArticle();
- if(member&&startDate){
+ if(member){
   var notifKey=name.toLowerCase().trim()+'::'+lob;
-  _pushNotif({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate,assignedAt:new Date().toISOString()});
+  _pushNotif({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate||'',assignedAt:new Date().toISOString()});
   buildNotifBadge();
-  saveAssignments();
  }
+ saveAssignments();
 }function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.id!==id;});
