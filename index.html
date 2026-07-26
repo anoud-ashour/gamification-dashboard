@@ -547,10 +547,13 @@ function goToUni(){var t=SHEET_TABS.find(function(x){return x.name.trim().toLowe
 function buildOverview(){
  ['sop','jr','dr','lang'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  var el=$('sec-overview');if(!el)return;
+ var _dR=ROWS.filter(function(r){return r.sopId==='default';});var _dD=_dR.filter(function(r){return r.ar>0&&r.en>0;}).length;
+ var _pR=ROWS.filter(function(r){return r.sopId==='tpro';});var _pD=_pR.filter(function(r){return r.ar>0&&r.en>0;}).length;
+ var _tR=ROWS.filter(function(r){return r.sopId==='tkt';});var _tD=_tR.filter(function(r){return r.ar>0&&r.en>0;}).length;
  var lops=[
-  {id:'default',name:'Default (Live Chat)',color:OR,cssCol:'var(--orange)',tab:'default',p:sopCov(SOPS[0]),done:DATA.filter(function(r){return r[SOPS[0].ar]>0&&r[SOPS[0].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[0].ar]>0||r[SOPS[0].en]>0;}).length},
-  {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,cssCol:'var(--purple)',tab:'tpro',p:sopCov(SOPS[1]),done:DATA.filter(function(r){return r[SOPS[1].ar]>0&&r[SOPS[1].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[1].ar]>0||r[SOPS[1].en]>0;}).length},
-  {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',tab:'tkt',p:sopCov(SOPS[2]),done:DATA.filter(function(r){return r[SOPS[2].ar]>0&&r[SOPS[2].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[2].ar]>0||r[SOPS[2].en]>0;}).length},
+  {id:'default',name:'Default (Live Chat)',color:OR,cssCol:'var(--orange)',tab:'default',p:pct(_dD,_dR.length),done:_dD,total:_dR.length},
+  {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,cssCol:'var(--purple)',tab:'tpro',p:pct(_pD,_pR.length),done:_pD,total:_pR.length},
+  {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',tab:'tkt',p:pct(_tD,_tR.length),done:_tD,total:_tR.length},
  ];
  var uniR=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
  var uniDone=uniR.filter(function(r){var cells=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(isStatusValue);return cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';});}).length;
@@ -2545,6 +2548,7 @@ async function saveAssignments(){
 
 function openAddArticle(){
  $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
+ if($('addart-startdate'))$('addart-startdate').value='';
  $('addart-deadline').value='';$('addart-priority').value='';
  var sel=$('addart-lob');
   sel.innerHTML='<option value="default">Default (LC)</option>'
@@ -2582,16 +2586,16 @@ function saveNewArticleAndNotify(){
  var member=$('addart-member').value;
  var lobSel=$('addart-lob');
  var lobLabel=lobSel.options[lobSel.selectedIndex].textContent;
- var deadline=$('addart-deadline').value;
+ var lob=lobSel.value;
+ var startDate=($('addart-startdate')?$('addart-startdate').value:'')||'';
  saveNewArticle();
- var emailMap={'amal':'amal.eldakroury@talabat.com','anoud':'anoud.shehata@talabat.com','dalia':'dalia.adel@talabat.com'};
- var key=(member||'').trim().split(' ')[0].toLowerCase();
- var emailAddr=emailMap[key];
- if(!emailAddr){alert('No email configured for '+member+'. Assignment saved.');return;}
- var dl=deadline?'\nDeadline: '+deadline:'';
- var subj='[Dashboard] New Article Assigned: '+name;
- var bodyText='Hi '+member.split(' ')[0]+',\n\nYou have been assigned a new article on the Gamification KB Dashboard:\n\nArticle: '+name+'\nLOB: '+lobLabel+dl+'\n\nPlease log in to review:\nhttps://anoud-ashour.github.io/gamification-dashboard/\n\nBest regards,\nDashboard Manager';
- _sendDashboardEmail(emailAddr,subj,bodyText,member);
+ if(member&&startDate){
+  if(!ASSIGNMENTS.notifications)ASSIGNMENTS.notifications=[];
+  var notifKey=name.toLowerCase().trim()+'::'+lob;
+  ASSIGNMENTS.notifications=ASSIGNMENTS.notifications.filter(function(n){return n.key!==notifKey;});
+  ASSIGNMENTS.notifications.push({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate,assignedAt:new Date().toISOString()});
+  buildNotifBadge();
+ }
 }function deleteExtraArticle(id){
  if(!confirm('Remove this article?'))return;
  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return e.id!==id;});
@@ -2993,12 +2997,18 @@ function cycleSecItemStatus(secId,itemId){
    </select>
   </div>
  </div>
- <div style="margin-bottom:12px">
-  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Deadline</div>
-  <input id="addart-deadline" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Start Date</div>
+   <input id="addart-startdate" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #FF5900;border-radius:10px;font-size:13px;outline:none">
+  </div>
+  <div>
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Deadline</div>
+   <input id="addart-deadline" type="date" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+  </div>
  </div>
   <div style="display:flex;gap:8px;margin-bottom:6px">
-   <button onclick="saveNewArticleAndNotify()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">&#128140; Add &amp; Notify</button>
+   <button onclick="saveNewArticleAndNotify()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">🔔 Add &amp; Notify</button>
    <button onclick="saveNewArticle()" style="padding:10px 16px;border-radius:10px;border:1.5px solid #8318d8;background:none;color:#8318d8;font-size:13px;font-weight:700;cursor:pointer">Add Only</button>
   </div>
   <div style="display:flex;gap:8px">
