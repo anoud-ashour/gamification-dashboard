@@ -2556,9 +2556,10 @@ function saveAssign(){membersBuilt=false;
  buildOverview();
  var isUniAct=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
  if(isUniAct){var pS=new Set();var uR=PROG.filter(function(r){if(!r.article||r.article==='—')return false;var k=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();if(pS.has(k))return false;pS.add(k);return true;});window._uniRows=uR;if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,uR);}
+ else if(activeTab==='members'){buildMembers();}
+ else if(activeTab==='progress'){buildProgress();}
  else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
- else if(activeTab==='members'){buildWorkload();}
  else{renderTable();}
 }
 
@@ -2594,10 +2595,12 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAssignModal();
- buildRows();applyAssignments();
- if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
+ buildOverview();
+ if(activeTab==='members'){buildMembers();}
+ else if(activeTab==='progress'){buildProgress();}
+ else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
- else if(activeTab==='members'){buildWorkload();}
  else{renderTable();}
 }
 
@@ -2690,7 +2693,9 @@ function saveNewArticleAndNotify(){
   var uniRows2=PROG.filter(function(r){if(!r.article||r.article==='—')return false;var k2=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();if(pSeen2.has(k2))return false;pSeen2.add(k2);return true;});
   window._uniRows=uniRows2;
   if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,uniRows2);
- }else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ }else if(activeTab==='members'){buildMembers();}
+ else if(activeTab==='progress'){buildProgress();}
+ else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
  else{renderTable();}
 }
@@ -2913,7 +2918,13 @@ function saveBulkArticles(){
  buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
  buildOverview();
  saveAssignments();
- renderTable();
+ var isUniAct2=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
+ if(isUniAct2){if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId);}
+ else if(activeTab==='members'){buildMembers();}
+ else if(activeTab==='progress'){buildProgress();}
+ else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else{renderTable();}
 }
 
 function selectTabType(t){
