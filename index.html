@@ -2798,7 +2798,9 @@ function _bulkMembOptions(){
 function openBulkAdd(){
  var m=$('bulk-modal');var o=$('bulk-overlay');if(!m||!o)return;
  $('bulk-tbody').innerHTML='';
- addBulkRow();addBulkRow();addBulkRow();
+ var pa=$('bulk-paste-area');if(pa)pa.value='';
+ var dl=$('bulk-def-lob');
+ if(dl){dl.innerHTML=_bulkLobOptions();}
  m.style.display='flex';o.style.display='block';
  _updateBulkCount();
 }
@@ -2806,28 +2808,50 @@ function closeBulkAdd(){
  var m=$('bulk-modal');var o=$('bulk-overlay');
  if(m)m.style.display='none';if(o)o.style.display='none';
 }
-function addBulkRow(){
+function splitBulkPaste(){
+ var pa=$('bulk-paste-area');if(!pa)return;
+ var lines=(pa.value||'').split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean);
+ if(!lines.length){alert('Please paste at least one article name.');return;}
+ var lob=($('bulk-def-lob')||{}).value||'default';
+ var mem=($('bulk-def-mem')||{}).value||'';
+ var stat=($('bulk-def-stat')||{}).value||'Not Started';
+ var start=($('bulk-def-start')||{}).value||'';
+ var dl=($('bulk-def-dl')||{}).value||'';
+ lines.forEach(function(name){addBulkRow(name,lob,mem,'','',stat,start,dl);});
+ pa.value='';
+ _updateBulkCount();
+}
+function addBulkRow(artName,lobDef,memDef,jourDef,prioDef,statDef,startDef,dlDef){
+ artName=artName||'';lobDef=lobDef||'default';memDef=memDef||'';
+ jourDef=jourDef||'';prioDef=prioDef||'';statDef=statDef||'Not Started';
+ startDef=startDef||'';dlDef=dlDef||'';
  var tbody=$('bulk-tbody');if(!tbody)return;
  var row=document.createElement('tr');
  row.style.cssText='border-bottom:1px solid #f9fafb';
- var inp='padding:7px 9px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;outline:none;width:100%;box-sizing:border-box';
- var sel='padding:6px 8px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:12px;outline:none;width:100%';
- row.innerHTML='<td style="padding:5px 4px;font-size:11px;color:#9ca3af;text-align:center;width:30px;font-weight:700"></td>'
-  +'<td style="padding:4px 5px"><input type="text" placeholder="Article name…" class="bk-art" style="'+inp+';min-width:170px" oninput="javascript:_updateBulkCount()"></td>'
-  +'<td style="padding:4px 5px"><select class="bk-lob" style="'+sel+'">'+_bulkLobOptions()+'</select></td>'
-  +'<td style="padding:4px 5px"><select class="bk-mem" style="'+sel+'">'+_bulkMembOptions()+'</select></td>'
-  +'<td style="padding:4px 5px"><input type="text" placeholder="e.g. Post Delivery" class="bk-jour" style="'+inp+';min-width:90px"></td>'
-  +'<td style="padding:4px 5px"><select class="bk-prio" style="'+sel+'">'
+ var inp='padding:6px 8px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:12px;outline:none;width:100%;box-sizing:border-box';
+ var sel='padding:5px 7px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:12px;outline:none;width:100%';
+ var esc=function(s){return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');};
+ row.innerHTML='<td style="padding:5px 4px;font-size:11px;color:#9ca3af;text-align:center;width:28px;font-weight:700"></td>'
+  +'<td style="padding:3px 4px"><input type="text" value="'+esc(artName)+'" placeholder="Article name…" class="bk-art" style="'+inp+';min-width:160px" oninput="_updateBulkCount()"></td>'
+  +'<td style="padding:3px 4px"><select class="bk-lob" style="'+sel+'">'+_bulkLobOptions()+'</select></td>'
+  +'<td style="padding:3px 4px"><select class="bk-mem" style="'+sel+'">'+_bulkMembOptions()+'</select></td>'
+  +'<td style="padding:3px 4px"><input type="text" value="'+esc(jourDef)+'" placeholder="Journey…" class="bk-jour" style="'+inp+';min-width:80px"></td>'
+  +'<td style="padding:3px 4px"><select class="bk-prio" style="'+sel+'">'
    +'<option value="">None</option><option value="high">🔴 High</option><option value="medium">🟡 Medium</option><option value="low">🔵 Low</option>'
   +'</select></td>'
-  +'<td style="padding:4px 5px"><select class="bk-stat" style="'+sel+'">'
+  +'<td style="padding:3px 4px"><select class="bk-stat" style="'+sel+'">'
    +'<option value="Not Started">Not Started</option><option value="In Progress">In Progress</option>'
    +'<option value="On Review">On Review</option><option value="Pending Modification">Pending Modification</option>'
    +'<option value="Done">Done</option>'
   +'</select></td>'
-  +'<td style="padding:4px 5px"><input type="date" class="bk-dl" style="'+inp+'"></td>'
-  +'<td style="padding:4px 5px;text-align:center"><button onclick="removeBulkRow(this)" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:16px;padding:3px 6px;border-radius:6px;line-height:1">✕</button></td>';
+  +'<td style="padding:3px 4px"><input type="date" value="'+esc(startDef)+'" class="bk-start" style="'+inp+'"></td>'
+  +'<td style="padding:3px 4px"><input type="date" value="'+esc(dlDef)+'" class="bk-dl" style="'+inp+'"></td>'
+  +'<td style="padding:3px 4px;text-align:center"><button onclick="removeBulkRow(this)" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:15px;padding:3px 5px;border-radius:6px;line-height:1">✕</button></td>';
  tbody.appendChild(row);
+ var lobSel=row.querySelector('.bk-lob');if(lobSel)lobSel.value=lobDef;
+ var memSel=row.querySelector('.bk-mem');if(memSel)memSel.value=memDef;
+ var priSel=row.querySelector('.bk-prio');if(priSel)priSel.value=prioDef;
+ var stSel=row.querySelector('.bk-stat');if(stSel)stSel.value=statDef;
  var artInp=row.querySelector('.bk-art');
  if(artInp)artInp.addEventListener('paste',_bulkArtPaste);
  _renumberBulkRows();
@@ -2844,16 +2868,11 @@ function _bulkArtPaste(e){
  var jourVal=currentRow.querySelector('.bk-jour').value;
  var prioVal=currentRow.querySelector('.bk-prio').value;
  var statVal=currentRow.querySelector('.bk-stat').value;
+ var startVal=currentRow.querySelector('.bk-start').value;
+ var dlVal=currentRow.querySelector('.bk-dl').value;
  this.value=lines[0];
  for(var i=1;i<lines.length;i++){
-  addBulkRow();
-  var nr=tbody.rows[tbody.rows.length-1];
-  nr.querySelector('.bk-art').value=lines[i];
-  nr.querySelector('.bk-lob').value=lobVal;
-  nr.querySelector('.bk-mem').value=memVal;
-  nr.querySelector('.bk-jour').value=jourVal;
-  nr.querySelector('.bk-prio').value=prioVal;
-  nr.querySelector('.bk-stat').value=statVal;
+  addBulkRow(lines[i],lobVal,memVal,jourVal,prioVal,statVal,startVal,dlVal);
  }
  _updateBulkCount();
 }
@@ -2881,9 +2900,10 @@ function saveBulkArticles(){
   var journey=(tr.querySelector('.bk-jour').value||'').trim()||'General';
   var priority=tr.querySelector('.bk-prio').value;
   var status=tr.querySelector('.bk-stat').value;
+  var startDate=tr.querySelector('.bk-start')?tr.querySelector('.bk-start').value:'';
   var deadline=tr.querySelector('.bk-dl').value;
   var id=(ts+saved).toString(36);
-  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,deadline:deadline,priority:priority,status:status});
+  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,startDate:startDate,deadline:deadline,priority:priority,status:status});
   saved++;
  });
  if(!saved){alert('Please fill in at least one article name.');return;}
@@ -3238,38 +3258,59 @@ function cycleSecItemStatus(secId,itemId){
 </div>
 <!-- Bulk Add Articles modal -->
 <div id="bulk-overlay" onclick="closeBulkAdd()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9300"></div>
-<div id="bulk-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:24px 28px 20px;width:92vw;max-width:1080px;max-height:88vh;z-index:9301;box-shadow:0 20px 60px rgba(0,0,0,.28);flex-direction:column">
- <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+<div id="bulk-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:22px 26px 18px;width:93vw;max-width:1120px;max-height:90vh;z-index:9301;box-shadow:0 20px 60px rgba(0,0,0,.28);flex-direction:column">
+ <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
   <div>
    <div style="font-size:13px;font-weight:900;color:#0d9488">📋 Bulk Add Articles</div>
-   <div style="font-size:11px;color:#6b7280;margin-top:3px">Each row is one article — fill Article Name + LOB at minimum, then Save All</div>
+   <div style="font-size:11px;color:#6b7280;margin-top:2px">Paste article names below to fill rows automatically, or add rows manually</div>
   </div>
   <button onclick="closeBulkAdd()" style="font-size:22px;line-height:1;background:none;border:none;cursor:pointer;color:#9ca3af;padding:0 4px">×</button>
  </div>
- <div style="overflow:auto;flex:1;margin-bottom:14px;max-height:calc(88vh - 140px)">
-  <table style="width:100%;border-collapse:collapse;min-width:860px">
+ <!-- Paste zone -->
+ <div style="background:#f0fdfa;border:1.5px solid #99f6e4;border-radius:12px;padding:12px 14px;margin-bottom:12px">
+  <div style="font-size:10px;font-weight:800;color:#0d9488;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">📥 Paste article names (one per line) — set defaults below, then click Split</div>
+  <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+   <textarea id="bulk-paste-area" placeholder="Paste article names here…&#10;Article One&#10;Article Two&#10;Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;padding:9px 11px;border:1.5px solid #99f6e4;border-radius:8px;font-size:12px;resize:vertical;outline:none;font-family:inherit;background:#fff;line-height:1.6"></textarea>
+   <div style="display:flex;flex-direction:column;gap:7px;min-width:460px;flex:1">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+     <div><div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:3px">LOB</div><select id="bulk-def-lob" style="width:100%;padding:5px 7px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:11px;outline:none"></select></div>
+     <div><div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:3px">Assign To</div><select id="bulk-def-mem" style="width:100%;padding:5px 7px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:11px;outline:none"><option value="">Unassigned</option><option value="Amal">Amal</option><option value="Anoud">Anoud</option><option value="Dalia">Dalia</option></select></div>
+     <div><div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:3px">Status</div><select id="bulk-def-stat" style="width:100%;padding:5px 7px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:11px;outline:none"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="On Review">On Review</option><option value="Pending Modification">Pending Modification</option><option value="Done">Done</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+     <div><div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:3px">Start Date</div><input id="bulk-def-start" type="date" style="width:100%;padding:5px 7px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:11px;outline:none;box-sizing:border-box"></div>
+     <div><div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:3px">Deadline</div><input id="bulk-def-dl" type="date" style="width:100%;padding:5px 7px;border:1.5px solid #e5e7eb;border-radius:7px;font-size:11px;outline:none;box-sizing:border-box"></div>
+     <div style="display:flex;align-items:flex-end"><button onclick="splitBulkPaste()" style="width:100%;padding:6px 10px;border-radius:7px;border:none;background:#0d9488;color:#fff;font-size:11px;font-weight:800;cursor:pointer">↙ Split into rows</button></div>
+    </div>
+   </div>
+  </div>
+ </div>
+ <!-- Rows table -->
+ <div style="overflow:auto;flex:1;margin-bottom:12px;max-height:calc(90vh - 310px)">
+  <table style="width:100%;border-collapse:collapse;min-width:1020px">
    <thead>
     <tr style="border-bottom:2px solid #f3f4f6;background:#fafafa">
-     <th style="padding:7px 4px;font-size:10px;font-weight:800;color:#9ca3af;text-transform:uppercase;text-align:center;width:30px">#</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:200px">Article Name *</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">LOB</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">Assign To</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">Journey</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:90px">Priority</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:130px">Status</th>
-     <th style="padding:7px 8px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:120px">Deadline</th>
-     <th style="width:36px"></th>
+     <th style="padding:6px 4px;font-size:10px;font-weight:800;color:#9ca3af;text-transform:uppercase;text-align:center;width:28px">#</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:180px">Article Name *</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:100px">LOB</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:100px">Assign To</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:90px">Journey</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:80px">Priority</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:120px">Status</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">Start Date</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">Deadline</th>
+     <th style="width:32px"></th>
     </tr>
    </thead>
    <tbody id="bulk-tbody"></tbody>
   </table>
  </div>
- <div style="display:flex;gap:8px;align-items:center;border-top:1px solid #f3f4f6;padding-top:14px">
-  <button onclick="addBulkRow()" style="padding:7px 16px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Row</button>
+ <div style="display:flex;gap:8px;align-items:center;border-top:1px solid #f3f4f6;padding-top:12px">
+  <button onclick="addBulkRow()" style="padding:7px 14px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Row</button>
   <span id="bulk-count" style="font-size:11px;color:#9ca3af"></span>
   <div style="flex:1"></div>
-  <button onclick="closeBulkAdd()" style="padding:8px 18px;border-radius:8px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
-  <button onclick="saveBulkArticles()" style="padding:8px 24px;border-radius:8px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">💾 Save All</button>
+  <button onclick="closeBulkAdd()" style="padding:8px 16px;border-radius:8px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
+  <button onclick="saveBulkArticles()" style="padding:8px 22px;border-radius:8px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">💾 Save All</button>
  </div>
 </div>
 
