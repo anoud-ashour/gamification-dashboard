@@ -2250,13 +2250,25 @@ function applyAssignments(){
   if(ov.priority)r._priority=ov.priority;
   if(ov.notes)r._notes=ov.notes;
  });
+ // Remove previously injected extra-article PROG entries to prevent accumulation across calls
+ PROG=PROG.filter(function(r){return !r._extraId;});
  ASSIGNMENTS.extra.forEach(function(e){
   if(!e.article||!e.lob)return;
   var sop=sopById(e.lob);
-   if(!sop&&e.lob.indexOf('ctab-')!==0&&e.lob!=='uni')return;
+  if(!sop&&e.lob.indexOf('ctab-')!==0&&e.lob!=='uni')return;
   var sd=sop||{name:e.lob,cls:'',id:e.lob};
   var exists=ROWS.some(function(r){return r._extraId===e.id;});
   if(!exists)ROWS.push({sopId:e.lob,sopName:sd.name,cls:sd.cls||'',article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
+  // Inject into PROG so this article appears in the Progress tab
+  var st=e.status||'Not Started';
+  var pe={article:e.article,member:e.member||'Unassigned',leave_status:'',
+   vip_ar:'',vip_en:'',vip_start:'',vip_end:'',
+   def_ar:'',def_en:'',def_start:e.startDate||'',def_end:e.deadline||'',
+   tkt_ar:'',tkt_en:'',_extraId:e.id,_extra:true};
+  if(e.lob==='tpro'){pe.vip_ar=st;pe.vip_en=st;}
+  else if(e.lob==='tkt'){pe.tkt_ar=st;pe.tkt_en=st;}
+  else{pe.def_ar=st;pe.def_en=st;}
+  PROG.push(pe);
  });
 }
 
@@ -2624,7 +2636,7 @@ function saveNewArticle(){
  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,status:artStatus});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- closeAddArticle();buildRows();applyAssignments();membersBuilt=false;
+ closeAddArticle();buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
  buildOverview();
  // Navigate to the LOB tab where the article was added so it's immediately visible
  if(lob.indexOf('ctab-')===0){renderCustomTabNav();setTab(lob);}
