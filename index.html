@@ -795,7 +795,7 @@ function buildMembers(){
    if(!r.article)return false;
    const mn=mergeArtName(r.article);const k=nrm(mn);
    if(pSeen.has(k))return false;
-   const ow=OWNER[k]||'Unassigned';if(ow!==m)return false;
+   const ow=r._extraId?(r.member||'Unassigned'):(OWNER[k]||'Unassigned');if(ow!==m)return false;
    pSeen.add(k);return true;
   });
   lobs.push({name:'Universal',
@@ -803,9 +803,9 @@ function buildMembers(){
    en:pr.length?Math.round(pr.filter(r=>statusOf(r.def_en)==='Done').length/pr.length*100):0,
    done:pr.filter(r=>statusOf(r.def_ar)==='Done'&&statusOf(r.def_en)==='Done').length,
   });
-  // count = coverage-sheet articles + any PROG-only articles not yet in coverage sheet
+  // count = coverage-sheet articles + tracker-only Universal articles + manager-added extra articles
   const dataKeys=new Set(rr.map(r=>nrm(mergeArtName(r.article))));
-  const uniOnly=pr.filter(r=>!dataKeys.has(nrm(mergeArtName(r.article)))).length;
+  const uniOnly=pr.filter(r=>!r._extraId&&!dataKeys.has(nrm(mergeArtName(r.article)))).length;
    const extraCount=(ASSIGNMENTS.extra||[]).filter(function(e){return (e.member||'Unassigned')===m;}).length;
    return {m,stage:stages.join(', ')||'—',count:rr.length+uniOnly+extraCount,full,lobs,pr};
  }).sort((a,b)=>b.full-a.full||b.count-a.count);
