@@ -552,8 +552,8 @@ function buildOverview(){
   {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',tab:'tkt',p:sopCov(SOPS[2]),done:DATA.filter(function(r){return r[SOPS[2].ar]>0&&r[SOPS[2].en]>0;}).length,total:DATA.filter(function(r){return r[SOPS[2].ar]>0||r[SOPS[2].en]>0;}).length},
  ];
  var uniR=PROG.filter(function(r){return r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});
- var uniC=0,uniD=0;uniR.forEach(function(r){PCELLS.forEach(function(k){var v=r[k];if(isStatusValue(v)){uniC++;if(statusOf(v)==='Done')uniD++;}});});
- var uniP=pct(uniD,uniC);
+ var uniDone=uniR.filter(function(r){var cells=[r.vip_ar,r.vip_en,r.def_ar,r.def_en,r.tkt_ar,r.tkt_en].filter(isStatusValue);return cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';});}).length;
+ var uniP=pct(uniDone,uniR.length);
  var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:4px 0">';
  lops.forEach(function(c){
@@ -576,7 +576,7 @@ function buildOverview(){
   +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:14px">'
   +'<div id="ovkpi-uni" style="font-size:36px;font-weight:900;color:#10b981;line-height:1;letter-spacing:-1px">0%</div>'
   +'<div style="font-size:13px;font-weight:600;color:var(--muted)">coverage</div></div>'
-  +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+uniR.length+' article'+(uniR.length!==1?'s':'')+' tracked</div>'
+  +'<div style="font-size:14px;font-weight:700;color:var(--muted);margin-top:6px">'+uniDone+' / '+uniR.length+' article'+(uniR.length!==1?'s':'')+' done</div>'
   +'<div style="height:6px;border-radius:4px;background:var(--border);margin-top:14px;overflow:hidden">'
   +'<div style="width:'+uniP+'%;height:100%;background:#10b981;border-radius:4px"></div></div>'
   +'</div>';
