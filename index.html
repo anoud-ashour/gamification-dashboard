@@ -2216,7 +2216,21 @@ var _mgrEditKey='';
 async function loadAssignments(){
  try{
   var r=await fetch('https://raw.githubusercontent.com/'+ASSIGN_REPO+'/main/'+ASSIGN_FILE+'?t='+Date.now(),{cache:'no-store'});
-  if(r.ok){var j=await r.json();ASSIGNMENTS=j;if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};if(!ASSIGNMENTS.customMGSections)ASSIGNMENTS.customMGSections=[];}
+  if(r.ok){
+   var j=await r.json();ASSIGNMENTS=j;
+   if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};
+   if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];
+   if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];
+   if(!ASSIGNMENTS.managers)ASSIGNMENTS.managers=[];
+   if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};
+   if(!ASSIGNMENTS.subCategories)ASSIGNMENTS.subCategories={};
+   if(!ASSIGNMENTS.articleSubCat)ASSIGNMENTS.articleSubCat={};
+   if(!ASSIGNMENTS.customMGSections)ASSIGNMENTS.customMGSections=[];
+   if(!ASSIGNMENTS.notifications)ASSIGNMENTS.notifications=[];
+   // Merge server notifications into localStorage so all browsers stay in sync
+   _mergeNotifs(ASSIGNMENTS.notifications);
+   buildNotifBadge();
+  }
  }catch(e){}
 }
 
@@ -2407,8 +2421,32 @@ function closeAssignModal(){
  $('asgn-overlay').style.display='none';$('asgn-modal').style.display='none';_mgrEditKey='';
 }
 
+// Notifications — stored in localStorage so they survive auto-refresh and are instant
+var _NOTIF_KEY='gd_notifs';
+function _getNotifs(){try{return JSON.parse(localStorage.getItem(_NOTIF_KEY)||'[]');}catch(e){return [];}}
+function _setNotifs(arr){try{localStorage.setItem(_NOTIF_KEY,JSON.stringify(arr));}catch(e){}}
+function _mergeNotifs(serverArr){
+ // Merge server notifications into localStorage; server entry wins on same key
+ var local=_getNotifs();
+ var byKey={};
+ local.forEach(function(n){if(n&&n.key)byKey[n.key]=n;});
+ (serverArr||[]).forEach(function(n){if(n&&n.key)byKey[n.key]=n;});
+ var merged=[];for(var k in byKey){merged.push(byKey[k]);}
+ merged.sort(function(a,b){return new Date(b.assignedAt)-new Date(a.assignedAt);});
+ _setNotifs(merged);
+}
+function _pushNotif(entry){
+ // Write to localStorage immediately + to ASSIGNMENTS for GitHub persistence
+ var notifs=_getNotifs();
+ notifs=notifs.filter(function(n){return n.key!==entry.key;});
+ notifs.push(entry);
+ _setNotifs(notifs);
+ if(!ASSIGNMENTS.notifications)ASSIGNMENTS.notifications=[];
+ ASSIGNMENTS.notifications=ASSIGNMENTS.notifications.filter(function(n){return n.key!==entry.key;});
+ ASSIGNMENTS.notifications.push(entry);
+}
 function buildNotifBadge(){
- var notifs=ASSIGNMENTS.notifications||[];
+ var notifs=_getNotifs();
  var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
  var unread=notifs.filter(function(n){return new Date(n.assignedAt).getTime()>lastSeen;}).length;
  var badge=$('notif-badge');
@@ -2416,7 +2454,7 @@ function buildNotifBadge(){
  var btn=$('notifBtn');if(btn)btn.style.borderColor=unread>0?'#FF5900':'var(--border)';
 }
 function openNotifPanel(){
- var notifs=(ASSIGNMENTS.notifications||[]).slice().sort(function(a,b){return new Date(b.assignedAt)-new Date(a.assignedAt);});
+ var notifs=_getNotifs().slice().sort(function(a,b){return new Date(b.assignedAt)-new Date(a.assignedAt);});
  var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
  var list=$('notif-list');if(!list)return;
  if(!notifs.length){
@@ -2428,7 +2466,7 @@ function openNotifPanel(){
    var at=new Date(n.assignedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
    var memColors={'Amal':'#8318d8','Anoud':'#FF5900','Dalia':'#411514'};
    var mc=memColors[n.member]||'#6b7280';
-   return '<div style="padding:14px 16px;border-radius:14px;margin-bottom:10px;background:'+(isNew?'#fff7ed':'var(--bg)')+';border:1.5px solid '+(isNew?'#FF5900':'var(--border)')+';transition:background .2s">'
+   return '<div style="padding:14px 16px;border-radius:14px;margin-bottom:10px;background:'+(isNew?'#fff7ed':'var(--bg)')+';border:1.5px solid '+(isNew?'#FF5900':'var(--border)')+'">'
     +(isNew?'<div style="font-size:10px;font-weight:800;color:#FF5900;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#FF5900;display:inline-block"></span>NEW</div>':'')
     +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:8px;line-height:1.4">'+n.article+'</div>'
     +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'
@@ -2464,11 +2502,9 @@ function saveAssign(){membersBuilt=false;
  ASSIGNMENTS.overrides[_mgrEditKey]=ov;
  // Create/update notification entry when member + startDate are set
  if(ov.member&&ov.startDate){
-  if(!ASSIGNMENTS.notifications)ASSIGNMENTS.notifications=[];
   var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
   var lobLabel=$('asgn-lob-label').textContent||'';
-  ASSIGNMENTS.notifications=ASSIGNMENTS.notifications.filter(function(n){return n.key!==_mgrEditKey;});
-  ASSIGNMENTS.notifications.push({id:Date.now().toString(36),key:_mgrEditKey,article:artTitle,member:ov.member,lob:lobLabel,startDate:ov.startDate,assignedAt:new Date().toISOString()});
+  _pushNotif({id:Date.now().toString(36),key:_mgrEditKey,article:artTitle,member:ov.member,lob:lobLabel,startDate:ov.startDate,assignedAt:new Date().toISOString()});
   buildNotifBadge();
  }
  // Save sub-category assignment
@@ -2590,10 +2626,8 @@ function saveNewArticleAndNotify(){
  var startDate=($('addart-startdate')?$('addart-startdate').value:'')||'';
  saveNewArticle();
  if(member&&startDate){
-  if(!ASSIGNMENTS.notifications)ASSIGNMENTS.notifications=[];
   var notifKey=name.toLowerCase().trim()+'::'+lob;
-  ASSIGNMENTS.notifications=ASSIGNMENTS.notifications.filter(function(n){return n.key!==notifKey;});
-  ASSIGNMENTS.notifications.push({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate,assignedAt:new Date().toISOString()});
+  _pushNotif({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate,assignedAt:new Date().toISOString()});
   buildNotifBadge();
  }
 }function deleteExtraArticle(id){
