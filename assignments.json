@@ -17,8 +17,21 @@
       "notes": "test test"
     }
   },
-  "extra": [],
-  "lastUpdated": "2026-07-22T11:05:51.703Z",
+  "extra": [
+    {
+      "id": "ms1lor49",
+      "article": "test",
+      "lob": "tpro",
+      "member": "Dalia",
+      "journey": "test",
+      "ar": 0,
+      "en": 0,
+      "deadline": "2026-07-25",
+      "priority": "high",
+      "status": "Not Started"
+    }
+  ],
+  "lastUpdated": "2026-07-26T09:33:35.463Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -32,5 +45,6 @@
   "customTabs": [],
   "memberStatus": {},
   "subCategories": {},
-  "articleSubCat": {}
+  "articleSubCat": {},
+  "customMGSections": []
 }
