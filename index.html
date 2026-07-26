@@ -2435,7 +2435,8 @@ function saveNewArticle(){
  var lob=$('addart-lob').value;
  if(!name)return;
  var id=Date.now().toString(36);
- ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value});
+ var artStatus=$('addart-status')?$('addart-status').value:'Not Started';
+ ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,status:artStatus});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddArticle();buildRows();applyAssignments();membersBuilt=false;
@@ -2602,12 +2603,24 @@ function deleteCustomTab(id){
 
 // ===== CUSTOM SECTIONS (Update Projects + Overview) =====
 function _secStatusBadge(s){
- var ss=s||'Pending';
- var cfg={'Done':['#dcfce7','#16a34a'],'In Progress':['#fef3c7','#d97706'],'Pending':['#f3f4f6','#6b7280'],'Blocked':['#fee2e2','#dc2626']};
- var c=cfg[ss]||cfg['Pending'];
+ var ss=s||'Not Started';
+ var cfg={
+  'Done':['#dcfce7','#16a34a'],
+  'In Progress':['#fff7ed','#ea580c'],
+  'On Review':['#eff6ff','#3b82f6'],
+  'Pending Modification':['#fefce8','#ca8a04'],
+  'Not Started':['#f3f4f6','#6b7280'],
+  'Pending':['#f3f4f6','#6b7280'],
+  'Blocked':['#fee2e2','#dc2626']
+ };
+ var c=cfg[ss]||cfg['Not Started'];
  return '<span style="display:inline-block;padding:2px 9px;border-radius:7px;font-size:10px;font-weight:800;background:'+c[0]+';color:'+c[1]+'">'+ss+'</span>';
 }
-function _secNextStatus(s){var order=['Pending','In Progress','Done'];return order[(order.indexOf(s||'Pending')+1)%order.length];}
+function _secNextStatus(s){
+ var order=['Not Started','In Progress','On Review','Pending Modification','Done'];
+ var idx=order.indexOf(s||'Not Started');
+ return order[idx===-1?1:((idx+1)%order.length)];
+}
 var _addSecItemTarget='';
 function openAddCustomSection(){
  $('custsec-name-inp').value='';$('custsec-color-inp').value='#6366f1';
@@ -2638,7 +2651,7 @@ function renameCustomSection(secId){
 var _addSecItemTarget='';var _editSecItemId='';
 function openAddSecItem(secId){
  _addSecItemTarget=secId;_editSecItemId='';
- $('secitem-text-inp').value='';$('secitem-assignee-inp').value='';$('secitem-status-sel').value='Pending';
+ $('secitem-text-inp').value='';$('secitem-assignee-inp').value='';$('secitem-status-sel').value='Not Started';
  $('secitem-start-inp').value='';$('secitem-end-inp').value='';$('secitem-lang-sel').value='Both';$('secitem-lob-inp').value='';
  $('secitem-modal-title').textContent='+ Add Item';$('secitem-save-btn').textContent='Add Item';
  $('secitem-overlay').style.display='block';$('secitem-modal').style.display='block';
@@ -2649,7 +2662,7 @@ function openEditSecItem(secId,itemId){
  var item=sec.items.find(function(it){return it.id===itemId;});if(!item)return;
  _addSecItemTarget=secId;_editSecItemId=itemId;
  $('secitem-text-inp').value=item.text||'';$('secitem-assignee-inp').value=item.assignee||'';
- $('secitem-status-sel').value=item.status||'Pending';$('secitem-start-inp').value=item.startDate||'';
+ $('secitem-status-sel').value=item.status||'Not Started';$('secitem-start-inp').value=item.startDate||'';
  $('secitem-end-inp').value=item.endDate||'';$('secitem-lang-sel').value=item.lang||'Both';$('secitem-lob-inp').value=item.lob||'';
  $('secitem-modal-title').textContent='Edit Item';$('secitem-save-btn').textContent='Save Changes';
  $('secitem-overlay').style.display='block';$('secitem-modal').style.display='block';
@@ -2659,7 +2672,7 @@ function closeAddSecItem(){$('secitem-overlay').style.display='none';$('secitem-
 function saveNewSecItem(){
  var text=($('secitem-text-inp').value||'').trim();if(!text)return;
  var assignee=($('secitem-assignee-inp').value||'').trim();
- var status=$('secitem-status-sel').value||'Pending';
+ var status=$('secitem-status-sel').value||'Not Started';
  var startDate=$('secitem-start-inp').value;var endDate=$('secitem-end-inp').value;
  var lang=$('secitem-lang-sel').value||'Both';var lob=($('secitem-lob-inp').value||'').trim();
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===_addSecItemTarget;});if(!sec)return;
@@ -2817,6 +2830,16 @@ function cycleSecItemStatus(secId,itemId){
     <option value="high">🔴 High</option>
     <option value="medium">🟡 Medium</option>
     <option value="low">🔵 Low</option>
+   </select>
+  </div>
+  <div style="grid-column:1/-1">
+   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Status</div>
+   <select id="addart-status" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+    <option value="Not Started">Not Started</option>
+    <option value="In Progress">In Progress</option>
+    <option value="On Review">On Review</option>
+    <option value="Pending Modification">Pending Modification</option>
+    <option value="Done">Done</option>
    </select>
   </div>
  </div>
@@ -2986,10 +3009,11 @@ function cycleSecItemStatus(secId,itemId){
   <div>
    <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Status</div>
    <select id="secitem-status-sel" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:#fff">
-    <option value="Pending">Pending</option>
+    <option value="Not Started">Not Started</option>
     <option value="In Progress">In Progress</option>
+    <option value="On Review">On Review</option>
+    <option value="Pending Modification">Pending Modification</option>
     <option value="Done">Done</option>
-    
    </select>
   </div>
  </div>
