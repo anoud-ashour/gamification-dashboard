@@ -9,21 +9,8 @@
       "notes": ""
     }
   },
-  "extra": [
-    {
-      "id": "ms1lrmgn",
-      "article": "test",
-      "lob": "default",
-      "member": "Dalia",
-      "journey": "test",
-      "ar": 0,
-      "en": 0,
-      "deadline": "2026-07-27",
-      "priority": "high",
-      "status": "Not Started"
-    }
-  ],
-  "lastUpdated": "2026-07-26T09:46:59.846Z",
+  "extra": [],
+  "lastUpdated": "2026-07-26T09:53:29.998Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
