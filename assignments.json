@@ -41,19 +41,6 @@
   },
   "extra": [
     {
-      "id": "ms30un53",
-      "article": "test 2",
-      "lob": "default",
-      "member": "Amal",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "ms30un54",
       "article": "test 3",
       "lob": "default",
@@ -80,7 +67,7 @@
       "status": "Not Started"
     }
   ],
-  "lastUpdated": "2026-07-27T09:28:25.716Z",
+  "lastUpdated": "2026-07-27T09:28:30.468Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
