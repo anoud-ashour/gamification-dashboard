@@ -41,19 +41,6 @@
   },
   "extra": [
     {
-      "id": "ms310foo",
-      "article": "tany 1",
-      "lob": "uni",
-      "member": "",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "ms310fop",
       "article": "tany 2",
       "lob": "uni",
@@ -80,7 +67,7 @@
       "status": "Not Started"
     }
   ],
-  "lastUpdated": "2026-07-27T09:30:14.349Z",
+  "lastUpdated": "2026-07-27T09:31:45.694Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
