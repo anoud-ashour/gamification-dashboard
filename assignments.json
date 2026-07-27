@@ -41,19 +41,6 @@
   },
   "extra": [
     {
-      "id": "ms30un54",
-      "article": "test 3",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "ms30un55",
       "article": "test 4",
       "lob": "default",
@@ -67,7 +54,7 @@
       "status": "Not Started"
     }
   ],
-  "lastUpdated": "2026-07-27T09:28:30.468Z",
+  "lastUpdated": "2026-07-27T09:28:43.708Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
