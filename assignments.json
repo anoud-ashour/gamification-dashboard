@@ -39,22 +39,8 @@
       "status": "In Progress"
     }
   },
-  "extra": [
-    {
-      "id": "ms30un55",
-      "article": "test 4",
-      "lob": "default",
-      "member": "Dalia",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    }
-  ],
-  "lastUpdated": "2026-07-27T09:28:43.708Z",
+  "extra": [],
+  "lastUpdated": "2026-07-27T09:28:48.319Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
