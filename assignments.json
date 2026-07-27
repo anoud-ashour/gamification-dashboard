@@ -32,7 +32,7 @@
       "member": "Anoud",
       "ar": 0,
       "en": 1,
-      "startDate": "",
+      "startDate": "2026-07-21",
       "deadline": "2026-07-30",
       "priority": "",
       "notes": "",
@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-27T09:37:21.622Z",
+  "lastUpdated": "2026-07-27T09:39:12.254Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -101,13 +101,13 @@
       "assignedAt": "2026-07-26T14:27:45.893Z"
     },
     {
-      "id": "ms319la7",
+      "id": "ms31bym6",
       "key": "change order details::uni",
       "article": "Change Order Details",
       "member": "Anoud",
       "lob": "Universal",
-      "startDate": "",
-      "assignedAt": "2026-07-27T09:37:21.151Z"
+      "startDate": "2026-07-21",
+      "assignedAt": "2026-07-27T09:39:11.742Z"
     }
   ]
 }
