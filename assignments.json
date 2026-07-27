@@ -39,22 +39,8 @@
       "status": "In Progress"
     }
   },
-  "extra": [
-    {
-      "id": "ms310foq",
-      "article": "tany3",
-      "lob": "uni",
-      "member": "",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    }
-  ],
-  "lastUpdated": "2026-07-27T09:31:52.512Z",
+  "extra": [],
+  "lastUpdated": "2026-07-27T09:32:05.730Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
