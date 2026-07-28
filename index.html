@@ -1138,6 +1138,9 @@ const pstBadge=v=>{const s=statusOf(v);const c=s==='Done'?'background:#CFFF00;co
 function renderProgress(){
  const q=$('psearch').value.toLowerCase().trim();
  const tb=$('ptbl').querySelector('tbody');tb.innerHTML='';let shown=0;
+ // Update header for member mode
+ var _pthead=$('ptbl').querySelector('thead tr');
+ if(_pthead){_pthead.innerHTML='<th class="l">Article</th><th class="l">Member</th><th>Arabic</th><th>English</th><th class="l">Due</th><th class="l">Timeline</th>'+(memberMode?'<th></th>':'');}
  var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
  PROG.forEach(r=>{
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)))return;
@@ -1165,9 +1168,14 @@ function renderProgress(){
    +'<td>'+artBadge(enStatus)+'</td>'
    +'<td class="jrn"'+(exceeded?' style="color:#dc2626"':'')+'>'+upd+'</td>'
    +'<td>'+tlBadge+'</td>'
-   +(memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+r.article.toLowerCase().trim().replace(/'/g,"\\'")+'\',\''+(r._sop||r._tab||'').toLowerCase().replace(/\s/g,'')+'\''+')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
+   +(memberMode?(function(){
+    var _artK=r.article.toLowerCase().trim().replace(/'/g,"\\'");
+    var _rowE=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===r.article.toLowerCase().trim();});
+    var _sopId=_rowE?_rowE.sopId:(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1?'uni':(isStatusValue(r.vip_ar)||isStatusValue(r.vip_en)?'uni':(isStatusValue(r.tkt_ar)||isStatusValue(r.tkt_en)?'tkt':'default')));
+    return '<td style="text-align:center"><button onclick="openMemberEdit(\''+_artK+'\',\''+_sopId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>';
+   })():'');
   tb.appendChild(tr);shown++;});
- if(!shown)tb.innerHTML='<tr><td colspan="6" class="empty">No articles match'+(statusFilter?' status "'+statusFilter+'"':'')+'. '+(statusFilter?'<a href="#" onclick="filterByStatus(statusFilter);return false" style="color:var(--orange)">clear filter</a>':'')+'</td></tr>';
+ if(!shown)tb.innerHTML='<tr><td colspan="'+(memberMode?7:6)+'" class="empty">No articles match'+(statusFilter?' status "'+statusFilter+'"':'')+'. '+(statusFilter?'<a href="#" onclick="filterByStatus(statusFilter);return false" style="color:var(--orange)">clear filter</a>':'')+'</td></tr>';
  $('prowcount').textContent=shown+' articles'+(statusFilter?' · status: '+statusFilter:'');
 }
 
