@@ -6,7 +6,8 @@
       "en": 1,
       "deadline": "",
       "priority": "",
-      "notes": ""
+      "notes": "",
+      "status": "In Progress"
     },
     "test::uni": {
       "member": "Anoud",
@@ -40,7 +41,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T09:55:06.937Z",
+  "lastUpdated": "2026-07-28T10:43:44.930Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
