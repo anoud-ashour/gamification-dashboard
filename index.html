@@ -1550,7 +1550,6 @@ function buildUniHtml(tabName,safeId){
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
   +(managerMode?'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>':'')
   +(managerMode?'<button onclick="exportArticleLinks()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">📋 Export Links</button>':'')
-  +'<button onclick="toggleManagerMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #8318d8;background:'+mgrBg+';color:'+mgrCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+mgrLabel+'</button>'
   +'</div>'
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
   +'<thead><tr>'
