@@ -2637,9 +2637,7 @@ async function attemptMemberLogin(){
   var lbl=$('mem-email-label');if(lbl)lbl.textContent='👤 '+email;
   var hdrBtn=$('mem-login-btn');if(hdrBtn){hdrBtn.textContent='✓ Member';hdrBtn.style.background='#0891b2';hdrBtn.style.color='#fff';}
   progressBuilt=false;membersBuilt=false;
-  if(activeTab==='progress')buildProgress();
-  else if(activeTab==='members')buildMembers();
-  else renderTable();
+  setTab('progress');
  }else{
   if(err){err.textContent='Wrong email or password.';err.style.display='block';}
   if(btn){btn.disabled=false;btn.textContent='Login';}
@@ -2666,17 +2664,19 @@ function openMemberEdit(artKey,lob){
  $('mem-edit-overlay').style.display='block';$('mem-edit-modal').style.display='block';
 }
 function closeMemberEdit(){$('mem-edit-overlay').style.display='none';$('mem-edit-modal').style.display='none';_memEditKey='';}
-function saveMemberStatus(){
+async function saveMemberStatus(){
  if(!_memEditKey)return;
  var status=$('mem-edit-status').value;
  var ov=ASSIGNMENTS.overrides[_memEditKey]||{};
  ov.status=status;ASSIGNMENTS.overrides[_memEditKey]=ov;
  closeMemberEdit();
- buildRows();applyAssignments();progressBuilt=false;membersBuilt=false;
- if(activeTab==='progress')buildProgress();
- else if(activeTab==='members')buildMembers();
- else renderTable();
- saveAssignments();
+ buildRows();applyAssignments();
+ renderProgress();
+ var bar=$('mem-save-bar');
+ var origTxt='You can edit article status only';
+ if(bar){var si=bar.querySelector('span:nth-child(3)');if(si)si.textContent='Saving…';}
+ try{await saveAssignments();}catch(e){}
+ if(bar){var si2=bar.querySelector('span:nth-child(3)');if(si2){si2.textContent='✓ Status saved!';setTimeout(function(){if(si2)si2.textContent=origTxt;},3000);}}
 }
 function openManageMembers(){
  $('mem-new-email').value='';$('mem-new-pw').value='';
