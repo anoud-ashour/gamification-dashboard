@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T08:03:35.572Z",
+  "lastUpdated": "2026-07-28T08:04:14.020Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -103,7 +103,13 @@
       "assignedAt": "2026-07-27T09:41:16.696Z"
     }
   ],
-  "mgGroups": [],
+  "mgGroups": [
+    {
+      "id": "mgms4ddoob",
+      "name": "est",
+      "sections": []
+    }
+  ],
   "memberAccounts": [
     {
       "email": "dalia.adel@talabat.com",
