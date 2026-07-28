@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T09:54:58.237Z",
+  "lastUpdated": "2026-07-28T09:55:03.909Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -107,13 +107,7 @@
     {
       "id": "mg232497972",
       "name": "test LOB",
-      "sections": [
-        {
-          "id": "sec2324979724203",
-          "name": "t",
-          "games": 6
-        }
-      ]
+      "sections": []
     }
   ],
   "memberAccounts": [
