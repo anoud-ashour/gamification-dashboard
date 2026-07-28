@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T09:46:48.627Z",
+  "lastUpdated": "2026-07-28T09:47:21.097Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -55,7 +55,13 @@
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
-  "customMGSections": [],
+  "customMGSections": [
+    {
+      "id": "ms4h23dp",
+      "name": "test2",
+      "games": 20
+    }
+  ],
   "notifications": [
     {
       "id": "ms1odzka",
@@ -107,13 +113,7 @@
     {
       "id": "mg232008361",
       "name": "test",
-      "sections": [
-        {
-          "id": "sec2320083614765",
-          "name": "t",
-          "games": 6
-        }
-      ]
+      "sections": []
     }
   ],
   "memberAccounts": [
