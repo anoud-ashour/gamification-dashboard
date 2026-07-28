@@ -1047,7 +1047,7 @@ function renderTable(){
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
    +glCell(gkey,'ar')+glCell(gkey,'en')
-   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek2+'\',\''+r.sopId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   tb.appendChild(tr);shown++;
  }
   filteredRows.forEach(renderRow);
@@ -1150,9 +1150,6 @@ function renderProgress(){
   const e=endDate(r);
   const activeCells=PCELLS.filter(k=>isStatusValue(r[k]));
   const isDone=activeCells.length>0&&activeCells.every(k=>statusOf(r[k])==='Done');
-  if(isDone)return; // hide fully-done articles — they show ✓ on member cards instead
-  // For Universal tracker articles: also hide if override marks coverage complete (ar=1,en=1) or status=Done
-  if(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1){var _al=(r.article||'').toLowerCase().trim();var _ovDone=Object.keys(ASSIGNMENTS.overrides).some(function(k){var _i=k.lastIndexOf('::');if(_i<0)return false;if(k.slice(0,_i)!==_al)return false;var _o=ASSIGNMENTS.overrides[k];return _o&&(_o.status&&statusOf(_o.status)==='Done'||(_o.ar===1&&_o.en===1));});if(_ovDone)return;}
   const exceeded=e&&!isDone&&e<today;
   const al=alertOf(r),idle=idleOf(r,7);const cls=al==='overdue'?'overdue':(idle?'idle':'');
   const mm=(r.member||'').replace(/'/g,'');
@@ -1238,10 +1235,6 @@ function renderMbTable(){
  rows.sort(function(a,b){return(a.member||'').localeCompare(b.member||'');});
  rows.forEach(function(r){
   var cells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
-   if(cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';}))return;
-  // Also hide Universal articles that are fully covered per override (ar=1,en=1 or status=Done)
-  var _mbArt=(r.article||'').toLowerCase().trim();
-  if(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1){var _mbOvD=Object.keys(ASSIGNMENTS.overrides).some(function(k){var _i=k.lastIndexOf('::');if(_i<0)return false;if(k.slice(0,_i)!==_mbArt)return false;var _o=ASSIGNMENTS.overrides[k];return _o&&(_o.status&&statusOf(_o.status)==='Done'||(_o.ar===1&&_o.en===1));});if(_mbOvD)return;}
   var done=cells.filter(function(v){return statusOf(v)==='Done';}).length;
   // Use ROWS coverage (ar/en) for Universal articles — status cells give wrong effort when all set to same value by override
   var _mbUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_mbArt&&row.sopId==='uni';});
@@ -1270,9 +1263,6 @@ function renderSopTable(){
  src.filter(function(r){return r.article&&r.article!=='—';}).forEach(function(r){
   var allCells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
   var overall=artStatusOverall(allCells);
-   if(allCells.length>0&&allCells.every(function(v){return statusOf(v)==='Done';}))return;
-  var _spArt=(r.article||'').toLowerCase().trim();
-  if(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1){var _spOvD=Object.keys(ASSIGNMENTS.overrides).some(function(k){var _i=k.lastIndexOf('::');if(_i<0)return false;if(k.slice(0,_i)!==_spArt)return false;var _o=ASSIGNMENTS.overrides[k];return _o&&(_o.status&&statusOf(_o.status)==='Done'||(_o.ar===1&&_o.en===1));});if(_spOvD)return;}
   if(sopfFilter&&overall!==sopfFilter)return;
   var done=allCells.filter(function(v){return statusOf(v)==='Done';}).length;
   var _spUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_spArt&&row.sopId==='uni';});
@@ -2685,6 +2675,27 @@ async function saveMemberStatus(){
  var status=$('mem-edit-status').value;
  var ov=ASSIGNMENTS.overrides[_memEditKey]||{};
  ov.status=status;ASSIGNMENTS.overrides[_memEditKey]=ov;
+ // Sync to ASSIGNMENTS.extra if this is an extra/custom article
+ var _mkLast=_memEditKey.lastIndexOf('::');
+ if(_mkLast>-1){
+  var _mkArt=_memEditKey.slice(0,_mkLast);var _mkLob=_memEditKey.slice(_mkLast+2);
+  var _exMatch=ASSIGNMENTS.extra.find(function(e){return (e.article||'').toLowerCase().trim()===_mkArt&&e.lob===_mkLob;});
+  if(_exMatch)_exMatch.status=status;
+  // If article isn't in PROG at all, inject a live entry so progress tab reflects it immediately
+  var _inProg=PROG.some(function(p){return (p.article||'').toLowerCase().trim()===_mkArt;});
+  if(!_inProg){
+   var _rowRef=ROWS.find(function(r){return (r.article||'').toLowerCase().trim()===_mkArt;});
+   if(_rowRef){
+    var _pe={article:_rowRef.article,member:_rowRef.member||'',leave_status:'',
+     vip_ar:'',vip_en:'',vip_start:'',vip_end:'',
+     def_ar:'',def_en:'',def_start:'',def_end:'',tkt_ar:'',tkt_en:'',_injected:true};
+    if(_mkLob==='tpro'||_mkLob==='uni'){_pe.vip_ar=status;_pe.vip_en=status;}
+    else if(_mkLob==='tkt'){_pe.tkt_ar=status;_pe.tkt_en=status;}
+    else{_pe.def_ar=status;_pe.def_en=status;}
+    PROG.push(_pe);
+   }
+  }
+ }
  closeMemberEdit();
  buildRows();applyAssignments();
  renderProgress();
