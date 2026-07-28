@@ -1047,11 +1047,11 @@ function renderTable(){
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
    +glCell(gkey,'ar')+glCell(gkey,'en')
-   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':'');
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   tb.appendChild(tr);shown++;
  }
   filteredRows.forEach(renderRow);
- if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
+ if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode||memberMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
  if(managerMode){
   var addRow=document.createElement('tr');
   addRow.innerHTML='<td colspan="9" style="padding:10px;text-align:center;border-top:1px solid var(--border)">'
@@ -1544,7 +1544,7 @@ function buildUniHtml(tabName,safeId){
  var mgrLabel=managerMode?'✓ Exit Manager':'👩‍💼 Manager';
  var mgrBg=managerMode?'#8318d8':'none';var mgrCol=managerMode?'#fff':'#8318d8';
  var rows=ROWS.filter(function(r){return r.sopId==='uni';});
- var colCount=managerMode?9:8;
+ var colCount=managerMode||memberMode?9:8;
  var h='<div class="card"><h3>'+tabName+'</h3>'
   +'<div class="controls" style="margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">'
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
@@ -1561,7 +1561,7 @@ function buildUniHtml(tabName,safeId){
   +'<th style="text-align:center;min-width:80px">COVERAGE</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
-  +(managerMode?'<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>':'')
+  +(managerMode?'<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>':memberMode?'<th style="text-align:center;width:60px;font-size:11px">Edit</th>':'')
   +'</tr></thead><tbody>';
  rows.forEach(function(r){
   var sp=pct(r.ar+r.en,2);
@@ -1580,7 +1580,7 @@ function buildUniHtml(tabName,safeId){
    +'<td style="text-align:center;padding:10px 6px">'+cell(r.en)+'</td>'
    +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+sp+'%</span></td>'
    +glCellForLob(gkey,'ar','uni')+glCellForLob(gkey,'en','uni')
-   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block;margin-top:2px">✕ remove</span>':'')+'</td>':'')
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block;margin-top:2px">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'')
    +'</tr>';
  });
  if(!rows.length)h+='<tr><td colspan="'+colCount+'" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
@@ -2637,7 +2637,11 @@ async function attemptMemberLogin(){
   var lbl=$('mem-email-label');if(lbl)lbl.textContent='👤 '+email;
   var hdrBtn=$('mem-login-btn');if(hdrBtn){hdrBtn.textContent='✓ Member';hdrBtn.style.background='#0891b2';hdrBtn.style.color='#fff';}
   progressBuilt=false;membersBuilt=false;
-  setTab('progress');
+  buildRows();applyAssignments();
+  renderTable();
+  if(activeTab==='progress')renderProgress();
+  else if(activeTab==='members')buildMembers();
+  else if(activeTab.indexOf('ctab-')===0)buildCustomTab(activeTab);
  }else{
   if(err){err.textContent='Wrong email or password.';err.style.display='block';}
   if(btn){btn.disabled=false;btn.textContent='Login';}
@@ -3102,6 +3106,7 @@ function buildCustomTab(tabId){
  h+='<th style="text-align:center">AR</th><th style="text-align:center">EN</th>';
  h+='<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th><th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
  if(managerMode)h+='<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>';
+ else if(memberMode)h+='<th style="text-align:center;width:60px;font-size:11px">Edit</th>';
  h+='</tr></thead><tbody>';
  h+='</tbody></table></div></div>';
  sec.innerHTML=h;
@@ -3120,12 +3125,12 @@ function buildCustomTab(tabId){
    +'<td style="text-align:center;padding:10px 6px">'+cell(r.ar||0)+'</td>'
    +'<td style="text-align:center;padding:10px 6px">'+cell(r.en||0)+'</td>'
    +glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId)
-   +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':'');
+   +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':memberMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openMemberEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   ctTb.appendChild(tr);
  }
  if(!ctRows.length){
   var emptyTr=document.createElement('tr');
-  emptyTr.innerHTML='<td colspan="'+(managerMode?7:6)+'" class="empty" style="padding:20px;text-align:center">No articles yet.'+(managerMode?' Click "+ Add Article" to add one.':'')+'</td>';
+  emptyTr.innerHTML='<td colspan="'+(managerMode||memberMode?7:6)+'" class="empty" style="padding:20px;text-align:center">No articles yet.'+(managerMode?' Click "+ Add Article" to add one.':'')+'</td>';
   ctTb.appendChild(emptyTr);
  }else{
    ctRows.forEach(ctRenderRow);
