@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-27T09:41:17.079Z",
+  "lastUpdated": "2026-07-28T07:11:43.754Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -51,14 +51,7 @@
       "hash": "63cecce565f6adef200977dbe716f2673075040513d0f6ad450bc832231b1a44"
     }
   ],
-  "customTabs": [
-    {
-      "id": "ms30tcxn",
-      "name": "test",
-      "type": "lob",
-      "color": "#ec4899"
-    }
-  ],
+  "customTabs": [],
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
