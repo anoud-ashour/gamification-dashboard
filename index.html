@@ -545,6 +545,42 @@ const sopCov=s=>{let g=0,t=0;DATA.forEach(r=>{if(r[s.ar]>0||r[s.en]>0){g+=r[s.ar
 const cell=v=>`<span class="cell ${v?'yes':'no'}">${v?'✓':'✕'}</span>`;
 
 function goToUni(){var t=SHEET_TABS.find(function(x){return x.name.trim().toLowerCase().replace(/\s/g,'').indexOf('univers')>-1;});if(t){var id='sheet-'+t.name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');setTab(id);}}
+function filterOverviewSearch(q){
+ q=(q||'').toLowerCase().trim();
+ var res=$('ov-search-results');var grid=$('ov-lob-grid');if(!res||!grid)return;
+ if(!q){res.style.display='none';grid.style.display='grid';return;}
+ grid.style.display='none';
+ var LOB_MAP={default:'Default (Live Chat)',tpro:'TPRO (tPro/VIP)',tkt:'Ticketing',uni:'Universal'};
+ var results=[];
+ ROWS.forEach(function(r){
+  if(!r.article)return;
+  var art=(r.article||'').toLowerCase();
+  if(art.indexOf(q)<0)return;
+  var lobId=r.sopId||'';
+  var lobName=LOB_MAP[lobId]||(ASSIGNMENTS.customTabs||[]).filter(function(ct){return 'ctab-'+ct.id===lobId;}).map(function(ct){return ct.name;})[0]||lobId;
+  var pct=r.ar!==undefined?Math.round(((r.ar||0)+(r.en||0))/2*100):null;
+  results.push({article:r.article,lob:lobName,lobId:lobId,pct:pct,member:r.member||''});
+ });
+ if(!results.length){res.style.display='block';res.innerHTML='<div style="padding:18px 20px;font-size:13px;color:var(--muted);text-align:center">No articles found matching "'+q.replace(/</g,'&lt;')+'"</div>';return;}
+ var html='<div style="padding:8px 0">';
+ var shown=results.slice(0,50);
+ shown.forEach(function(r){
+  var col=r.pct===100?'#10b981':(r.pct>0?'#f59e0b':'#9ca3af');
+  var pctStr=r.pct!==null?r.pct+'%':'—';
+  var lobSafe=r.lobId.replace(/'/g,"\\'");
+  html+='<div onclick="setTab(\''+lobSafe+'\')" style="display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background=\'var(--hover)\'" onmouseout="this.style.background=\'\'">'
+   +'<div style="flex:1;min-width:0">'
+   +'<div style="font-size:13px;font-weight:700;color:var(--dark);line-height:1.3">'+r.article+'</div>'
+   +'<div style="font-size:11px;color:var(--muted);margin-top:2px;font-weight:600">'+r.lob+(r.member?' · '+r.member:'')+'</div>'
+   +'</div>'
+   +'<div style="font-size:13px;font-weight:800;color:'+col+';flex:none">'+pctStr+'</div>'
+   +'<div style="font-size:11px;color:var(--muted);flex:none">›</div>'
+   +'</div>';
+ });
+ if(results.length>50)html+='<div style="padding:10px 16px;font-size:11px;color:var(--muted);text-align:center">…and '+(results.length-50)+' more. Refine your search.</div>';
+ html+='</div>';
+ res.style.display='block';res.innerHTML=html;
+}
 function buildOverview(){
  ['sop','jr','dr','lang'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  var el=$('sec-overview');if(!el)return;
@@ -560,7 +596,16 @@ function buildOverview(){
  var uniDone=uniR.filter(function(r){return r.ar>0&&r.en>0;}).length;
  var uniP=pct(uniDone,uniR.length);
  var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
- var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:4px 0">';
+ var html='<div style="margin-bottom:20px">'
+  +'<div style="position:relative;max-width:480px">'
+  +'<span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔍</span>'
+  +'<input id="ov-search" type="text" placeholder="Search any article across all LOBs…" oninput="filterOverviewSearch(this.value)"'
+  +' style="width:100%;box-sizing:border-box;padding:11px 14px 11px 42px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;outline:none;background:var(--card);color:var(--dark)"'
+  +' onfocus="this.style.borderColor=\''+PU+'\'" onblur="this.style.borderColor=\'var(--border)\'">'
+  +'</div>'
+  +'<div id="ov-search-results" style="display:none;margin-top:10px;background:var(--card);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.1);overflow:hidden;max-height:380px;overflow-y:auto"></div>'
+  +'</div>'
+  +'<div id="ov-lob-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;padding:4px 0">';
  lops.forEach(function(c){
   html+='<div onclick="setTab(\''+c.tab+'\')" style="'+cs+';border-left:5px solid '+c.color+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
@@ -612,7 +657,8 @@ function buildOverview(){
     +'<div style="font-size:13px;font-weight:800;color:#10b981">+ Add New LOB</div>'
     +'</div>';
  }
- html+='</div>';
+ html+='</div>';// end ov-lob-grid
+ html+='</div>';// end outer wrapper
  el.innerHTML=html;
  lops.forEach(function(c){countUp($('ovkpi-'+c.id),c.p,'%');});
  countUp($('ovkpi-uni'),uniP,'%');
@@ -1642,15 +1688,19 @@ var MG_CATS=[
  {name:'documentation tutorial game',games:1},
 ];
 function openAddMgGroup(){
- var n=prompt('LOB group name (e.g. Universal, Default):');if(!n||!n.trim())return;
+ var n=prompt('New tab name (e.g. Universal, Default):');if(!n||!n.trim())return;
  if(!ASSIGNMENTS.mgGroups)ASSIGNMENTS.mgGroups=[];
- ASSIGNMENTS.mgGroups.push({id:'mg'+Date.now().toString(36),name:n.trim(),sections:[]});
+ var newId='mg'+Date.now().toString(36);
+ ASSIGNMENTS.mgGroups.push({id:newId,name:n.trim(),sections:[]});
+ activeMgGroup=newId;
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  saveAssignments();buildMiniGames();
+ var wrap=$('mg-table-wrap');if(wrap&&wrap.style.display==='none'){wrap.style.display='block';var ic=$('mg-toggle-icon');if(ic)ic.style.transform='rotate(90deg)';}
 }
 function deleteMgGroup(gid){
- if(!confirm('Delete this LOB group and all its sections?'))return;
+ if(!confirm('Delete this tab and all its sections?'))return;
  ASSIGNMENTS.mgGroups=(ASSIGNMENTS.mgGroups||[]).filter(function(g){return g.id!==gid;});
+ if(activeMgGroup===gid)activeMgGroup='__builtin__';
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  saveAssignments();buildMiniGames();
 }
@@ -1672,6 +1722,16 @@ function deleteMgSection(gid,sid){
 function mgKey(cat,num){return 'mglink::'+cat.toLowerCase().replace(/[^a-z0-9]/g,'-')+'::'+num;}
 var MG_COLORS=['#FF5900','#8318d8','#0891b2','#16a34a','#d97706'];
 var MG_ICONS=['🚫','💬','📸','📄','🎓'];
+function setMgGroup(id){
+ activeMgGroup=id;
+ var allIds=['__builtin__'].concat((ASSIGNMENTS.mgGroups||[]).map(function(g){return g.id;}));
+ allIds.forEach(function(gid){
+  var d=document.getElementById('mg-content-'+gid);
+  if(d)d.style.display=(gid===id)?'block':'none';
+  var b=document.getElementById('mg-nav-btn-'+gid);
+  if(b){var c=gid==='__builtin__'?PU:'#0891b2';b.style.background=(gid===id)?c:'#f3f4f6';b.style.color=(gid===id)?'#fff':c;}
+ });
+}
 function buildMiniGames(){
  var el=$('minigames-content');if(!el)return;
  var totalGames=MG_CATS.reduce(function(s,c){return s+c.games;},0);
@@ -1704,7 +1764,18 @@ function buildMiniGames(){
   +'<textarea id="mg-export-txt" style="width:100%;box-sizing:border-box;height:80px;font-size:11px;font-family:monospace;border:none;background:transparent;resize:none;outline:none;color:#166534" readonly></textarea>'
   +'<button onclick="copyMgExport()" style="padding:5px 14px;border-radius:7px;background:#16a34a;color:#fff;border:none;font-size:12px;font-weight:800;cursor:pointer">Copy to Clipboard</button>'
   +'</div>';
- // Category cards grid
+ // LOB tab nav
+ html+='<div id="mg-group-nav" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--border)">'
+  +'<button id="mg-nav-btn-__builtin__" onclick="setMgGroup(\'__builtin__\')" style="padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.15s;background:'+(activeMgGroup==='__builtin__'?PU:'#f3f4f6')+';color:'+(activeMgGroup==='__builtin__'?'#fff':PU)+'">🎮 CS Games</button>';
+ (ASSIGNMENTS.mgGroups||[]).forEach(function(grp){
+  var isAct=(activeMgGroup===grp.id);
+  html+='<button id="mg-nav-btn-'+grp.id+'" onclick="setMgGroup(\''+grp.id+'\')" style="padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.15s;background:'+(isAct?'#0891b2':'#f3f4f6')+';color:'+(isAct?'#fff':'#0891b2')+'">'+grp.name+'</button>';
+  if(managerMode)html+='<button onclick="deleteMgGroup(\''+grp.id+'\')" title="Delete tab" style="padding:3px 8px;border-radius:7px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:10px;cursor:pointer;margin-left:-6px">✕</button>';
+ });
+ if(managerMode)html+='<button onclick="openAddMgGroup()" style="padding:7px 14px;border-radius:8px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:12px;font-weight:700;cursor:pointer">+ New Tab</button>';
+ html+='</div>';
+ // Built-in CS Games content panel
+ html+='<div id="mg-content-__builtin__" style="display:'+(activeMgGroup==='__builtin__'?'block':'none')+'">';
  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
  MG_CATS.forEach(function(cat,ci){
   var col=MG_COLORS[ci%MG_COLORS.length];
@@ -1714,7 +1785,6 @@ function buildMiniGames(){
   var catPct=Math.round((catLinked/cat.games)*100);
   var colLight=col+'22';
   html+='<div style="background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)">'
-   // Card header
    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
    +'<div style="width:38px;height:38px;border-radius:10px;background:'+colLight+';display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
    +'<div style="flex:1;min-width:0">'
@@ -1722,11 +1792,9 @@ function buildMiniGames(){
    +'<div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:1px">'+catLinked+' / '+cat.games+' linked</div>'
    +'</div>'
    +'</div>'
-   // Progress bar
    +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
    +'<div style="width:'+catPct+'%;height:100%;background:'+col+';border-radius:3px;transition:width .5s ease"></div>'
    +'</div>'
-   // Game pills
    +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
   for(var i=1;i<=cat.games;i++){
    var key=mgKey(cat.name,i);
@@ -1750,46 +1818,48 @@ function buildMiniGames(){
   }
   html+='</div></div>';
  });
- html+='</div></div>';
+ html+='</div>';
+ html+='</div>';// end mg-content-__builtin__
+ // Dynamic LOB group content panels
+ (ASSIGNMENTS.mgGroups||[]).forEach(function(grp){
+  var isAct=(activeMgGroup===grp.id);
+  html+='<div id="mg-content-'+grp.id+'" style="display:'+(isAct?'block':'none')+'">';
+  if(managerMode)html+='<div style="margin-bottom:16px"><button onclick="openAddMgSection(\''+grp.id+'\')" style="padding:7px 16px;border-radius:8px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:12px;font-weight:700;cursor:pointer">+ Add Section</button></div>';
+  if(!(grp.sections&&grp.sections.length)){html+='<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;font-weight:600">No sections yet.'+(managerMode?' Click "+ Add Section" to get started.':' Ask the manager to add sections.')+'</div>';}
+  else{
+   html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
+   grp.sections.forEach(function(sec,si){
+    var col=MG_COLORS[si%MG_COLORS.length];var icon=MG_ICONS[si%MG_ICONS.length];
+    var secLinked=0;for(var gi=1;gi<=sec.games;gi++){if(GAME_LINKS[mgKey(grp.id+'::'+sec.id,gi)])secLinked++;}
+    var secPct=sec.games>0?Math.round((secLinked/sec.games)*100):0;
+    html+='<div style="background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)">'
+     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+     +'<div style="width:38px;height:38px;border-radius:10px;background:'+col+'22;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
+     +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:800;color:var(--dark)">'+sec.name+'</div>'
+     +'<div style="font-size:11px;color:var(--muted);font-weight:600">'+secLinked+'/'+sec.games+' linked</div></div>'
+     +(managerMode?'<button onclick="deleteMgSection(\''+grp.id+'\',\''+sec.id+'\')" style="padding:2px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:10px;cursor:pointer">✕</button>':'')
+     +'</div>'
+     +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
+     +'<div style="width:'+secPct+'%;height:100%;background:'+col+';border-radius:3px"></div></div>'
+     +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
+    for(var gi=1;gi<=sec.games;gi++){
+     var gk=mgKey(grp.id+'::'+sec.id,gi);var gu=GAME_LINKS[gk]||'';
+     var gsk=gk.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+     var gl=sec.games===1?'Game Link':'Game '+gi;
+     if(gu){html+='<a href="'+gu+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:'+col+';color:#fff;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none">🎮 '+gl+'</a>';
+      if(editLinksMode){html+='<span onclick="mgEditLink(\''+gsk+'\')" style="display:inline-flex;align-items:center;padding:6px 10px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';}
+     }else if(editLinksMode){html+='<span onclick="mgEditLink(\''+gsk+'\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed '+col+';color:'+col+';border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:'+col+'22">+ '+gl+'</span>';
+     }else{html+='<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:20px;font-size:12px;font-weight:600">'+gl+'</span>';}
+    }
+    html+='</div></div>';
+   });
+   html+='</div>';
+  }
+  html+='</div>';// end mg-content-{grp.id}
+ });
+ html+='</div>';// end mg-table-wrap
  el.innerHTML=html;
  countUp($('mg-stat-total'),totalGames,'');
- // Render dynamic manager-added LOB groups
- (ASSIGNMENTS.mgGroups||[]).forEach(function(grp){
-  var grpEl=document.createElement('div');grpEl.style.marginTop='24px';
-  var grpHtml='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
-   +'<div style="font-size:14px;font-weight:900;color:var(--dark);text-transform:uppercase;letter-spacing:.6px">'+grp.name+'</div>';
-  if(managerMode){grpHtml+='<button onclick="openAddMgSection(\''+grp.id+'\')" style="padding:4px 10px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:11px;font-weight:700;cursor:pointer">+ Section</button>'
-   +'<button onclick="deleteMgGroup(\''+grp.id+'\')" style="padding:4px 10px;border-radius:8px;border:1.5px dashed #dc2626;background:none;color:#dc2626;font-size:11px;font-weight:700;cursor:pointer">✕</button>';}
-  grpHtml+='</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
-  (grp.sections||[]).forEach(function(sec,si){
-   var col=MG_COLORS[si%MG_COLORS.length];var icon=MG_ICONS[si%MG_ICONS.length];
-   var secLinked=0;for(var gi=1;gi<=sec.games;gi++){if(GAME_LINKS[mgKey(grp.id+'::'+sec.id,gi)])secLinked++;}
-   var secPct=sec.games>0?Math.round((secLinked/sec.games)*100):0;
-   grpHtml+='<div style="background:var(--card);border-radius:20px;padding:20px;border:1px solid var(--border);border-top:4px solid '+col+';box-shadow:0 4px 16px rgba(0,0,0,.06)">'
-    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
-    +'<div style="width:38px;height:38px;border-radius:10px;background:'+col+'22;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none">'+icon+'</div>'
-    +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:800;color:var(--dark)">'+sec.name+'</div>'
-    +'<div style="font-size:11px;color:var(--muted);font-weight:600">'+secLinked+'/'+sec.games+' linked</div></div>'
-    +(managerMode?'<button onclick="deleteMgSection(\''+grp.id+'\',\''+sec.id+'\')" style="padding:2px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:10px;cursor:pointer">✕</button>':'')
-    +'</div>'
-    +'<div style="height:4px;border-radius:3px;background:var(--border);margin-bottom:14px;overflow:hidden">'
-    +'<div style="width:'+secPct+'%;height:100%;background:'+col+';border-radius:3px"></div></div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:7px">';
-   for(var gi=1;gi<=sec.games;gi++){
-    var gk=mgKey(grp.id+'::'+sec.id,gi);var gu=GAME_LINKS[gk]||'';
-    var gsk=gk.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    var gl=sec.games===1?'Game Link':'Game '+gi;
-    if(gu){grpHtml+='<a href="'+gu+'" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:'+col+';color:#fff;border-radius:20px;font-size:12px;font-weight:800;text-decoration:none">🎮 '+gl+'</a>';
-     if(editLinksMode){grpHtml+='<span onclick="mgEditLink(\''+gsk+'\')" style="display:inline-flex;align-items:center;padding:6px 10px;background:#f3f4f6;color:#6b7280;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #e5e7eb">✏️</span>';}
-    }else if(editLinksMode){grpHtml+='<span onclick="mgEditLink(\''+gsk+'\')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed '+col+';color:'+col+';border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:'+col+'22">+ '+gl+'</span>';
-    }else{grpHtml+='<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1.5px dashed #d1d5db;color:#9ca3af;border-radius:20px;font-size:12px;font-weight:600">'+gl+'</span>';}
-   }
-   grpHtml+='</div></div>';
-  });
-  grpHtml+='</div>';
-  grpEl.innerHTML=grpHtml;el.appendChild(grpEl);
- });
- if(managerMode){var addBtn=document.createElement('div');addBtn.style.marginTop='20px';addBtn.innerHTML='<button onclick="openAddMgGroup()" style="padding:9px 20px;border-radius:10px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:13px;font-weight:700;cursor:pointer">+ Add LOB Group</button>';el.appendChild(addBtn);}
  // Custom LOB article game links
  (ASSIGNMENTS.customTabs||[]).filter(function(ct){return ct.type==='tab';}).forEach(function(ct){
   var tid='ctab-'+ct.id;
@@ -2287,6 +2357,7 @@ var ASSIGN_FILE='assignments.json';
 var ASSIGNMENTS={overrides:{},extra:[],customTabs:[],managers:[],memberStatus:{},subCategories:{},articleSubCat:{},customSections:[],notifications:[],mgGroups:[],memberAccounts:[]};
 var managerMode=false;
 var memberMode=false;var _memberEmail='';
+var activeMgGroup='__builtin__';
 var _managerEmail='';
 var _assignPending=false;
 var _mgrEditKey='';var _mgrEditExtraId='';
