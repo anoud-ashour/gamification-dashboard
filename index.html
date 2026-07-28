@@ -1188,6 +1188,7 @@ function artStatusOverall(cells){
  var sts=cells.map(statusOf);
  if(sts.every(function(s){return s==='Done';}))return 'Done';
  if(sts.some(function(s){return s==='In Progress';}))return 'In Progress';
+ if(sts.some(function(s){return s==='Pending Modification';}))return 'Pending Modification';
  if(sts.some(function(s){return s==='On Review';}))return 'On Review';
  return 'Not started';
 }
@@ -1201,6 +1202,7 @@ function artBadge(s){
  var c=s==='Done'?{dot:'#16a34a',bg:'#f0fdf4',col:'#166534'}
         :s==='In Progress'?{dot:'#3b82f6',bg:'#eff6ff',col:'#1d4ed8'}
         :s==='On Review'?{dot:'#f59e0b',bg:'#fffbeb',col:'#92400e'}
+        :s==='Pending Modification'?{dot:'#d97706',bg:'#fef3c7',col:'#b45309'}
         :{dot:'#9ca3af',bg:'#f9fafb',col:'#6b7280'};
  return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;background:'+c.bg+';color:'+c.col+';font-size:12px;font-weight:600">'
   +'<span style="width:7px;height:7px;border-radius:50%;background:'+c.dot+';flex:none"></span>'+(s==='Not started'?'Not Started':s)+'</span>';
@@ -1217,7 +1219,7 @@ var ALLSOPS=[
 function isStatusValue(v){
  if(!v)return false;
  var s=String(v).toLowerCase().trim();
- return s.indexOf('done')>-1||s.indexOf('progress')>-1||s.indexOf('review')>-1||s.indexOf('not started')>-1||s.indexOf('found')>-1||s.indexOf('complete')>-1;
+ return s.indexOf('done')>-1||s.indexOf('progress')>-1||s.indexOf('review')>-1||s.indexOf('not started')>-1||s.indexOf('found')>-1||s.indexOf('complete')>-1||s.indexOf('pending')>-1;
 }
 function artSopBadges(r){
  if(r._sop)return sopPill(r._sop.label,r._sop.color);
