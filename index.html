@@ -1236,7 +1236,7 @@ function renderMbTable(){
  rows.forEach(function(r){
   var cells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
   var done=cells.filter(function(v){return statusOf(v)==='Done';}).length;
-  // Use ROWS coverage (ar/en) for Universal articles — status cells give wrong effort when all set to same value by override
+  var _mbArt=(r.article||'').toLowerCase().trim();
   var _mbUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_mbArt&&row.sopId==='uni';});
   var p=_mbUniRow?Math.round((_mbUniRow.ar+_mbUniRow.en)/2*100):(cells.length?Math.round(done/cells.length*100):0);
   var st=artStatusOverall(cells);
@@ -1265,6 +1265,7 @@ function renderSopTable(){
   var overall=artStatusOverall(allCells);
   if(sopfFilter&&overall!==sopfFilter)return;
   var done=allCells.filter(function(v){return statusOf(v)==='Done';}).length;
+  var _spArt=(r.article||'').toLowerCase().trim();
   var _spUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_spArt&&row.sopId==='uni';});
   var p=_spUniRow?Math.round((_spUniRow.ar+_spUniRow.en)/2*100):(allCells.length?Math.round(done/allCells.length*100):0);
   var due=parseDate(r.vip_end)||parseDate(r.def_end)||null;
@@ -2699,7 +2700,7 @@ async function saveMemberStatus(){
  }
  closeMemberEdit();
  buildRows();applyAssignments();
- renderProgress();
+ renderProgress();renderMbTable();renderSopTable();
  var bar=$('mem-save-bar');
  var origTxt='You can edit article status only';
  if(bar){var si=bar.querySelector('span:nth-child(3)');if(si)si.textContent='Saving…';}
