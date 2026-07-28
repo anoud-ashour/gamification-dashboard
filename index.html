@@ -1757,9 +1757,10 @@ function saveMgLob(){
   ASSIGNMENTS.mgGroups.push({id:newId,name:name,sections:sections});
   activeMgGroup=newId;
  }
+ var _wasNewLob=!_mgLobEditId;var _newLobId=_mgLobEditId||(ASSIGNMENTS.mgGroups.length>0?ASSIGNMENTS.mgGroups[ASSIGNMENTS.mgGroups.length-1].id:null);
  closeMgLobModal();
  saveAssignments();buildMiniGames();
- var wrap=$('mg-table-wrap');if(wrap&&wrap.style.display==='none'){wrap.style.display='block';var ic=$('mg-toggle-icon');if(ic)ic.style.transform='rotate(90deg)';}
+ if(_newLobId){var lobWrap=document.getElementById('mg-lob-wrap-'+_newLobId);if(lobWrap&&lobWrap.style.display==='none')toggleMgLob(_newLobId);}
 }
 function deleteMgGroup(gid){
  if(!confirm('Delete this tab and all its sections?'))return;
@@ -1775,15 +1776,18 @@ function deleteMgSection(gid,sid){
 function mgKey(cat,num){return 'mglink::'+cat.toLowerCase().replace(/[^a-z0-9]/g,'-')+'::'+num;}
 var MG_COLORS=['#FF5900','#8318d8','#0891b2','#16a34a','#d97706'];
 var MG_ICONS=['🚫','💬','📸','📄','🎓'];
-function setMgGroup(id){
- activeMgGroup=id;
- var allIds=['__builtin__'].concat((ASSIGNMENTS.mgGroups||[]).map(function(g){return g.id;}));
- allIds.forEach(function(gid){
-  var d=document.getElementById('mg-content-'+gid);
-  if(d)d.style.display=(gid===id)?'block':'none';
-  var b=document.getElementById('mg-nav-btn-'+gid);
-  if(b){var c=gid==='__builtin__'?PU:'#0891b2';b.style.background=(gid===id)?c:'#f3f4f6';b.style.color=(gid===id)?'#fff':c;}
- });
+function setMgGroup(id){activeMgGroup=id;}// kept for compat
+function toggleMgLob(gid){
+ var wrap=document.getElementById('mg-lob-wrap-'+gid);
+ var icon=document.getElementById('mg-lob-icon-'+gid);
+ if(!wrap)return;
+ var open=wrap.style.display==='none';
+ // Close CS Games if open
+ if(open){var csg=$('mg-table-wrap');if(csg&&csg.style.display!=='none'){csg.style.display='none';var csgic=$('mg-toggle-icon');if(csgic)csgic.style.transform='';}}
+ // Close other LOB wraps
+ (ASSIGNMENTS.mgGroups||[]).forEach(function(g){if(g.id!==gid){var w=document.getElementById('mg-lob-wrap-'+g.id);if(w)w.style.display='none';var ic=document.getElementById('mg-lob-icon-'+g.id);if(ic)ic.style.transform='';}});
+ wrap.style.display=open?'block':'none';
+ if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
 function buildMiniGames(){
  var el=$('minigames-content');if(!el)return;
@@ -1792,8 +1796,9 @@ function buildMiniGames(){
  MG_CATS.forEach(function(c){for(var i=1;i<=c.games;i++){if(GAME_LINKS[mgKey(c.name,i)])linkedCount++;}});
  var pct100=Math.round((linkedCount/totalGames)*100);
  // Clickable summary card (same style as Drop Off Update)
- var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:4px 0 22px">'
-  +'<div onclick="toggleMgTable()" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+PU+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s;grid-column:1/-1;max-width:340px" '
+ var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;padding:4px 0 22px">'
+  // CS Mini Games summary card
+  +'<div onclick="toggleMgTable()" style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid '+PU+';box-shadow:0 2px 8px rgba(0,0,0,.07);cursor:pointer;transition:box-shadow .15s,transform .13s" '
   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
   +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
@@ -1805,7 +1810,41 @@ function buildMiniGames(){
   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:5px" id="mg-stat-linked-label">'+linkedCount+' / '+totalGames+' links added</div>'
   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
   +'<div style="width:'+pct100+'%;height:100%;background:'+PU+';border-radius:3px"></div></div>'
-  +'</div></div>';
+  +'</div>';
+ // LOB group summary cards
+ (ASSIGNMENTS.mgGroups||[]).forEach(function(grp){
+  var grpTotGames=(grp.sections||[]).reduce(function(s,sec){return s+sec.games;},0);
+  var grpLinked=0;(grp.sections||[]).forEach(function(sec){for(var gi=1;gi<=sec.games;gi++){if(GAME_LINKS[mgKey(grp.id+'::'+sec.id,gi)])grpLinked++;}});
+  var grpPct=grpTotGames>0?Math.round((grpLinked/grpTotGames)*100):0;
+  var secCnt=(grp.sections||[]).length;
+  html+='<div style="background:var(--card);border-radius:20px;padding:24px 22px;border:1px solid var(--border);border-left:5px solid #0891b2;box-shadow:0 2px 8px rgba(0,0,0,.07);transition:box-shadow .15s,transform .13s" '
+   +'onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-3px)\'" '
+   +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
+   +'<div onclick="toggleMgLob(\''+grp.id+'\')" style="cursor:pointer">'
+   +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
+   +'<div style="font-size:18px;font-weight:900;color:var(--dark)">🎯 '+grp.name+'</div>'
+   +'<span id="mg-lob-icon-'+grp.id+'" style="font-size:20px;color:#0891b2;font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
+   +'<div style="font-size:13px;font-weight:700;color:var(--muted);margin-top:10px">'+secCnt+' section'+(secCnt!==1?'s':'')+' · '+grpTotGames+' games</div>'
+   +'<div style="font-size:12px;font-weight:600;color:var(--muted);margin-top:3px">'+grpLinked+' / '+grpTotGames+' links added</div>'
+   +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:10px;overflow:hidden">'
+   +'<div style="width:'+grpPct+'%;height:100%;background:#0891b2;border-radius:3px"></div></div>'
+   +'</div>'
+   +(managerMode?'<div style="display:flex;gap:6px;margin-top:12px">'
+    +'<button onclick="openAddMgSection(\''+grp.id+'\')" style="flex:1;padding:5px 10px;border-radius:7px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:11px;font-weight:700;cursor:pointer">+ Section</button>'
+    +'<button onclick="if(confirm(\'Delete this LOB?\'))deleteMgGroup(\''+grp.id+'\')" style="padding:5px 10px;border-radius:7px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">✕</button>'
+    +'</div>':'')
+   +'</div>';
+ });
+ // New LOB Games creation card (always in manager mode)
+ if(managerMode){
+  html+='<div onclick="openAddMgGroup()" style="background:var(--card);border-radius:20px;padding:24px 22px;border:2px dashed #0891b2;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;transition:background .15s" '
+   +'onmouseover="this.style.background=\'#e0f2fe\'" onmouseout="this.style.background=\'var(--card)\'">'
+   +'<div style="font-size:28px;margin-bottom:8px">🎮</div>'
+   +'<div style="font-size:14px;font-weight:900;color:#0891b2">New LOB Games</div>'
+   +'<div style="font-size:11px;color:#6b7280;margin-top:4px;font-weight:600;text-align:center">Create a new LOB tab<br>with custom sections</div>'
+   +'</div>';
+ }
+ html+='</div>';
  // Expandable content
  html+='<div id="mg-table-wrap" style="display:none">'
   +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px">'
@@ -1817,18 +1856,7 @@ function buildMiniGames(){
   +'<textarea id="mg-export-txt" style="width:100%;box-sizing:border-box;height:80px;font-size:11px;font-family:monospace;border:none;background:transparent;resize:none;outline:none;color:#166534" readonly></textarea>'
   +'<button onclick="copyMgExport()" style="padding:5px 14px;border-radius:7px;background:#16a34a;color:#fff;border:none;font-size:12px;font-weight:800;cursor:pointer">Copy to Clipboard</button>'
   +'</div>';
- // LOB tab nav
- html+='<div id="mg-group-nav" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--border)">'
-  +'<button id="mg-nav-btn-__builtin__" onclick="setMgGroup(\'__builtin__\')" style="padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.15s;background:'+(activeMgGroup==='__builtin__'?PU:'#f3f4f6')+';color:'+(activeMgGroup==='__builtin__'?'#fff':PU)+'">🎮 CS Games</button>';
- (ASSIGNMENTS.mgGroups||[]).forEach(function(grp){
-  var isAct=(activeMgGroup===grp.id);
-  html+='<button id="mg-nav-btn-'+grp.id+'" onclick="setMgGroup(\''+grp.id+'\')" style="padding:7px 16px;border-radius:8px;border:none;font-size:12px;font-weight:800;cursor:pointer;transition:.15s;background:'+(isAct?'#0891b2':'#f3f4f6')+';color:'+(isAct?'#fff':'#0891b2')+'">'+grp.name+'</button>';
-  if(managerMode)html+='<button onclick="deleteMgGroup(\''+grp.id+'\')" title="Delete tab" style="padding:3px 8px;border-radius:7px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:10px;cursor:pointer;margin-left:-6px">✕</button>';
- });
- if(managerMode)html+='<button onclick="openAddMgGroup()" style="padding:7px 14px;border-radius:8px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:12px;font-weight:700;cursor:pointer">+ New Tab</button>';
- html+='</div>';
- // Built-in CS Games content panel
- html+='<div id="mg-content-__builtin__" style="display:'+(activeMgGroup==='__builtin__'?'block':'none')+'">';
+ // CS Games sections (each LOB now has its own summary card outside)
  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
  MG_CATS.forEach(function(cat,ci){
   var col=MG_COLORS[ci%MG_COLORS.length];
@@ -1871,14 +1899,12 @@ function buildMiniGames(){
   }
   html+='</div></div>';
  });
- html+='</div>';
- html+='</div>';// end mg-content-__builtin__
- // Dynamic LOB group content panels
+ html+='</div>';// end CS Games grid
+ html+='</div>';// end mg-table-wrap
+ // LOB group expandable content (each separate, outside mg-table-wrap)
  (ASSIGNMENTS.mgGroups||[]).forEach(function(grp){
-  var isAct=(activeMgGroup===grp.id);
-  html+='<div id="mg-content-'+grp.id+'" style="display:'+(isAct?'block':'none')+'">';
-  if(managerMode)html+='<div style="margin-bottom:16px"><button onclick="openAddMgSection(\''+grp.id+'\')" style="padding:7px 16px;border-radius:8px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:12px;font-weight:700;cursor:pointer">+ Add Section</button></div>';
-  if(!(grp.sections&&grp.sections.length)){html+='<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;font-weight:600">No sections yet.'+(managerMode?' Click "+ Add Section" to get started.':' Ask the manager to add sections.')+'</div>';}
+  html+='<div id="mg-lob-wrap-'+grp.id+'" style="display:none;margin-top:16px">';
+  if(!(grp.sections&&grp.sections.length)){html+='<div style="padding:40px;text-align:center;color:var(--muted);font-size:13px;font-weight:600">No sections yet.'+(managerMode?' Use "+ Section" on the card above.':' Ask the manager to add sections.')+'</div>';}
   else{
    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">';
    grp.sections.forEach(function(sec,si){
@@ -1908,9 +1934,8 @@ function buildMiniGames(){
    });
    html+='</div>';
   }
-  html+='</div>';// end mg-content-{grp.id}
+  html+='</div>';// end mg-lob-wrap-{id}
  });
- html+='</div>';// end mg-table-wrap
  el.innerHTML=html;
  countUp($('mg-stat-total'),totalGames,'');
  // Custom LOB article game links
@@ -2045,6 +2070,7 @@ var _mgEditKey='';
 function toggleMgTable(){
  var wrap=$('mg-table-wrap');var icon=$('mg-toggle-icon');if(!wrap)return;
  var open=wrap.style.display==='none';
+ if(open){(ASSIGNMENTS.mgGroups||[]).forEach(function(g){var w=document.getElementById('mg-lob-wrap-'+g.id);if(w)w.style.display='none';var ic=document.getElementById('mg-lob-icon-'+g.id);if(ic)ic.style.transform='';});}
  wrap.style.display=open?'block':'none';
  if(icon)icon.style.transform=open?'rotate(90deg)':'';
 }
