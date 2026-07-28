@@ -1695,13 +1695,69 @@ var MG_CATS=[
  {name:'Documentation',games:6},
  {name:'documentation tutorial game',games:1},
 ];
+var _mgLobEditId=null;
 function openAddMgGroup(){
- var n=prompt('New tab name (e.g. Universal, Default):');if(!n||!n.trim())return;
+ _mgLobEditId=null;
+ $('mg-lob-modal-title').textContent='Create New LOB Tab';
+ $('mg-lob-name').value='';$('mg-lob-name').disabled=false;
+ $('mg-lob-sections-wrap').innerHTML='';
+ addMgLobSectionRow();
+ $('mg-lob-overlay').style.display='block';$('mg-lob-modal').style.display='block';
+ setTimeout(function(){$('mg-lob-name').focus();},50);
+}
+function openAddMgSection(gid){
+ var grp=(ASSIGNMENTS.mgGroups||[]).find(function(g){return g.id===gid;});if(!grp)return;
+ if((grp.sections||[]).length>=6){alert('Maximum 6 sections per LOB tab.');return;}
+ _mgLobEditId=gid;
+ $('mg-lob-modal-title').textContent='Add Section to "'+grp.name+'"';
+ $('mg-lob-name').value=grp.name;$('mg-lob-name').disabled=true;
+ $('mg-lob-sections-wrap').innerHTML='';
+ addMgLobSectionRow();
+ $('mg-lob-overlay').style.display='block';$('mg-lob-modal').style.display='block';
+}
+function closeMgLobModal(){
+ $('mg-lob-overlay').style.display='none';$('mg-lob-modal').style.display='none';
+ $('mg-lob-name').disabled=false;_mgLobEditId=null;
+}
+function addMgLobSectionRow(){
+ var wrap=$('mg-lob-sections-wrap');if(!wrap)return;
+ if(wrap.querySelectorAll('.mg-sec-row').length>=6){return;}
+ var row=document.createElement('div');row.className='mg-sec-row';
+ row.style.cssText='display:grid;grid-template-columns:1fr 120px auto;gap:8px;align-items:center;margin-bottom:8px';
+ row.innerHTML='<input type="text" placeholder="Section name" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;outline:none;width:100%;box-sizing:border-box">'
+  +'<select style="padding:9px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;outline:none;width:100%">'
+  +'<option value="1">1 game</option><option value="2" selected>2 games</option><option value="3">3 games</option>'
+  +'<option value="4">4 games</option><option value="5">5 games</option><option value="6">6 games</option>'
+  +'</select>'
+  +'<button type="button" onclick="this.closest(\'.mg-sec-row\').remove();_updateMgAddBtn()" style="padding:7px 10px;border-radius:8px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:12px;cursor:pointer">✕</button>';
+ wrap.appendChild(row);_updateMgAddBtn();
+}
+function _updateMgAddBtn(){
+ var wrap=$('mg-lob-sections-wrap');var btn=$('mg-add-sec-btn');if(!wrap||!btn)return;
+ var c=wrap.querySelectorAll('.mg-sec-row').length;
+ btn.disabled=c>=6;btn.style.opacity=c>=6?'.4':'1';btn.textContent=c>=6?'Max 6 sections':'+ Add Section';
+}
+function saveMgLob(){
+ var nameEl=$('mg-lob-name');var name=(nameEl.value||'').trim();
+ var rows=($('mg-lob-sections-wrap')||{querySelectorAll:function(){return [];}}).querySelectorAll('.mg-sec-row');
+ var sections=[];
+ rows.forEach(function(row){
+  var inp=row.querySelectorAll('input,select');
+  var sn=(inp[0].value||'').trim();var sg=Math.min(6,Math.max(1,parseInt(inp[1].value,10)||2));
+  if(sn)sections.push({id:'sec'+(Date.now()%1e9|0)+(Math.random()*9999|0),name:sn,games:sg});
+ });
  if(!ASSIGNMENTS.mgGroups)ASSIGNMENTS.mgGroups=[];
- var newId='mg'+Date.now().toString(36);
- ASSIGNMENTS.mgGroups.push({id:newId,name:n.trim(),sections:[]});
- activeMgGroup=newId;
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ if(_mgLobEditId){
+  var grp=ASSIGNMENTS.mgGroups.find(function(g){return g.id===_mgLobEditId;});
+  if(grp){if(!grp.sections)grp.sections=[];sections.forEach(function(s){if(grp.sections.length<6)grp.sections.push(s);});}
+ }else{
+  if(!name){nameEl.style.borderColor='#dc2626';nameEl.focus();setTimeout(function(){nameEl.style.borderColor='';},1500);return;}
+  if(!sections.length){var firstIn=($('mg-lob-sections-wrap').querySelector('input'));if(firstIn){firstIn.style.borderColor='#dc2626';firstIn.focus();setTimeout(function(){firstIn.style.borderColor='';},1500);}return;}
+  var newId='mg'+(Date.now()%1e9|0);
+  ASSIGNMENTS.mgGroups.push({id:newId,name:name,sections:sections});
+  activeMgGroup=newId;
+ }
+ closeMgLobModal();
  saveAssignments();buildMiniGames();
  var wrap=$('mg-table-wrap');if(wrap&&wrap.style.display==='none'){wrap.style.display='block';var ic=$('mg-toggle-icon');if(ic)ic.style.transform='rotate(90deg)';}
 }
@@ -1709,22 +1765,11 @@ function deleteMgGroup(gid){
  if(!confirm('Delete this tab and all its sections?'))return;
  ASSIGNMENTS.mgGroups=(ASSIGNMENTS.mgGroups||[]).filter(function(g){return g.id!==gid;});
  if(activeMgGroup===gid)activeMgGroup='__builtin__';
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- saveAssignments();buildMiniGames();
-}
-function openAddMgSection(gid){
- var grp=(ASSIGNMENTS.mgGroups||[]).find(function(g){return g.id===gid;});if(!grp)return;
- var n=prompt('Section name (e.g. Wrong Order Game):');if(!n||!n.trim())return;
- var gc=parseInt(prompt('Number of games (e.g. 2):'),10);if(isNaN(gc)||gc<1)gc=1;
- if(!grp.sections)grp.sections=[];
- grp.sections.push({id:'sec'+Date.now().toString(36),name:n.trim(),games:gc});
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  saveAssignments();buildMiniGames();
 }
 function deleteMgSection(gid,sid){
  var grp=(ASSIGNMENTS.mgGroups||[]).find(function(g){return g.id===gid;});if(!grp)return;
  grp.sections=(grp.sections||[]).filter(function(s){return s.id!==sid;});
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  saveAssignments();buildMiniGames();
 }
 function mgKey(cat,num){return 'mglink::'+cat.toLowerCase().replace(/[^a-z0-9]/g,'-')+'::'+num;}
@@ -2632,22 +2677,25 @@ function renderMemberList(){
 function removeMemberAt(i){
  if(!confirm('Remove this member?'))return;
  (ASSIGNMENTS.memberAccounts||[]).splice(i,1);
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  renderMemberList();
+ saveAssignments();
 }
 async function addMemberAccess(){
  var email=($('mem-new-email').value||'').toLowerCase().trim();
  var pw=($('mem-new-pw').value||'').trim();
- var err=$('mem-access-err');
+ var err=$('mem-access-err');var btn=document.querySelector('#mem-manage-modal button[onclick="addMemberAccess()"]');
  if(!email||!pw){if(err){err.textContent='Email and password required.';err.style.display='block';}return;}
+ if(btn){btn.disabled=true;btn.textContent='Saving…';}
  var hash=await mgHash(email,pw);
  if(!ASSIGNMENTS.memberAccounts)ASSIGNMENTS.memberAccounts=[];
  var existing=ASSIGNMENTS.memberAccounts.find(function(m){return m.email.toLowerCase()===email;});
  if(existing){existing.hash=hash;}else{ASSIGNMENTS.memberAccounts.push({email:email,hash:hash});}
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  if(err)err.style.display='none';
  $('mem-new-email').value='';$('mem-new-pw').value='';
  renderMemberList();
+ await saveAssignments();
+ if(btn){btn.disabled=false;btn.textContent='✓ Saved! Add / Update';}
+ setTimeout(function(){if(btn)btn.textContent='Add / Update';},3000);
 }
 
 function openManageAccess(){
@@ -3657,6 +3705,22 @@ function cycleSecItemStatus(secId,itemId){
  </div>
 </div>
 
+<!-- Create LOB Mini Game modal -->
+<div id="mg-lob-overlay" onclick="closeMgLobModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9300"></div>
+<div id="mg-lob-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border-radius:20px;padding:28px 26px;width:520px;max-width:94vw;z-index:9301;box-shadow:0 24px 64px rgba(0,0,0,.28);max-height:90vh;overflow-y:auto">
+ <div id="mg-lob-modal-title" style="font-size:15px;font-weight:900;color:var(--dark);margin-bottom:20px">Create New LOB Tab</div>
+ <div style="margin-bottom:16px">
+  <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Tab Name</div>
+  <input id="mg-lob-name" type="text" placeholder="e.g. Universal, Default, TPRO…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--card);color:var(--dark)" onfocus="this.style.borderColor='#0891b2'" onblur="this.style.borderColor='var(--border)'">
+ </div>
+ <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Sections <span style="font-weight:500;color:#9ca3af">(up to 6 — each with 1–6 games)</span></div>
+ <div id="mg-lob-sections-wrap" style="margin-bottom:10px"></div>
+ <button id="mg-add-sec-btn" type="button" onclick="addMgLobSectionRow()" style="padding:7px 16px;border-radius:8px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:20px">+ Add Section</button>
+ <div style="display:flex;gap:8px">
+  <button onclick="saveMgLob()" style="flex:1;padding:11px;border-radius:10px;border:none;background:#0891b2;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
+  <button onclick="closeMgLobModal()" style="padding:11px 18px;border-radius:10px;border:1.5px solid var(--border);background:none;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
+ </div>
+</div>
 <!-- Manager Login modal -->
 <div id="mgr-login-overlay" onclick="closeManagerLogin()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9400"></div>
 <div id="mgr-login-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;padding:36px 32px;width:380px;max-width:93vw;z-index:9401;box-shadow:0 24px 64px rgba(0,0,0,.28)">
