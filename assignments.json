@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T09:47:21.097Z",
+  "lastUpdated": "2026-07-28T09:48:57.566Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -55,13 +55,7 @@
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
-  "customMGSections": [
-    {
-      "id": "ms4h23dp",
-      "name": "test2",
-      "games": 20
-    }
-  ],
+  "customMGSections": [],
   "notifications": [
     {
       "id": "ms1odzka",
@@ -109,13 +103,7 @@
       "assignedAt": "2026-07-27T09:41:16.696Z"
     }
   ],
-  "mgGroups": [
-    {
-      "id": "mg232008361",
-      "name": "test",
-      "sections": []
-    }
-  ],
+  "mgGroups": [],
   "memberAccounts": [
     {
       "email": "dalia.adel@talabat.com",
