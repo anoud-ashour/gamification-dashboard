@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T09:38:14.476Z",
+  "lastUpdated": "2026-07-28T09:39:39.666Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -107,13 +107,7 @@
     {
       "id": "mg231494032",
       "name": "test",
-      "sections": [
-        {
-          "id": "sec2314940326744",
-          "name": "t",
-          "games": 6
-        }
-      ]
+      "sections": []
     }
   ],
   "memberAccounts": [
