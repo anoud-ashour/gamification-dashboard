@@ -40,7 +40,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T07:11:43.754Z",
+  "lastUpdated": "2026-07-28T07:48:59.680Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -102,5 +102,13 @@
       "startDate": "2026-07-21",
       "assignedAt": "2026-07-27T09:41:16.696Z"
     }
-  ]
+  ],
+  "mgGroups": [
+    {
+      "id": "mgms4cu32l",
+      "name": "test",
+      "sections": []
+    }
+  ],
+  "memberAccounts": []
 }
