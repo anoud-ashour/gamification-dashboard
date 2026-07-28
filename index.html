@@ -1728,6 +1728,7 @@ function addMgLobSectionRow(){
   +'<select style="padding:9px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;outline:none;width:100%">'
   +'<option value="1">1 game</option><option value="2" selected>2 games</option><option value="3">3 games</option>'
   +'<option value="4">4 games</option><option value="5">5 games</option><option value="6">6 games</option>'
+  +'<option value="7">7 games</option><option value="8">8 games</option><option value="9">9 games</option><option value="10">10 games</option>'
   +'</select>'
   +'<button type="button" onclick="this.closest(\'.mg-sec-row\').remove();_updateMgAddBtn()" style="padding:7px 10px;border-radius:8px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:12px;cursor:pointer">✕</button>';
  wrap.appendChild(row);_updateMgAddBtn();
@@ -1934,6 +1935,11 @@ function buildMiniGames(){
    });
    html+='</div>';
   }
+  if(managerMode){
+   html+='<div style="margin-top:14px">'
+    +'<button onclick="openAddMgSection(\''+grp.id+'\')" style="padding:9px 20px;border:2px dashed #0891b2;border-radius:12px;background:none;color:#0891b2;font-size:12px;font-weight:800;cursor:pointer;transition:background .15s" onmouseover="this.style.background=\'#e0f2fe\'" onmouseout="this.style.background=\'transparent\'">+ Add New Section</button>'
+    +'</div>';
+  }
   html+='</div>';// end mg-lob-wrap-{id}
  });
  el.innerHTML=html;
@@ -2034,15 +2040,6 @@ function buildMiniGames(){
    csGrid.appendChild(card);
   });
   el.appendChild(csGrid);
- }
- if(managerMode){
-  var addSecDiv=document.createElement('div');
-  addSecDiv.onclick=function(){openAddMGSection();};
-  addSecDiv.onmouseover=function(){this.style.background='#f5f3ff';};
-  addSecDiv.onmouseout=function(){this.style.background='transparent';};
-  addSecDiv.style.cssText='margin-top:16px;display:inline-block;padding:9px 20px;border:2px dashed #6366f1;border-radius:12px;cursor:pointer;color:#6366f1;font-size:12px;font-weight:800;background:transparent;transition:background .15s';
-  addSecDiv.textContent='+ Add New Section';
-  el.appendChild(addSecDiv);
  }
 }
 function openAddMGSection(){
@@ -3739,7 +3736,7 @@ function cycleSecItemStatus(secId,itemId){
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Tab Name</div>
   <input id="mg-lob-name" type="text" placeholder="e.g. Universal, Default, TPRO…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--card);color:var(--dark)" onfocus="this.style.borderColor='#0891b2'" onblur="this.style.borderColor='var(--border)'">
  </div>
- <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Sections <span style="font-weight:500;color:#9ca3af">(up to 6 — each with 1–6 games)</span></div>
+ <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Sections <span style="font-weight:500;color:#9ca3af">(up to 6 — each with 1–10 games)</span></div>
  <div id="mg-lob-sections-wrap" style="margin-bottom:10px"></div>
  <button id="mg-add-sec-btn" type="button" onclick="addMgLobSectionRow()" style="padding:7px 16px;border-radius:8px;border:1.5px dashed #0891b2;background:none;color:#0891b2;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:20px">+ Add Section</button>
  <div style="display:flex;gap:8px">
