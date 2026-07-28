@@ -1143,7 +1143,8 @@ function renderProgress(){
  if(_pthead){_pthead.innerHTML='<th class="l">Article</th><th class="l">Member</th><th>Arabic</th><th>English</th><th class="l">Due</th><th class="l">Timeline</th>'+(memberMode?'<th></th>':'');}
  var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
  PROG.forEach(r=>{
-  if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)))return;
+  if(!r.article||r.article==='—')return;
+  if(q&&!(r.article.toLowerCase().includes(q)||(r.member||'').toLowerCase().includes(q)))return;
   if(statusFilter&&!PCELLS.some(k=>statusOf(r[k])===statusFilter))return;
   const upd=r.def_end||r.vip_end||r.def_start||r.vip_start||'';
   const e=endDate(r);
@@ -1171,7 +1172,10 @@ function renderProgress(){
    +(memberMode?(function(){
     var _artK=r.article.toLowerCase().trim().replace(/'/g,"\\'");
     var _rowE=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===r.article.toLowerCase().trim();});
-    var _sopId=_rowE?_rowE.sopId:(r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1?'uni':(isStatusValue(r.vip_ar)||isStatusValue(r.vip_en)?'uni':(isStatusValue(r.tkt_ar)||isStatusValue(r.tkt_en)?'tkt':'default')));
+    var _sopId;
+    if(_rowE){_sopId=_rowE.sopId;}
+    else if(r._extraId){var _ex=ASSIGNMENTS.extra.find(function(e){return e.id===r._extraId;});_sopId=_ex?_ex.lob:'default';}
+    else{_sopId=r._tab&&r._tab.toLowerCase().replace(/\s/g,'').indexOf('univers')>-1?'uni':(isStatusValue(r.vip_ar)||isStatusValue(r.vip_en)?'uni':(isStatusValue(r.tkt_ar)||isStatusValue(r.tkt_en)?'tkt':'default'));}
     return '<td style="text-align:center"><button onclick="openMemberEdit(\''+_artK+'\',\''+_sopId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>';
    })():'');
   tb.appendChild(tr);shown++;});
@@ -1199,7 +1203,7 @@ function artBadge(s){
         :s==='On Review'?{dot:'#f59e0b',bg:'#fffbeb',col:'#92400e'}
         :{dot:'#9ca3af',bg:'#f9fafb',col:'#6b7280'};
  return '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;background:'+c.bg+';color:'+c.col+';font-size:12px;font-weight:600">'
-  +'<span style="width:7px;height:7px;border-radius:50%;background:'+c.dot+';flex:none"></span>'+(s==='Not started'?'Pending':s)+'</span>';
+  +'<span style="width:7px;height:7px;border-radius:50%;background:'+c.dot+';flex:none"></span>'+(s==='Not started'?'Not Started':s)+'</span>';
 }
 function sopPill(label,color){
  return '<span style="padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700;background:'+color+'25;color:'+color+'">'+label+'</span>';
@@ -2492,6 +2496,8 @@ function applyAssignments(){
     // Per-language: ar=1→Done, en=1→Done; otherwise use override status or keep tracker value
     if(typeof ov.ar!=='undefined')p.vip_ar=(ov.ar===1)?'Done':(st||(isStatusValue(p.vip_ar)?p.vip_ar:'In Progress'));
     if(typeof ov.en!=='undefined')p.vip_en=(ov.en===1)?'Done':(st||(isStatusValue(p.vip_en)?p.vip_en:'In Progress'));
+    // Member-only status save (no ar/en set) — apply status to both cells so progress reflects
+    if(st&&typeof ov.ar==='undefined'&&typeof ov.en==='undefined'){p.vip_ar=st;p.vip_en=st;}
     // Leave def_ar/def_en/tkt_ar/tkt_en untouched — unused for Universal tracker articles
    } else if(st){
     if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
@@ -2662,7 +2668,11 @@ function openMemberEdit(artKey,lob){
  _memEditKey=artKey+'::'+lob;
  var ov=ASSIGNMENTS.overrides[_memEditKey]||{};
  var lobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing','uni':'Universal','updates':'Update Projects'}[lob]||lob;
- $('mem-edit-title').textContent=artKey;
+ // Look up the original proper-case article name
+ var _dispRow=ROWS.find(function(r){return (r.article||'').toLowerCase().trim()===artKey.toLowerCase().replace(/\\'/g,"'").trim();})
+  ||ASSIGNMENTS.extra.find(function(e){return (e.article||'').toLowerCase().trim()===artKey.toLowerCase().replace(/\\'/g,"'").trim();})
+  ||PROG.find(function(p){return (p.article||'').toLowerCase().trim()===artKey.toLowerCase().replace(/\\'/g,"'").trim();});
+ $('mem-edit-title').textContent=_dispRow?(_dispRow.article||artKey):artKey;
  $('mem-edit-lob').textContent=lobLabel;
  $('mem-edit-status').value=ov.status||'Not Started';
  $('mem-edit-overlay').style.display='block';$('mem-edit-modal').style.display='block';
