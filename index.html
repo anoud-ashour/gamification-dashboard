@@ -2853,23 +2853,34 @@ function openNotifPanel(){
  var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
  var list=$('notif-list');if(!list)return;
  if(!notifs.length){
-  list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:1.8">No assignments yet.<br><span style="font-size:12px">When a manager assigns an article with a start date, it will appear here.</span></div>';
+  list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:1.8">No notifications yet.<br><span style="font-size:12px">Assignment changes, timeline updates and status changes will appear here.</span></div>';
  }else{
+  var typeIcon={'assign':'👤','timeline':'📅','status':'📋','default':'🔔'};
+  var typeLabel={'assign':'New Assignment','timeline':'Timeline Updated','status':'Status Changed','default':'Update'};
   list.innerHTML=notifs.map(function(n){
    var isNew=new Date(n.assignedAt).getTime()>lastSeen;
-   var sd=n.startDate?new Date(n.startDate+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';
-   var at=new Date(n.assignedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-   var memColors={'Amal':'#8318d8','Anoud':'#FF5900','Dalia':'#411514'};
-   var mc=memColors[n.member]||'#6b7280';
+   var at=new Date(n.assignedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+   var tkey=n.type||'default';
+   var icon=typeIcon[tkey]||typeIcon.default;
+   var label=typeLabel[tkey]||typeLabel.default;
+   var summary=n.summary||'';
+   // Build a fallback summary from old-format notifications
+   if(!summary){
+    if(n.member)summary='👤 Assigned to '+n.member;
+    if(n.startDate)summary+=(summary?' · ':'')+'📅 '+n.startDate;
+   }
+   var lobColor={'Default LOB':'#0891b2','TPRO':'#16a34a','TKT':'#d97706','Universal':'#6366f1'};
+   var lc=lobColor[n.lob]||'#8318d8';
    return '<div style="padding:14px 16px;border-radius:14px;margin-bottom:10px;background:'+(isNew?'#fff7ed':'var(--bg)')+';border:1.5px solid '+(isNew?'#FF5900':'var(--border)')+'">'
-    +(isNew?'<div style="font-size:10px;font-weight:800;color:#FF5900;letter-spacing:.5px;margin-bottom:5px;display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#FF5900;display:inline-block"></span>NEW</div>':'')
-    +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:8px;line-height:1.4">'+n.article+'</div>'
-    +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">'
-    +'<span style="background:'+mc+';color:#fff;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">👤 '+n.member+'</span>'
-    +'<span style="background:#f0fdf4;color:#16a34a;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">📅 '+sd+'</span>'
-    +(n.lob?'<span style="background:#f5f3ff;color:#8318d8;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">'+n.lob+'</span>':'')
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+    +'<span style="font-size:10px;font-weight:800;color:'+(isNew?'#FF5900':'#6b7280')+';letter-spacing:.5px;display:flex;align-items:center;gap:4px">'
+    +(isNew?'<span style="width:6px;height:6px;border-radius:50%;background:#FF5900;display:inline-block"></span>':'')
+    +icon+' '+label+'</span>'
+    +(n.lob?'<span style="background:'+lc+'22;color:'+lc+';padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">'+n.lob+'</span>':'')
     +'</div>'
-    +'<div style="font-size:10px;color:var(--muted);font-weight:600">Assigned '+at+'</div>'
+    +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px;line-height:1.4">'+n.article+'</div>'
+    +(summary?'<div style="font-size:11px;font-weight:600;color:#374151;background:var(--bg);padding:6px 10px;border-radius:8px;margin-bottom:8px;line-height:1.6">'+summary+'</div>':'')
+    +'<div style="font-size:10px;color:var(--muted);font-weight:600">'+at+'</div>'
     +'</div>';
   }).join('');
  }
@@ -2898,13 +2909,27 @@ function saveAssign(){membersBuilt=false;
  var _stEl=$('asgn-status');var _stRow=$('asgn-status-row');
  if(_stEl&&_stRow&&_stRow.style.display!=='none'){ov.status=_stEl.value;}
  ASSIGNMENTS.overrides[_mgrEditKey]=ov;
- // Always create notification when a member is assigned, always auto-save to GitHub
- if(ov.member){
+ // Build and push notifications for every meaningful change
+ (function(){
   var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
   var lobLabel=$('asgn-lob-label').textContent||'';
-  _pushNotif({id:Date.now().toString(36),key:_mgrEditKey,article:artTitle,member:ov.member,lob:lobLabel,startDate:ov.startDate||'',assignedAt:new Date().toISOString()});
+  var now=new Date().toISOString();
+  if(ov.member){
+   var sumParts=['👤 Assigned to '+ov.member];
+   if(ov.startDate||ov.deadline)sumParts.push('📅 '+(ov.startDate||'?')+' → '+(ov.deadline||'ongoing'));
+   if(ov.priority&&ov.priority!=='None')sumParts.push('⚡ '+ov.priority);
+   if(ov.status&&ov.status!=='Not Started')sumParts.push('📋 '+ov.status);
+   _pushNotif({id:Date.now().toString(36),key:_mgrEditKey+'::assign',type:'assign',article:artTitle,member:ov.member,lob:lobLabel,summary:sumParts.join(' · '),startDate:ov.startDate||'',assignedAt:now});
+  }
+  if((ov.startDate||ov.deadline)&&!ov.member){
+   var tsum='📅 Timeline: '+(ov.startDate||'?')+' → '+(ov.deadline||'ongoing');
+   _pushNotif({id:(Date.now()+1).toString(36),key:_mgrEditKey+'::timeline',type:'timeline',article:artTitle,member:ov.member||'',lob:lobLabel,summary:tsum,startDate:ov.startDate||'',assignedAt:now});
+  }
+  if(ov.status&&ov.status!=='Not Started'&&!ov.member){
+   _pushNotif({id:(Date.now()+2).toString(36),key:_mgrEditKey+'::status',type:'status',article:artTitle,member:ov.member||'',lob:lobLabel,summary:'📋 Status set to: '+ov.status,startDate:ov.startDate||'',assignedAt:now});
+  }
   buildNotifBadge();
- }
+ })();
  saveAssignments();
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
@@ -3040,8 +3065,10 @@ function saveNewArticleAndNotify(){
  var startDate=($('addart-startdate')?$('addart-startdate').value:'')||'';
  saveNewArticle();
  if(member){
-  var notifKey=name.toLowerCase().trim()+'::'+lob;
-  _pushNotif({id:Date.now().toString(36),key:notifKey,article:name,member:member,lob:lobLabel,startDate:startDate||'',assignedAt:new Date().toISOString()});
+  var notifKey=name.toLowerCase().trim()+'::'+lob+'::assign';
+  var nSumParts=['👤 Assigned to '+member];
+  if(startDate)nSumParts.push('📅 Start: '+startDate);
+  _pushNotif({id:Date.now().toString(36),key:notifKey,type:'assign',article:name,member:member,lob:lobLabel,summary:nSumParts.join(' · '),startDate:startDate||'',assignedAt:new Date().toISOString()});
   buildNotifBadge();
  }
  saveAssignments();
