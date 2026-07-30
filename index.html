@@ -1299,6 +1299,22 @@ function renderSopTable(){
  });
  if(!count)tbody.insertAdjacentHTML('beforeend','<tr><td colspan="6" class="empty" style="padding:20px;text-align:center;color:var(--muted)">No articles match this filter.</td></tr>');
 }
+function refreshProgressKPIs(){
+ var _vp=PROG.filter(function(r){return r.article&&r.article!=='—'&&r.article.replace(/[—–-]/g,'').trim()!=='';});
+ var tot=_vp.length;
+ var done=_vp.filter(function(r){var cells=PCELLS.map(function(k){return r[k];}).filter(isStatusValue);return cells.length>0&&cells.every(function(v){return statusOf(v)==='Done';});}).length;
+ if($('p-done'))$('p-done').textContent=pct(done,tot)+'%';
+ if($('p-prog'))$('p-prog').textContent=_vp.filter(function(r){return PCELLS.some(function(k){return statusOf(r[k])==='In Progress';});}).length;
+ if($('p-rev'))$('p-rev').textContent=_vp.filter(function(r){return PCELLS.some(function(k){return statusOf(r[k])==='On Review';})&&!PCELLS.some(function(k){return statusOf(r[k])==='In Progress';});}).length;
+ if($('p-not'))$('p-not').textContent=_vp.filter(function(r){return PCELLS.every(function(k){return statusOf(r[k])==='Not started';});}).length;
+ if($('p-pend'))$('p-pend').textContent=_vp.filter(function(r){return PCELLS.some(function(k){return statusOf(r[k])==='Pending Modification';});}).length;
+}
+function showToast(msg,color){
+ var t=document.createElement('div');
+ t.style.cssText='position:fixed;bottom:28px;right:28px;background:'+(color||'#1f2937')+';color:#fff;padding:11px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,.22);pointer-events:none;transition:opacity .4s';
+ t.textContent=msg;document.body.appendChild(t);
+ setTimeout(function(){t.style.opacity='0';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},450);},2500);
+}
 function buildProgress(){
  if(progressBuilt)return;progressBuilt=true;
  ['psop','pmem'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
@@ -2713,6 +2729,8 @@ async function saveMemberStatus(){
  closeMemberEdit();
  buildRows();applyAssignments();
  renderProgress();renderMbTable();renderSopTable();
+ refreshProgressKPIs();
+ showToast('✓ Status updated to '+status+(status==='Done'?' · hidden from active view':''),'#16a34a');
  var bar=$('mem-save-bar');
  var origTxt='You can edit article status only';
  if(bar){var si=bar.querySelector('span:nth-child(3)');if(si)si.textContent='Saving…';}
@@ -2888,6 +2906,8 @@ function buildNotifBadge(){
 function openNotifPanel(){
  var notifs=_getNotifs().slice().sort(function(a,b){return new Date(b.assignedAt)-new Date(a.assignedAt);});
  var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
+ try{localStorage.setItem('notif_last_seen',Date.now().toString());}catch(e){}
+ buildNotifBadge();
  var list=$('notif-list');if(!list)return;
  if(!notifs.length){
   list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:1.8">No notifications yet.<br><span style="font-size:12px">Assignment changes, timeline updates and status changes will appear here.</span></div>';
