@@ -61,10 +61,20 @@
       "priority": "",
       "notes": "",
       "status": "Not Started"
+    },
+    "wrong weight::tkt": {
+      "member": "Dalia",
+      "ar": 1,
+      "en": 0,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "notes": "",
+      "status": "Not Started"
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-30T09:33:06.431Z",
+  "lastUpdated": "2026-07-30T09:33:21.905Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -147,6 +157,17 @@
       "summary": "👤 Assigned to Dalia",
       "startDate": "",
       "assignedAt": "2026-07-30T09:33:06.153Z"
+    },
+    {
+      "id": "ms7bg0es",
+      "key": "wrong weight::tkt::assign",
+      "type": "assign",
+      "article": "Wrong Weight",
+      "member": "Dalia",
+      "lob": "Ticketing",
+      "summary": "👤 Assigned to Dalia",
+      "startDate": "",
+      "assignedAt": "2026-07-30T09:33:21.556Z"
     }
   ],
   "mgGroups": [],
