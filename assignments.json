@@ -51,10 +51,20 @@
       "priority": "",
       "notes": "",
       "status": "Not Started"
+    },
+    "wrong weight::tpro": {
+      "member": "Dalia",
+      "ar": 0,
+      "en": 1,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "notes": "",
+      "status": "Not Started"
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-30T09:26:04.779Z",
+  "lastUpdated": "2026-07-30T09:26:15.550Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -126,6 +136,17 @@
       "summary": "👤 Assigned to Amal",
       "startDate": "",
       "assignedAt": "2026-07-30T09:25:59.645Z"
+    },
+    {
+      "id": "ms7b6vew",
+      "key": "wrong weight::tpro::assign",
+      "type": "assign",
+      "article": "Wrong Weight",
+      "member": "Dalia",
+      "lob": "TPRO",
+      "summary": "👤 Assigned to Dalia",
+      "startDate": "",
+      "assignedAt": "2026-07-30T09:26:15.176Z"
     }
   ],
   "mgGroups": [],
