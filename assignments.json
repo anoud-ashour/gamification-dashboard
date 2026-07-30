@@ -44,7 +44,7 @@
     },
     "missing item(s) complaints::tkt": {
       "member": "Amal",
-      "ar": 0,
+      "ar": 1,
       "en": 1,
       "startDate": "",
       "deadline": "",
@@ -54,7 +54,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-30T09:04:14.116Z",
+  "lastUpdated": "2026-07-30T09:25:59.930Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -117,7 +117,7 @@
       "assignedAt": "2026-07-27T09:41:16.696Z"
     },
     {
-      "id": "ms7aegg5",
+      "id": "ms7b6jfh",
       "key": "missing item(s) complaints::tkt::assign",
       "type": "assign",
       "article": "Missing Item(s) Complaints",
@@ -125,7 +125,7 @@
       "lob": "Ticketing",
       "summary": "👤 Assigned to Amal",
       "startDate": "",
-      "assignedAt": "2026-07-30T09:04:09.413Z"
+      "assignedAt": "2026-07-30T09:25:59.645Z"
     }
   ],
   "mgGroups": [],
