@@ -2723,21 +2723,25 @@ async function saveMemberStatus(){
  var _mkLast=_memEditKey.lastIndexOf('::');
  if(_mkLast>-1){
   var _mkArt=_memEditKey.slice(0,_mkLast);var _mkLob=_memEditKey.slice(_mkLast+2);
+  // Sync extra article record if applicable
   var _exMatch=ASSIGNMENTS.extra.find(function(e){return (e.article||'').toLowerCase().trim()===_mkArt&&e.lob===_mkLob;});
   if(_exMatch)_exMatch.status=status;
-  // If article isn't in PROG at all, inject a live entry so progress tab reflects it immediately
-  var _inProg=PROG.some(function(p){return (p.article||'').toLowerCase().trim()===_mkArt;});
-  if(!_inProg){
+  // Direct PROG mutation — set ALL 6 cells so status appears in every LOB view immediately
+  var _progUpdated=false;
+  PROG.forEach(function(p){
+   if((p.article||'').toLowerCase().trim()!==_mkArt||p._extraId)return;
+   _progUpdated=true;
+   PCELLS.forEach(function(k){p[k]=status;});
+  });
+  // Article not in PROG yet — inject with all cells so it appears everywhere
+  if(!_progUpdated){
    var _rowRef=ROWS.find(function(r){return (r.article||'').toLowerCase().trim()===_mkArt;});
-   if(_rowRef){
-    var _pe={article:_rowRef.article,member:_rowRef.member||'',leave_status:'',
-     vip_ar:'',vip_en:'',vip_start:'',vip_end:'',
-     def_ar:'',def_en:'',def_start:'',def_end:'',tkt_ar:'',tkt_en:'',_injected:true};
-    if(_mkLob==='tpro'||_mkLob==='uni'){_pe.vip_ar=status;_pe.vip_en=status;}
-    else if(_mkLob==='tkt'){_pe.tkt_ar=status;_pe.tkt_en=status;}
-    else{_pe.def_ar=status;_pe.def_en=status;}
-    PROG.push(_pe);
-   }
+   var _artName=_rowRef?_rowRef.article:_mkArt;
+   var _mem=_rowRef?(_rowRef.member||''):'';
+   var _pe={article:_artName,member:_mem,leave_status:'',
+    vip_ar:status,vip_en:status,def_ar:status,def_en:status,
+    tkt_ar:status,tkt_en:status,vip_start:'',vip_end:'',def_start:'',def_end:'',_injected:true};
+   PROG.push(_pe);
   }
  }
  closeMemberEdit();
