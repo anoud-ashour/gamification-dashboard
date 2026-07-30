@@ -2522,9 +2522,23 @@ function applyAssignments(){
     if(st&&typeof ov.ar==='undefined'&&typeof ov.en==='undefined'){p.vip_ar=st;p.vip_en=st;}
     // Leave def_ar/def_en/tkt_ar/tkt_en untouched — unused for Universal tracker articles
    } else if(st){
-    if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
-    else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
-    else{p.def_ar=st;p.def_en=st;}
+    var _hasQuota=typeof ov.ar!=='undefined'||typeof ov.en!=='undefined';
+    if(_hasQuota){
+     // Manager override with explicit coverage quotas — update specific LOB cells
+     if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
+     else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
+     else{p.def_ar=st;p.def_en=st;}
+    } else {
+     // Status-only change — update ALL cells that already have a value (correct LOB regardless of key)
+     var _anyUpdated=false;
+     PCELLS.forEach(function(ck){if(isStatusValue(p[ck])){p[ck]=st;_anyUpdated=true;}});
+     // Fallback: if no cells had values yet, seed the sopId cells so the article appears
+     if(!_anyUpdated){
+      if(sopId==='tpro'){p.vip_ar=st;p.vip_en=st;}
+      else if(sopId==='tkt'){p.tkt_ar=st;p.tkt_en=st;}
+      else{p.def_ar=st;p.def_en=st;}
+     }
+    }
    }
    // Propagate dashboard start/end dates to PROG
    if(ov.startDate){if(sopId==='uni'||sopId==='tpro'){p.vip_start=ov.startDate;}else{p.def_start=ov.startDate;}}
