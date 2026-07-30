@@ -41,10 +41,20 @@
     },
     "smoking service::uni": {
       "status": "Done"
+    },
+    "missing item(s) complaints::tkt": {
+      "member": "Amal",
+      "ar": 0,
+      "en": 1,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "notes": "",
+      "status": "Not Started"
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-28T11:51:46.303Z",
+  "lastUpdated": "2026-07-30T09:04:09.838Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -105,6 +115,17 @@
       "lob": "Universal",
       "startDate": "2026-07-21",
       "assignedAt": "2026-07-27T09:41:16.696Z"
+    },
+    {
+      "id": "ms7aegg5",
+      "key": "missing item(s) complaints::tkt::assign",
+      "type": "assign",
+      "article": "Missing Item(s) Complaints",
+      "member": "Amal",
+      "lob": "Ticketing",
+      "summary": "👤 Assigned to Amal",
+      "startDate": "",
+      "assignedAt": "2026-07-30T09:04:09.413Z"
     }
   ],
   "mgGroups": [],
