@@ -54,7 +54,7 @@
     },
     "wrong weight::tpro": {
       "member": "Dalia",
-      "ar": 0,
+      "ar": 1,
       "en": 1,
       "startDate": "",
       "deadline": "",
@@ -64,7 +64,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-07-30T09:26:15.550Z",
+  "lastUpdated": "2026-07-30T09:33:06.431Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -133,12 +133,12 @@
       "article": "Missing Item(s) Complaints",
       "member": "Amal",
       "lob": "Ticketing",
-      "summary": "👤 Assigned to Amal",
+      "summary": "ð¤ Assigned to Amal",
       "startDate": "",
       "assignedAt": "2026-07-30T09:25:59.645Z"
     },
     {
-      "id": "ms7b6vew",
+      "id": "ms7bfoix",
       "key": "wrong weight::tpro::assign",
       "type": "assign",
       "article": "Wrong Weight",
@@ -146,7 +146,7 @@
       "lob": "TPRO",
       "summary": "👤 Assigned to Dalia",
       "startDate": "",
-      "assignedAt": "2026-07-30T09:26:15.176Z"
+      "assignedAt": "2026-07-30T09:33:06.153Z"
     }
   ],
   "mgGroups": [],
