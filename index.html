@@ -1250,6 +1250,7 @@ function renderMbTable(){
   var _mbUniRow=ROWS.find(function(row){return (row.article||'').toLowerCase().trim()===_mbArt&&row.sopId==='uni';});
   var p=_mbUniRow?Math.round((_mbUniRow.ar+_mbUniRow.en)/2*100):(cells.length?Math.round(done/cells.length*100):0);
   var st=artStatusOverall(cells);
+  if(st==='Done'&&!mbfFilter)return;
   var col=MEMCOLS[r.member]||'#9ca3af';
   var parts=(r.member||'').trim().split(/\s+/);
   var ini=parts.length>=2?(parts[0][0]+parts[1][0]).toUpperCase():(r.member||'??').slice(0,2).toUpperCase();
@@ -1273,6 +1274,7 @@ function renderSopTable(){
  src.filter(function(r){return r.article&&r.article!=='—';}).forEach(function(r){
   var allCells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
   var overall=artStatusOverall(allCells);
+  if(overall==='Done'&&!sopfFilter)return;
   if(sopfFilter&&overall!==sopfFilter)return;
   var done=allCells.filter(function(v){return statusOf(v)==='Done';}).length;
   var _spArt=(r.article||'').toLowerCase().trim();
