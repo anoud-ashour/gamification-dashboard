@@ -34,10 +34,10 @@
       "ar": 0,
       "en": 1,
       "startDate": "2026-07-21",
-      "deadline": "2026-07-30",
+      "deadline": "2026-08-05",
       "priority": "",
       "notes": "",
-      "status": "Pending Modification"
+      "status": "On Review"
     },
     "smoking service::uni": {
       "status": "Done"
@@ -74,7 +74,7 @@
     }
   },
   "extra": [],
-  "lastUpdated": "2026-08-04T07:32:38.665Z",
+  "lastUpdated": "2026-08-04T07:33:13.618Z",
   "managers": [
     {
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164",
@@ -143,7 +143,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Amal",
       "lob": "Ticketing",
-      "summary": "Ã°ÂÂÂ¤ Assigned to Amal",
+      "summary": "ÃÂ°ÃÂÃÂÃÂ¤ Assigned to Amal",
       "startDate": "",
       "assignedAt": "2026-07-30T09:25:59.645Z"
     },
@@ -154,7 +154,7 @@
       "article": "Wrong Weight",
       "member": "Dalia",
       "lob": "TPRO",
-      "summary": "ð¤ Assigned to Dalia",
+      "summary": "Ã°ÂÂÂ¤ Assigned to Dalia",
       "startDate": "",
       "assignedAt": "2026-07-30T09:33:06.153Z"
     },
@@ -165,9 +165,20 @@
       "article": "Wrong Weight",
       "member": "Dalia",
       "lob": "Ticketing",
-      "summary": "👤 Assigned to Dalia",
+      "summary": "ð¤ Assigned to Dalia",
       "startDate": "",
       "assignedAt": "2026-08-04T07:32:38.215Z"
+    },
+    {
+      "id": "mseccrud",
+      "key": "change order details::uni::assign",
+      "type": "assign",
+      "article": "Change Order Details",
+      "member": "Anoud",
+      "lob": "Universal",
+      "summary": "👤 Assigned to Anoud · 📅 2026-07-21 → 2026-08-05 · 📋 On Review",
+      "startDate": "2026-07-21",
+      "assignedAt": "2026-08-04T07:33:13.333Z"
     }
   ],
   "mgGroups": [],
