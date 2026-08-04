@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -2930,8 +2930,8 @@ function openNotifPanel(){
  if(!notifs.length){
   list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:1.8">No notifications yet.<br><span style="font-size:12px">Assignment changes, timeline updates and status changes will appear here.</span></div>';
  }else{
-  var typeIcon={'assign':'👤','timeline':'📅','status':'📋','default':'🔔'};
-  var typeLabel={'assign':'New Assignment','timeline':'Timeline Updated','status':'Status Changed','default':'Update'};
+  var typeIcon={'assign':'👤','timeline':'📅','status':'📋','update':'✏️','default':'🔔'};
+  var typeLabel={'assign':'New Assignment','timeline':'Timeline Updated','status':'Status Changed','update':'Assignment Updated','default':'Update'};
   list.innerHTML=notifs.map(function(n){
    var isNew=new Date(n.assignedAt).getTime()>lastSeen;
    var at=new Date(n.assignedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -2983,29 +2983,29 @@ function saveAssign(){membersBuilt=false;
  ov.notes=$('asgn-notes').value;
  var _stEl=$('asgn-status');var _stRow=$('asgn-status-row');
  if(_stEl&&_stRow&&_stRow.style.display!=='none'){ov.status=_stEl.value;}
- ASSIGNMENTS.overrides[_mgrEditKey]=ov;
- // Build and push notifications for every meaningful change
- (function(){
-  var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
-  var lobLabel=$('asgn-lob-label').textContent||'';
-  var now=new Date().toISOString();
-  if(ov.member){
-   var sumParts=['👤 Assigned to '+ov.member];
-   if(ov.startDate||ov.deadline)sumParts.push('📅 '+(ov.startDate||'?')+' → '+(ov.deadline||'ongoing'));
-   if(ov.priority&&ov.priority!=='None')sumParts.push('⚡ '+ov.priority);
-   if(ov.status&&ov.status!=='Not Started')sumParts.push('📋 '+ov.status);
-   _pushNotif({id:Date.now().toString(36),key:_mgrEditKey+'::assign',type:'assign',article:artTitle,member:ov.member,lob:lobLabel,summary:sumParts.join(' · '),startDate:ov.startDate||'',assignedAt:now});
-  }
-  if((ov.startDate||ov.deadline)&&!ov.member){
-   var tsum='📅 Timeline: '+(ov.startDate||'?')+' → '+(ov.deadline||'ongoing');
-   _pushNotif({id:(Date.now()+1).toString(36),key:_mgrEditKey+'::timeline',type:'timeline',article:artTitle,member:ov.member||'',lob:lobLabel,summary:tsum,startDate:ov.startDate||'',assignedAt:now});
-  }
-  if(ov.status&&ov.status!=='Not Started'&&!ov.member){
-   _pushNotif({id:(Date.now()+2).toString(36),key:_mgrEditKey+'::status',type:'status',article:artTitle,member:ov.member||'',lob:lobLabel,summary:'📋 Status set to: '+ov.status,startDate:ov.startDate||'',assignedAt:now});
-  }
-  buildNotifBadge();
- })();
- saveAssignments();
+ var _prevOv=Object.assign({},ASSIGNMENTS.overrides[_mgrEditKey]||{});
+ASSIGNMENTS.overrides[_mgrEditKey]=ov;
+// Build change-based notification — diff old vs new so coordinator sees exactly what changed
+(function(){
+var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
+var lobLabel=$('asgn-lob-label').textContent||'';
+var now=new Date().toISOString();
+var changes=[];var notifType='update';
+var om=_prevOv.member||'',nm=ov.member||'';
+if(nm!==om){if(!om&&nm){changes.push('👤 Assigned to '+nm);notifType='assign';}else if(om&&nm&&om!==nm){changes.push('👤 Reassigned: '+om+' → '+nm);notifType='assign';}else if(om&&!nm){changes.push('👤 Unassigned (was '+om+')');}}else if(nm&&!_prevOv.deadline&&!_prevOv.startDate&&!_prevOv.status){changes.push('👤 Assigned to '+nm);notifType='assign';}
+var od=_prevOv.deadline||'',nd=ov.deadline||'';
+if(nd!==od){if(!od&&nd)changes.push('📅 Deadline set: '+nd);else if(od&&nd)changes.push('📅 Deadline: '+od+' → '+nd);else if(od&&!nd)changes.push('📅 Deadline removed');if(notifType==='update')notifType='timeline';}
+var osd=_prevOv.startDate||'',nsd=ov.startDate||'';
+if(nsd!==osd){if(!osd&&nsd)changes.push('📅 Start date set: '+nsd);else if(osd&&nsd)changes.push('📅 Start date: '+osd+' → '+nsd);else if(osd&&!nsd)changes.push('📅 Start date removed');if(notifType==='update')notifType='timeline';}
+var ost=_prevOv.status||'Not Started',nst=ov.status||'Not Started';
+if(nst!==ost){changes.push('📋 Status: '+ost+' → '+nst);if(notifType==='update')notifType='status';}
+var opr=_prevOv.priority||'',npr=ov.priority||'';
+if(npr!==opr&&(npr||opr)){if(npr&&npr!=='None')changes.push('⚡ Priority: '+(opr&&opr!=='None'?opr+' → ':'')+npr);else changes.push('⚡ Priority removed');}
+if(_prevOv.ar!==undefined&&Number(ov.ar)!==Number(_prevOv.ar))changes.push('🇦🇪 AR: '+(ov.ar?'✓ Done':'✕ Not done'));
+if(_prevOv.en!==undefined&&Number(ov.en)!==Number(_prevOv.en))changes.push('🇬🇧 EN: '+(ov.en?'✓ Done':'✕ Not done'));
+if((ov.notes||'')!==(_prevOv.notes||'')&&ov.notes)changes.push('📝 Notes updated');
+if(changes.length>0){_pushNotif({id:Date.now().toString(36),key:_mgrEditKey+'::latest',type:notifType,article:artTitle,member:ov.member||_prevOv.member||'',lob:lobLabel,summary:changes.join('<br>'),startDate:ov.startDate||'',assignedAt:now});buildNotifBadge();}
+})(); saveAssignments();
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
  var artKeyStr=parts.slice(0,-1).join('::');var lobStr=parts[parts.length-1];
