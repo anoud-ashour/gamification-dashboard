@@ -2,7 +2,12 @@
   "overrides": {},
   "extra": [],
   "customTabs": [],
-  "managers": [],
+  "managers": [
+    {
+      "email": "anoud.shehata@talabat.com",
+      "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
+    }
+  ],
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
@@ -11,5 +16,6 @@
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T10:24:59.125Z"
+  "lastUpdated": "2026-08-09T10:53:39.693Z",
+  "customMGSections": []
 }
