@@ -20,7 +20,7 @@
       "reviewer": "anoud.shehata@talabat.com",
       "priority": "",
       "notes": "Test",
-      "status": "Done"
+      "status": "In Progress"
     }
   },
   "extra": [],
@@ -86,6 +86,16 @@
       "member": "Anoud",
       "articleTitle": "change order details::uni",
       "read": false
+    },
+    {
+      "key": "change order details::uni::status::1786283533075",
+      "type": "status",
+      "title": "Status Changed",
+      "details": "📋 Status: In Progress ➡️ In Progress\n📋 AR: ✅ Done\n📋 EN: ❌ Not done",
+      "assignedAt": "2026-08-09T13:52:13.075Z",
+      "member": "Anoud",
+      "articleTitle": "change order details::uni",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -104,7 +114,7 @@
     }
   ],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T13:52:11.338Z",
+  "lastUpdated": "2026-08-09T13:52:13.640Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -173,6 +183,10 @@
       {
         "ts": "2026-08-09T13:52:10.572Z",
         "status": "Done"
+      },
+      {
+        "ts": "2026-08-09T13:52:13.075Z",
+        "status": "In Progress"
       }
     ]
   }
