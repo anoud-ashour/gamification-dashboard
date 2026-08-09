@@ -2965,7 +2965,7 @@ function openNotifPanel(){
     +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px;line-height:1.4">'+n.article+'</div>'
     +(summary?'<div style="font-size:11px;font-weight:600;color:#374151;background:var(--bg);padding:6px 10px;border-radius:8px;margin-bottom:8px;line-height:1.6">'+summary+'</div>':'')
     +'<div style="font-size:10px;color:var(--muted);font-weight:600">'+at+'</div>'
-    +(n.key?'<div style="margin-top:8px;display:flex;gap:6px"><button onclick="quickStatusUpdate('" + n.key.replace('::latest','') + "','In Progress')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1.5px solid #FF5900;color:#FF5900;background:none;cursor:pointer">&#8635; In Progress</button><button onclick="quickStatusUpdate('" + n.key.replace('::latest','') + "','Done')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:none;background:#FF5900;color:white;cursor:pointer">&#10003; Done</button></div>':'')
+    +(n.key?'<div style="margin-top:8px;display:flex;gap:6px" data-nk="'+n.key.replace('::latest','')+'"><button onclick="quickStatusUpdate(this.parentNode.getAttribute(\'data-nk\'),\'In Progress\')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1.5px solid #FF5900;color:#FF5900;background:none;cursor:pointer">&#8635; In Progress</button><button onclick="quickStatusUpdate(this.parentNode.getAttribute(\'data-nk\'),\'Done\')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:none;background:#FF5900;color:white;cursor:pointer">&#10003; Done</button></div>':'')
     +'</div>';
   }).join('');
  }
