@@ -20,7 +20,7 @@
       "reviewer": "",
       "priority": "",
       "notes": "Test",
-      "status": "In Progress"
+      "status": "Done"
     }
   },
   "extra": [],
@@ -65,14 +65,14 @@
       "article": "change order details::uni",
       "member": "Anoud",
       "lob": "",
-      "summary": "Status changed to In Progress",
-      "assignedAt": 1786280567062
+      "summary": "Status changed to Done",
+      "assignedAt": 1786280585112
     }
   ],
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T13:02:47.381Z",
+  "lastUpdated": "2026-08-09T13:03:05.476Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -127,6 +127,11 @@
         "ts": "2026-08-09T13:02:47.062Z",
         "user": "Coordinator",
         "summary": "Status → In Progress"
+      },
+      {
+        "ts": "2026-08-09T13:03:05.112Z",
+        "user": "Coordinator",
+        "summary": "Status → Done"
       }
     ]
   }
