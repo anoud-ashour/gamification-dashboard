@@ -9,7 +9,7 @@
       "reviewer": "",
       "priority": "",
       "notes": "",
-      "status": "In Progress"
+      "status": "Done"
     }
   },
   "extra": [],
@@ -31,14 +31,14 @@
       "article": "rider reports cst wrong address/pinpoint::uni",
       "member": "Amal",
       "lob": "",
-      "summary": "Status changed to In Progress",
-      "assignedAt": 1786272909581
+      "summary": "Status changed to Done",
+      "assignedAt": 1786272920400
     }
   ],
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T10:55:11.438Z",
+  "lastUpdated": "2026-08-09T10:55:20.889Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -61,6 +61,11 @@
         "ts": "2026-08-09T10:55:09.581Z",
         "user": "Coordinator",
         "summary": "Status → In Progress"
+      },
+      {
+        "ts": "2026-08-09T10:55:20.400Z",
+        "user": "Coordinator",
+        "summary": "Status → Done"
       }
     ]
   }
