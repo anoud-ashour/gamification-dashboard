@@ -1037,7 +1037,7 @@ function renderTable(){
   if(r.sopId!==activeTab)return;
   if(!r._extra&&!managerMode&&r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
-  if((_myTasksOn||(!managerMode&&typeof _memberEmail!=="undefined"&&_memberEmail))&&r.member&&r.member!==_myTasksMember())return;
+  if((_myTasksOn||(typeof memberMode!=="undefined"&&memberMode&&_memberEmail))&&r.member&&r.member!==_myTasksMember())return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
   if(fs==='gaps'&&full)return;if(fs==='full'&&!full)return;
@@ -2693,7 +2693,7 @@ async function attemptMemberLogin(){
   var hdrBtn=$('mem-login-btn');if(hdrBtn){hdrBtn.textContent='✓ Member';hdrBtn.style.background='#0891b2';hdrBtn.style.color='#fff';}
   progressBuilt=false;membersBuilt=false;
   buildRows();applyAssignments();
-  renderTable();
+  renderTable();_updateMgrCols();
   if(activeTab==='progress')renderProgress();
   else if(activeTab==='members')buildMembers();
   else if(activeTab.indexOf('ctab-')===0)buildCustomTab(activeTab);
@@ -3588,6 +3588,7 @@ function buildDueWeekCard() {
       '<span style="font-size:11px;color:#6b7280;min-width:60px">'+it.member+'</span>'+
       '<span style="font-size:10px;background:'+(sc[it.status]||'#f3f4f6')+';color:'+(st[it.status]||'#374151')+';padding:2px 8px;border-radius:20px;font-weight:700">'+it.status+'</span></div>';
     }).join('')+'</div>';
+_updateMgrCols();
 }
 
 var _myTasksOn=false;
@@ -3596,7 +3597,14 @@ function toggleMyTasks(){
   var btn=document.getElementById('myTasksBtn');
   if(btn){btn.style.background=_myTasksOn?'#FF5900':'';btn.style.color=_myTasksOn?'#fff':'';}
   if(typeof activeTab!=="undefined"&&activeTab==="overview"){try{buildOverview();}catch(e){renderTable();}}else{renderTable();}
+_updateMgrCols();
 }
+function _updateMgrCols(){
+ var tr=document.getElementById('thead-row');
+ if(tr&&tr.firstElementChild&&tr.firstElementChild.querySelector('#sel-all-cb'))tr.firstElementChild.style.display=managerMode?'':'none';
+ document.querySelectorAll('.exp-cb').forEach(function(cb){if(cb.parentElement)cb.parentElement.style.display=managerMode?'':'none';});
+}
+
 function _myTasksMember(){
   if(typeof _memberEmail==='undefined'||!_memberEmail) return '';
   var accounts=(typeof ASSIGNMENTS!=='undefined'&&ASSIGNMENTS.memberAccounts)||[];
