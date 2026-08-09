@@ -78,69 +78,73 @@
     {
       "email": "amal.eldakroury@talabat.com",
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
+    },
+    {
+      "email": "dalia.adel@talabat.com",
+      "hash": "f9fca2fb0132af0e9ee58a7a4b746f75596cdb9200098d6c460d5c44fd5ff9fc"
     }
   ],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T13:07:16.090Z",
+  "lastUpdated": "2026-08-09T13:07:54.842Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
       {
         "ts": "2026-08-09T10:54:17.528Z",
         "user": "Coordinator",
-        "summary": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Status: Not Started ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ On Review; ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Notes updated"
+        "summary": "ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Status: Not Started ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ On Review; ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Notes updated"
       },
       {
         "ts": "2026-08-09T10:55:02.989Z",
         "user": "Coordinator",
-        "summary": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¦ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂª AR: ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done"
+        "summary": "ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂª AR: ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:08.589Z",
         "user": "Coordinator",
-        "summary": "Status ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ In Progress"
+        "summary": "Status ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ In Progress"
       },
       {
         "ts": "2026-08-09T10:55:09.581Z",
         "user": "Coordinator",
-        "summary": "Status ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ In Progress"
+        "summary": "Status ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ In Progress"
       },
       {
         "ts": "2026-08-09T10:55:20.400Z",
         "user": "Coordinator",
-        "summary": "Status ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done"
+        "summary": "Status ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:20.933Z",
         "user": "Coordinator",
-        "summary": "Status ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done"
+        "summary": "Status ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:35.451Z",
         "user": "Coordinator",
-        "summary": "Status ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done"
+        "summary": "Status ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Done"
       }
     ],
     "change order details::uni": [
       {
         "ts": "2026-08-09T12:57:38.722Z",
         "user": "Coordinator",
-        "summary": "ÃÂ°ÃÂÃÂÃÂ¤ Assigned to Anoud; ÃÂ°ÃÂÃÂÃÂ Status: Not Started ÃÂ¢ÃÂÃÂ Done; ÃÂ°ÃÂÃÂÃÂ Notes updated"
+        "summary": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ¤ Assigned to Anoud; ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Status: Not Started ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Done; ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Notes updated"
       },
       {
         "ts": "2026-08-09T12:58:40.135Z",
         "user": "Coordinator",
-        "summary": "ÃÂ°ÃÂÃÂÃÂ Status: Done ÃÂ¢ÃÂÃÂ In Progress"
+        "summary": "ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ Status: Done ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ In Progress"
       },
       {
         "ts": "2026-08-09T13:02:47.062Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ In Progress"
+        "summary": "Status ÃÂ¢ÃÂÃÂ In Progress"
       },
       {
         "ts": "2026-08-09T13:03:05.112Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ Done"
+        "summary": "Status ÃÂ¢ÃÂÃÂ Done"
       }
     ]
   }
