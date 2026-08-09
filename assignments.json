@@ -96,6 +96,26 @@
       "member": "Anoud",
       "articleTitle": "change order details::uni",
       "read": false
+    },
+    {
+      "key": "change order details::uni::status::1786283534158",
+      "type": "status",
+      "title": "Status Changed",
+      "details": "📋 Status: Done ➡️ Done\n📋 AR: ✅ Done\n📋 EN: ❌ Not done",
+      "assignedAt": "2026-08-09T13:52:14.158Z",
+      "member": "Anoud",
+      "articleTitle": "change order details::uni",
+      "read": false
+    },
+    {
+      "key": "change order details::uni::status::1786283536045",
+      "type": "status",
+      "title": "Status Changed",
+      "details": "📋 Status: In Progress ➡️ In Progress\n📋 AR: ✅ Done\n📋 EN: ❌ Not done",
+      "assignedAt": "2026-08-09T13:52:16.045Z",
+      "member": "Anoud",
+      "articleTitle": "change order details::uni",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -114,7 +134,7 @@
     }
   ],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T13:52:13.640Z",
+  "lastUpdated": "2026-08-09T13:52:16.190Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -186,6 +206,14 @@
       },
       {
         "ts": "2026-08-09T13:52:13.075Z",
+        "status": "In Progress"
+      },
+      {
+        "ts": "2026-08-09T13:52:14.158Z",
+        "status": "Done"
+      },
+      {
+        "ts": "2026-08-09T13:52:16.045Z",
         "status": "In Progress"
       }
     ]
