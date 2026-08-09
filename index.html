@@ -594,7 +594,7 @@ function filterOverviewSearch(q){
 function buildOverview(){
  ['sop','jr','dr','lang'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  var el=$('sec-overview');if(!el)return;
- var _dR=ROWS.filter(function(r){return r.sopId==='default';});var _dD=_dR.filter(function(r){return r.ar>0&&r.en>0;}).length;
+ var _dR=ROWS.filter(function(r){return r.sopId==='default';});if(typeof _myTasksOn!=='undefined'&&_myTasksOn&&_myTasksMember()){_dR=_dR.filter(function(r){return r.member===_myTasksMember();});}var _dD=_dR.filter(function(r){return r.ar>0&&r.en>0;}).length;
  var _pR=ROWS.filter(function(r){return r.sopId==='tpro';});var _pD=_pR.filter(function(r){return r.ar>0&&r.en>0;}).length;
  var _tR=ROWS.filter(function(r){return r.sopId==='tkt';});var _tD=_tR.filter(function(r){return r.ar>0&&r.en>0;}).length;
  var lops=[
@@ -3001,7 +3001,7 @@ function saveAssign(){membersBuilt=false;
  ov.deadline=$('asgn-deadline').value;
  var _ri=document.getElementById('asgn-reviewer');if(_ri)ov.reviewer=_ri.value;
  ov.priority=$('asgn-priority').value;
- ov.notes=$('asgn-notes').value;
+ ov.notes=$('asgn-notes').value;ov.updatedAt=new Date().toISOString();
  var _stEl=$('asgn-status');var _stRow=$('asgn-status-row');
  if(_stEl&&_stRow&&_stRow.style.display!=='none'){ov.status=_stEl.value;}
  var _prevOv=Object.assign({},ASSIGNMENTS.overrides[_mgrEditKey]||{});
@@ -3067,7 +3067,7 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
  var deadline=$("asgn-deadline").value;
  var priority=$("asgn-priority").value;
  saveAssign();
- var msg="Assignment updated for "+member+": "+artTitle+(deadline?" | Deadline: "+deadline:"")+(priority&&priority!=="None"?" | Priority: "+priority:"");
+ var noteVal=($("asgn-notes")||{value:""}).value||"";var msg="Assignment updated for "+member+": "+artTitle+(deadline?" | Deadline: "+deadline:"")+(priority&&priority!=="None"?" | Priority: "+priority:"")+(noteVal?" | 📝 Note: "+noteVal.substring(0,80):"");
  _pushNotif({key:_mgrEditKey+"::notif::"+Date.now(),msg:msg,ts:new Date().toISOString(),member:member,read:false});
  saveAssignments();
  showToast("Notified "+member+" on dashboard",2500);
@@ -3639,15 +3639,24 @@ function openExportMenu(){
   document.body.appendChild(p);
   setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',h);}},true);},50);
 }
-function exportToCSV(){
-  var rows=[['Article','Member','LOB','Status','Start Date','Deadline','Reviewer']];
+function exportToCSV(newOnly){
+  var lastTs=0;try{lastTs=parseInt(localStorage.getItem('lastExportTs')||'0');}catch(e){}
+  var rows=[['Article','Member','LOB','Status','Start Date','Deadline','Notes','Last Updated']];
   Object.keys(ASSIGNMENTS.overrides||{}).forEach(function(key){
     var ov=ASSIGNMENTS.overrides[key];
-    rows.push([ov.article||key,ov.member||'',ov.lob||'',ov.status||'',ov.startDate||'',ov.deadline||'',ov.reviewer||'']);
+    if(newOnly&&lastTs>0){
+      var upTs=ov.updatedAt?new Date(ov.updatedAt).getTime():0;
+      if(upTs<=lastTs)return;
+    }
+    rows.push([ov.article||key,ov.member||'',ov.lob||'',ov.status||'',ov.startDate||'',ov.deadline||'',ov.notes||'',ov.updatedAt||'']);
   });
-  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='kb_assignments_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  if(rows.length<=1){showToast('No new data to export',2000);return;}
+  if(newOnly)try{localStorage.setItem('lastExportTs',Date.now().toString());}catch(e){}
+  var csv=rows.map(function(row){return row.map(function(c){return '"'+c.toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='gamification-export.csv';a.click();URL.revokeObjectURL(url);
 }
 function exportToPDF(){window.print();}
 
