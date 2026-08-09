@@ -70,68 +70,73 @@
     }
   ],
   "mgGroups": [],
-  "memberAccounts": [],
+  "memberAccounts": [
+    {
+      "email": "dalia.adel@talabat.com",
+      "hash": "b8b7ec0daa69fa50eb84c9d3e6fbe7e4a8709905750a6522985289f13acefa84"
+    }
+  ],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T13:03:05.476Z",
+  "lastUpdated": "2026-08-09T13:05:49.007Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
       {
         "ts": "2026-08-09T10:54:17.528Z",
         "user": "Coordinator",
-        "summary": "Ã°ÂÂÂ¤ Assigned to Amal; Ã°ÂÂÂ Status: Not Started Ã¢ÂÂ On Review; Ã°ÂÂÂ Notes updated"
+        "summary": "ÃÂ°ÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂ°ÃÂÃÂÃÂ Status: Not Started ÃÂ¢ÃÂÃÂ On Review; ÃÂ°ÃÂÃÂÃÂ Notes updated"
       },
       {
         "ts": "2026-08-09T10:55:02.989Z",
         "user": "Coordinator",
-        "summary": "Ã°ÂÂÂ¦Ã°ÂÂÂª AR: Ã¢ÂÂ Done"
+        "summary": "ÃÂ°ÃÂÃÂÃÂ¦ÃÂ°ÃÂÃÂÃÂª AR: ÃÂ¢ÃÂÃÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:08.589Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ In Progress"
+        "summary": "Status ÃÂ¢ÃÂÃÂ In Progress"
       },
       {
         "ts": "2026-08-09T10:55:09.581Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ In Progress"
+        "summary": "Status ÃÂ¢ÃÂÃÂ In Progress"
       },
       {
         "ts": "2026-08-09T10:55:20.400Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ Done"
+        "summary": "Status ÃÂ¢ÃÂÃÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:20.933Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ Done"
+        "summary": "Status ÃÂ¢ÃÂÃÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:35.451Z",
         "user": "Coordinator",
-        "summary": "Status Ã¢ÂÂ Done"
+        "summary": "Status ÃÂ¢ÃÂÃÂ Done"
       }
     ],
     "change order details::uni": [
       {
         "ts": "2026-08-09T12:57:38.722Z",
         "user": "Coordinator",
-        "summary": "ð¤ Assigned to Anoud; ð Status: Not Started â Done; ð Notes updated"
+        "summary": "Ã°ÂÂÂ¤ Assigned to Anoud; Ã°ÂÂÂ Status: Not Started Ã¢ÂÂ Done; Ã°ÂÂÂ Notes updated"
       },
       {
         "ts": "2026-08-09T12:58:40.135Z",
         "user": "Coordinator",
-        "summary": "ð Status: Done â In Progress"
+        "summary": "Ã°ÂÂÂ Status: Done Ã¢ÂÂ In Progress"
       },
       {
         "ts": "2026-08-09T13:02:47.062Z",
         "user": "Coordinator",
-        "summary": "Status → In Progress"
+        "summary": "Status â In Progress"
       },
       {
         "ts": "2026-08-09T13:03:05.112Z",
         "user": "Coordinator",
-        "summary": "Status → Done"
+        "summary": "Status â Done"
       }
     ]
   }
