@@ -3615,11 +3615,18 @@ function quickStatusUpdate(key,newStatus){
   ov.status=newStatus;
   if(!ASSIGNMENTS.history)ASSIGNMENTS.history={};
   if(!ASSIGNMENTS.history[key])ASSIGNMENTS.history[key]=[];
-  ASSIGNMENTS.history[key].push({ts:new Date().toISOString(),user:_myTasksMember()||'Coordinator',summary:'Status → '+newStatus});
-  _pushNotif({key:key+'::latest',type:'status',article:ov.article||key,member:ov.member||'',lob:ov.lob||'',summary:'Status changed to '+newStatus,assignedAt:Date.now()});
-  buildNotifBadge();saveAssignments();renderTable();openNotifPanel();
+  ASSIGNMENTS.history[key].push({ts:new Date().toISOString(),status:newStatus});
+  var member=ov.member||'';
+  var title=ov.title||key;
+  var langs=Object.keys(ov).filter(function(k){return k==='ar'||k==='en'||k==='fr';});
+  var langDetails=langs.map(function(l){return '\uD83D\uDCCB '+l.toUpperCase()+': '+((ov[l]===1?'\u2705 Done':ov[l]===0?'\u274C Not done':'\u23F3 In Progress'));}).join('\n');
+  var details='\uD83D\uDCCB Status: '+newStatus+' \u27A1\uFE0F '+(ov.status||'')+'\n'+langDetails;
+  var notifEntry={key:key+'::status::'+Date.now(),type:'status',title:'Status Changed',details:details,assignedAt:new Date().toISOString(),member:member,articleTitle:title,read:false};
+  _pushNotif(notifEntry);
+  saveAssignments();
+  showToast('Status updated for '+member+' - '+newStatus,2000);
+  renderTable();
 }
-
 function openExportMenu(){
   var ex=document.getElementById('export-popup');
   if(ex){ex.remove();return;}
