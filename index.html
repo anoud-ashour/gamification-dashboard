@@ -105,9 +105,9 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </style></head>
 <body><div class="wrap">
 <button id="themeBtn">🌙 Dark</button>
-<button id="myTasksBtn" onclick="toggleMyTasks()" style="padding:7px 14px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer">&#128100; My Tasks</button>
-<button onclick="openExportMenu()" style="padding:7px 14px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer">&#8595; Export</button>
-<button onclick="openShareMenu()" style="padding:7px 14px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer">&#128279; Share</button>
+<button id="myTasksBtn" onclick="toggleMyTasks()" style="display:none;padding:7px 14px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer">&#128100; My Tasks</button>
+<button id="exportBtn" onclick="openExportMenu()" style="display:none;padding:7px 14px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer">&#8595; Export</button>
+<button id="shareBtn" onclick="openShareMenu()" style="display:none;padding:7px 14px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--dark);font-size:13px;font-weight:700;cursor:pointer">&#128279; Share</button>
 <button id="mem-login-btn" onclick="openMemberLogin()" style="display:none;position:absolute;top:18px;right:320px;padding:6px 14px;border-radius:20px;border:1.5px solid #0891b2;background:var(--card);color:#0891b2;font-size:12px;font-weight:800;cursor:pointer;z-index:5">👥 Member</button>
 <button id="mgr-mode-btn" onclick="toggleManagerMode()" style="display:none;position:absolute;top:18px;right:205px;padding:6px 14px;border-radius:20px;border:1.5px solid #8318d8;background:var(--card);color:#8318d8;font-size:12px;font-weight:800;cursor:pointer;z-index:5">👩‍💼 Manager</button>
 <button id="notifBtn" onclick="openNotifPanel()" style="position:absolute;top:18px;right:90px;border:1px solid var(--border);background:var(--card);color:var(--dark);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;z-index:5;display:flex;align-items:center;gap:6px">🔔<span id="notif-badge" style="display:none;background:#FF5900;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:800;min-width:18px;text-align:center;line-height:1.6"></span></button>
@@ -2584,6 +2584,7 @@ function openManagerLogin(){
  $('mgr-login-email').value='';$('mgr-login-pw').value='';
  $('mgr-login-err').style.display='none';
  $('mgr-login-btn').textContent='Login';$('mgr-login-btn').disabled=false;
+ var _sn=$('mgr-setup-note');if(_sn)_sn.style.display=(ASSIGNMENTS&&(ASSIGNMENTS.managers||[]).length===0)?'block':'none';
  $('mgr-login-overlay').style.display='block';$('mgr-login-modal').style.display='block';
  setTimeout(function(){$('mgr-login-email').focus();},50);
 }
@@ -2602,6 +2603,7 @@ async function attemptManagerLogin(){
  var hash=await mgHash(email,pw);
  var mgrs=ASSIGNMENTS.managers||[];
  var found=mgrs.find(function(m){return m.email.toLowerCase()===email&&m.hash===hash;});
+ if(!found&&mgrs.length===0){ASSIGNMENTS.managers=[{email:email,hash:hash}];try{await saveAssignments();}catch(e){}found={email:email,hash:hash};}
  if(found){
   _managerEmail=email;
   closeManagerLogin();
@@ -2623,6 +2625,7 @@ function showToast(msg,duration){
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent='✓ Manager';btn.style.background='#8318d8';btn.style.color='#fff';btn.style.borderColor='#8318d8';}
  var bar=$('mgr-save-bar');if(bar)bar.style.display='flex';
+ ['myTasksBtn','exportBtn','shareBtn'].forEach(function(id){var el=$(id);if(el)el.style.display='';});
  var el=$('mgr-email-label');if(el)el.textContent='👤 '+_managerEmail;
  renderCustomTabNav();
  buildWorkload();
@@ -2679,9 +2682,11 @@ async function attemptMemberLogin(){
  var hash=await mgHash(email,pw);
  var accounts=ASSIGNMENTS.memberAccounts||[];
  var match=accounts.find(function(m){return m.email.toLowerCase()===email&&m.hash===hash;});
+ if(!match&&(ASSIGNMENTS.managers||[]).length>0){var _na={email:email,hash:hash};ASSIGNMENTS.memberAccounts=(ASSIGNMENTS.memberAccounts||[]);ASSIGNMENTS.memberAccounts.push(_na);try{await saveAssignments();}catch(e){}match=_na;}
  if(match){
   _memberEmail=email;memberMode=true;
   closeMemberLogin();
+  ['myTasksBtn','exportBtn','shareBtn'].forEach(function(id){var el=$(id);if(el)el.style.display='';});
   var bar=$('mem-save-bar');if(bar)bar.style.display='flex';
   var lbl=$('mem-email-label');if(lbl)lbl.textContent='👤 '+email;
   var hdrBtn=$('mem-login-btn');if(hdrBtn){hdrBtn.textContent='✓ Member';hdrBtn.style.background='#0891b2';hdrBtn.style.color='#fff';}
@@ -4041,7 +4046,7 @@ function switchDrawerTab(tab){
  </div>
  </div>
  <div id="mgr-login-err" style="display:none;font-size:12px;color:#dc2626;background:#fee2e2;padding:9px 12px;border-radius:8px;margin-bottom:14px;font-weight:600"></div>
- <button id="mgr-login-btn" onclick="attemptManagerLogin()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px">Login</button>
+ <div id="mgr-setup-note" style="font-size:11px;color:#8318d8;text-align:center;margin-bottom:8px;display:none">&#128274; First time? Enter your email &amp; a new password to create your manager account.</div><button id="mgr-login-btn" onclick="attemptManagerLogin()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px">Login</button>
  <button onclick="closeManagerLogin()" style="width:100%;margin-top:8px;padding:11px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
 </div>
 
