@@ -20,7 +20,7 @@
       "reviewer": "",
       "priority": "",
       "notes": "Test",
-      "status": "Done"
+      "status": "In Progress"
     }
   },
   "extra": [],
@@ -46,20 +46,27 @@
       "assignedAt": 1786272935451
     },
     {
-      "id": "mslt58rl",
-      "key": "change order details::uni::latest",
-      "type": "assign",
-      "article": "Change Order Details",
-      "member": "Anoud",
-      "lob": "Universal",
-      "summary": "👤 Assigned to Anoud<br>📋 Status: Not Started → Done<br>📝 Notes updated",
-      "startDate": "",
-      "assignedAt": "2026-08-09T12:57:38.721Z"
-    },
-    {
       "key": "::notif::1786280258725",
       "msg": "Assignment updated for Anoud: Change Order Details",
       "ts": "2026-08-09T12:57:38.725Z",
+      "member": "Anoud",
+      "read": false
+    },
+    {
+      "id": "mslt6k5j",
+      "key": "change order details::uni::latest",
+      "type": "status",
+      "article": "Change Order Details",
+      "member": "Anoud",
+      "lob": "Universal",
+      "summary": "📋 Status: Done → In Progress",
+      "startDate": "",
+      "assignedAt": "2026-08-09T12:58:40.135Z"
+    },
+    {
+      "key": "::notif::1786280320137",
+      "msg": "Assignment updated for Anoud: Change Order Details",
+      "ts": "2026-08-09T12:58:40.137Z",
       "member": "Anoud",
       "read": false
     }
@@ -67,7 +74,7 @@
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T12:57:40.565Z",
+  "lastUpdated": "2026-08-09T12:58:40.707Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -112,6 +119,11 @@
         "ts": "2026-08-09T12:57:38.722Z",
         "user": "Coordinator",
         "summary": "👤 Assigned to Anoud; 📋 Status: Not Started → Done; 📝 Notes updated"
+      },
+      {
+        "ts": "2026-08-09T12:58:40.135Z",
+        "user": "Coordinator",
+        "summary": "📋 Status: Done → In Progress"
       }
     ]
   }
