@@ -3618,8 +3618,8 @@ function openExportMenu(){
   p.id='export-popup';
   p.style.cssText='position:fixed;top:56px;right:130px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;padding:12px;min-width:150px';
   p.innerHTML='<div style="font-weight:800;font-size:12px;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">EXPORT AS</div>'+
-    '<button onclick="exportToCSV();document.getElementById('export-popup').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128202; CSV / Excel</button>'+
-    '<button onclick="exportToPDF();document.getElementById('export-popup').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128438; Print / PDF</button>';
+    '<button onclick="exportToCSV();document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128202; CSV / Excel</button>'+
+    '<button onclick="exportToPDF();document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128438; Print / PDF</button>';
   document.body.appendChild(p);
   setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',h);}},true);},50);
 }
@@ -3646,7 +3646,7 @@ function openShareMenu(){
   p.style.cssText='position:fixed;top:56px;right:60px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;padding:16px;min-width:300px';
   p.innerHTML='<div style="font-weight:800;font-size:13px;margin-bottom:10px">&#128279; Shareable Read-Only Link</div>'+
     '<input type="text" value="'+url+'" readonly style="width:100%;box-sizing:border-box;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);outline:none" onclick="this.select()">'+
-    '<button onclick="navigator.clipboard.writeText(''+url+'').then(function(){alert('Copied!');})" style="margin-top:8px;width:100%;padding:8px;background:#FF5900;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Copy Link</button>';
+    '<button onclick="navigator.clipboard.writeText(\''+url+'\').then(function(){alert(\'Copied!\');})" style="margin-top:8px;width:100%;padding:8px;background:#FF5900;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Copy Link</button>';
   document.body.appendChild(p);
   setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',h);}},true);},50);
 }
@@ -3674,7 +3674,7 @@ function renderComments(key){
     '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+new Date(c.ts).toLocaleString()+(c.user?' &middot; <strong>'+c.user+'</strong>':'')+'</div>'+
     '<div style="font-size:13px;color:#1f2937">'+c.text+'</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No notes yet.</div>';
   el.innerHTML=html+'<div style="margin-top:10px"><textarea id="new-comment-input" placeholder="Add a note..." style="width:100%;box-sizing:border-box;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;resize:none" rows="3"></textarea>'+
-    '<button onclick="saveComment(''+key+'')" style="margin-top:6px;width:100%;padding:9px;background:#FF5900;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Add Note</button></div>';
+    '<button onclick="saveComment(\''+key+'\')" style="margin-top:6px;width:100%;padding:9px;background:#FF5900;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Add Note</button></div>';
 }
 function saveComment(key){
   var inp=document.getElementById('new-comment-input');
