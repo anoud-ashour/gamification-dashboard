@@ -32,13 +32,13 @@
       "member": "Amal",
       "lob": "",
       "summary": "Status changed to Done",
-      "assignedAt": 1786272920933
+      "assignedAt": 1786272935451
     }
   ],
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T10:55:22.754Z",
+  "lastUpdated": "2026-08-09T10:55:35.790Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -69,6 +69,11 @@
       },
       {
         "ts": "2026-08-09T10:55:20.933Z",
+        "user": "Coordinator",
+        "summary": "Status → Done"
+      },
+      {
+        "ts": "2026-08-09T10:55:35.451Z",
         "user": "Coordinator",
         "summary": "Status → Done"
       }
