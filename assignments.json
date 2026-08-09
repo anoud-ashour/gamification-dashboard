@@ -2,13 +2,13 @@
   "overrides": {
     "rider reports cst wrong address/pinpoint::uni": {
       "member": "Amal",
-      "ar": 0,
+      "ar": 1,
       "en": 1,
       "startDate": "",
       "deadline": "",
       "reviewer": "",
       "priority": "",
-      "notes": "Test ",
+      "notes": "",
       "status": "On Review"
     }
   },
@@ -26,21 +26,21 @@
   "customSections": [],
   "notifications": [
     {
-      "id": "msloqlyv",
+      "id": "mslorl1p",
       "key": "rider reports cst wrong address/pinpoint::uni::latest",
-      "type": "assign",
+      "type": "update",
       "article": "Rider Reports CST Wrong Address/Pinpoint",
       "member": "Amal",
       "lob": "Universal",
-      "summary": "👤 Assigned to Amal<br>📋 Status: Not Started → On Review<br>📝 Notes updated",
+      "summary": "🇦🇪 AR: ✓ Done",
       "startDate": "",
-      "assignedAt": "2026-08-09T10:54:17.527Z"
+      "assignedAt": "2026-08-09T10:55:02.989Z"
     }
   ],
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T10:54:27.803Z",
+  "lastUpdated": "2026-08-09T10:55:03.564Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -48,6 +48,11 @@
         "ts": "2026-08-09T10:54:17.528Z",
         "user": "Coordinator",
         "summary": "👤 Assigned to Amal; 📋 Status: Not Started → On Review; 📝 Notes updated"
+      },
+      {
+        "ts": "2026-08-09T10:55:02.989Z",
+        "user": "Coordinator",
+        "summary": "🇦🇪 AR: ✓ Done"
       }
     ]
   }
