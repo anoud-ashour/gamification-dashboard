@@ -120,6 +120,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 </div>
 <div id="status"><div class="kpis"><div class="kpi skel" style="height:78px"></div><div class="kpi skel" style="height:78px"></div><div class="kpi skel" style="height:78px"></div><div class="kpi skel" style="height:78px"></div></div><div class="skel" style="height:230px;margin-top:16px"></div><div style="text-align:center;color:var(--muted);font-size:12px;margin-top:12px">Loading live data…</div></div>
 
+<div id="due-week-wrap" style="padding:0 16px;display:none"></div>
 <div id="app" class="hide">
 <div class="tabs">
 <button class="tab active" data-tab="overview">Overview</button>
@@ -1035,6 +1036,7 @@ function renderTable(){
   if(r.sopId!==activeTab)return;
   if(!r._extra&&!managerMode&&r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
+  if(_myTasksOn&&r.member&&r.member!==_myTasksMember())return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
   if(fs==='gaps'&&full)return;if(fs==='full'&&!full)return;
@@ -2221,6 +2223,8 @@ function build(){
  else if(activeTab==='all'||activeTab==='default'||activeTab==='tpro'||activeTab==='tkt')renderTable();
  buildWorkload();
  buildDynamicTabs();
+ try{buildDueWeekCard();}catch(e){}
+ try{_applyReadOnlyMode();}catch(e){}
 }
 var _refreshTimer=null;
 function startCountdown(){
@@ -2860,6 +2864,7 @@ function openAssignEdit(artKey,lob){
  var lobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing','uni':'Universal','updates':'Update Projects'}[lob]||((ASSIGNMENTS.customTabs||[]).find(function(c){return 'ctab-'+c.id===lob;})||{name:lob}).name;
  $('asgn-lob-label').textContent=lobLabel;
  $('asgn-member').value=ov.member!==undefined?ov.member:(row?row.member||'':'');
+ var _revEl=document.getElementById('asgn-reviewer');if(_revEl)_revEl.value=ov.reviewer||'';
  $('asgn-ar').value=ov.ar!==undefined?String(ov.ar):(row?String(row.ar):'0');
  $('asgn-en').value=ov.en!==undefined?String(ov.en):(row?String(row.en):'0');
  $('asgn-startdate').value=ov.startDate||'';
@@ -2876,6 +2881,10 @@ function openAssignEdit(artKey,lob){
   else{var initSt=ov.status||'';if(!initSt){var pe=PROG.find(function(p){return !p._extraId&&(p.article||'').toLowerCase().trim()===artKey;});if(pe){var ac=PCELLS.filter(function(k){return isStatusValue(pe[k]);});if(ac.length&&ac.every(function(k){return statusOf(pe[k])==='Done';}))initSt='Done';else if(ac.some(function(k){return statusOf(pe[k])==='In Progress';}))initSt='In Progress';else if(ac.some(function(k){return statusOf(pe[k])==='On Review';}))initSt='On Review';else if(ac.some(function(k){return statusOf(pe[k])==='Pending Modification';}))initSt='Pending Modification';else if(ac.length)initSt='In Progress';}}$('asgn-status').value=initSt||'Not Started';}
  }
  $('asgn-overlay').style.display='block';$('asgn-modal').style.display='block';
+ try{renderComments(_mgrEditKey);}catch(e){}
+ try{renderHistory(_mgrEditKey);}catch(e){}
+ window._mgrEditKey=_mgrEditKey;
+ switchDrawerTab('assign');
 }
 
 function closeAssignModal(){
@@ -2956,6 +2965,7 @@ function openNotifPanel(){
     +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px;line-height:1.4">'+n.article+'</div>'
     +(summary?'<div style="font-size:11px;font-weight:600;color:#374151;background:var(--bg);padding:6px 10px;border-radius:8px;margin-bottom:8px;line-height:1.6">'+summary+'</div>':'')
     +'<div style="font-size:10px;color:var(--muted);font-weight:600">'+at+'</div>'
+    +(n.key?'<div style="margin-top:8px;display:flex;gap:6px"><button onclick="quickStatusUpdate('" + n.key.replace('::latest','') + "','In Progress')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1.5px solid #FF5900;color:#FF5900;background:none;cursor:pointer">&#8635; In Progress</button><button onclick="quickStatusUpdate('" + n.key.replace('::latest','') + "','Done')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:none;background:#FF5900;color:white;cursor:pointer">&#10003; Done</button></div>':'')
     +'</div>';
   }).join('');
  }
@@ -2979,6 +2989,7 @@ function saveAssign(){membersBuilt=false;
  ov.en=Number($('asgn-en').value);
  ov.startDate=$('asgn-startdate').value;
  ov.deadline=$('asgn-deadline').value;
+ var _ri=document.getElementById('asgn-reviewer');if(_ri)ov.reviewer=_ri.value;
  ov.priority=$('asgn-priority').value;
  ov.notes=$('asgn-notes').value;
  var _stEl=$('asgn-status');var _stRow=$('asgn-status-row');
@@ -3004,7 +3015,10 @@ if(npr!==opr&&(npr||opr)){if(npr&&npr!=='None')changes.push('⚡ Priority: '+(op
 if(_prevOv.ar!==undefined&&Number(ov.ar)!==Number(_prevOv.ar))changes.push('🇦🇪 AR: '+(ov.ar?'✓ Done':'✕ Not done'));
 if(_prevOv.en!==undefined&&Number(ov.en)!==Number(_prevOv.en))changes.push('🇬🇧 EN: '+(ov.en?'✓ Done':'✕ Not done'));
 if((ov.notes||'')!==(_prevOv.notes||'')&&ov.notes)changes.push('📝 Notes updated');
-if(changes.length>0){_pushNotif({id:Date.now().toString(36),key:_mgrEditKey+'::latest',type:notifType,article:artTitle,member:ov.member||_prevOv.member||'',lob:lobLabel,summary:changes.join('<br>'),startDate:ov.startDate||'',assignedAt:now});buildNotifBadge();}
+if(changes.length>0){_pushNotif({id:Date.now().toString(36),key:_mgrEditKey+'::latest',type:notifType,article:artTitle,member:ov.member||_prevOv.member||'',lob:lobLabel,summary:changes.join('<br>'),startDate:ov.startDate||'',assignedAt:now});buildNotifBadge();
+if(!ASSIGNMENTS.history)ASSIGNMENTS.history={};
+if(!ASSIGNMENTS.history[_mgrEditKey])ASSIGNMENTS.history[_mgrEditKey]=[];
+ASSIGNMENTS.history[_mgrEditKey].push({ts:new Date().toISOString(),user:_myTasksMember()||'Coordinator',summary:changes.join('; ')});}
 })(); saveAssignments();
  // Save sub-category assignment
  var parts=_mgrEditKey.split('::');
@@ -3542,6 +3556,143 @@ function cycleSecItemStatus(secId,itemId){
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
+
+// == Anoud Feature Pack ==
+
+function buildDueWeekCard() {
+  var wrap = document.getElementById('due-week-wrap');
+  if (!wrap) return;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var nextWeek = new Date(today.getTime() + 7*24*60*60*1000);
+  var items = [];
+  Object.keys(ASSIGNMENTS.overrides||{}).forEach(function(key) {
+    var ov = ASSIGNMENTS.overrides[key];
+    if (!ov || !ov.startDate || ov.status === 'Done') return;
+    var d = new Date(ov.startDate);
+    if (d >= today && d <= nextWeek)
+      items.push({key:key,article:ov.article||key,member:ov.member||'',date:ov.startDate,status:ov.status||'Not Started'});
+  });
+  if (!items.length) { wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  var sc={'Done':'#d1fae5','In Progress':'#dbeafe','On Review':'#ede9fe','Not Started':'#fee2e2'};
+  var st={'Done':'#065f46','In Progress':'#1e40af','On Review':'#5b21b6','Not Started':'#991b1b'};
+  wrap.innerHTML='<div style="background:linear-gradient(135deg,#fff7ed,#fff);border:1.5px solid #FF5900;border-radius:16px;padding:16px 20px;margin-bottom:16px">'+
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
+    '<span style="font-size:18px">&#128197;</span>'+
+    '<span style="font-weight:800;font-size:15px;color:#FF5900">Due This Week</span>'+
+    '<span style="background:#FF5900;color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">'+items.length+'</span></div>'+
+    items.map(function(it){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #FF590022">'+
+      '<span style="font-size:12px;flex:1;color:#1f2937;font-weight:600">'+it.article+'</span>'+
+      '<span style="font-size:11px;color:#6b7280;min-width:60px">'+it.member+'</span>'+
+      '<span style="font-size:10px;background:'+(sc[it.status]||'#f3f4f6')+';color:'+(st[it.status]||'#374151')+';padding:2px 8px;border-radius:20px;font-weight:700">'+it.status+'</span></div>';
+    }).join('')+'</div>';
+}
+
+var _myTasksOn=false;
+function toggleMyTasks(){
+  _myTasksOn=!_myTasksOn;
+  var btn=document.getElementById('myTasksBtn');
+  if(btn){btn.style.background=_myTasksOn?'#FF5900':'';btn.style.color=_myTasksOn?'#fff':'';}
+  renderTable();
+}
+function _myTasksMember(){
+  if(typeof _loggedInMember!=='undefined'&&_loggedInMember)return _loggedInMember;
+  return '';
+}
+
+function quickStatusUpdate(key,newStatus){
+  if(!ASSIGNMENTS.overrides||!ASSIGNMENTS.overrides[key])return;
+  var ov=ASSIGNMENTS.overrides[key];
+  ov.status=newStatus;
+  if(!ASSIGNMENTS.history)ASSIGNMENTS.history={};
+  if(!ASSIGNMENTS.history[key])ASSIGNMENTS.history[key]=[];
+  ASSIGNMENTS.history[key].push({ts:new Date().toISOString(),user:_myTasksMember()||'Coordinator',summary:'Status → '+newStatus});
+  _pushNotif({key:key+'::latest',type:'status',article:ov.article||key,member:ov.member||'',lob:ov.lob||'',summary:'Status changed to '+newStatus,assignedAt:Date.now()});
+  buildNotifBadge();saveAssignments();renderTable();openNotifPanel();
+}
+
+function openExportMenu(){
+  var ex=document.getElementById('export-popup');
+  if(ex){ex.remove();return;}
+  var p=document.createElement('div');
+  p.id='export-popup';
+  p.style.cssText='position:fixed;top:56px;right:130px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;padding:12px;min-width:150px';
+  p.innerHTML='<div style="font-weight:800;font-size:12px;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">EXPORT AS</div>'+
+    '<button onclick="exportToCSV();document.getElementById('export-popup').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128202; CSV / Excel</button>'+
+    '<button onclick="exportToPDF();document.getElementById('export-popup').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128438; Print / PDF</button>';
+  document.body.appendChild(p);
+  setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',h);}},true);},50);
+}
+function exportToCSV(){
+  var rows=[['Article','Member','LOB','Status','Start Date','Deadline','Reviewer']];
+  Object.keys(ASSIGNMENTS.overrides||{}).forEach(function(key){
+    var ov=ASSIGNMENTS.overrides[key];
+    rows.push([ov.article||key,ov.member||'',ov.lob||'',ov.status||'',ov.startDate||'',ov.deadline||'',ov.reviewer||'']);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='kb_assignments_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+function exportToPDF(){window.print();}
+
+var _isReadOnly=(new URLSearchParams(location.search).get('view')==='readonly');
+var _shareTokenParam=new URLSearchParams(location.search).get('token');
+
+function openShareMenu(){
+  var ex=document.getElementById('share-popup');if(ex){ex.remove();return;}
+  if(!ASSIGNMENTS.shareToken){ASSIGNMENTS.shareToken=Math.random().toString(36).slice(2,10);saveAssignments();}
+  var url=location.origin+location.pathname+'?view=readonly&token='+ASSIGNMENTS.shareToken;
+  var p=document.createElement('div');p.id='share-popup';
+  p.style.cssText='position:fixed;top:56px;right:60px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;padding:16px;min-width:300px';
+  p.innerHTML='<div style="font-weight:800;font-size:13px;margin-bottom:10px">&#128279; Shareable Read-Only Link</div>'+
+    '<input type="text" value="'+url+'" readonly style="width:100%;box-sizing:border-box;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);outline:none" onclick="this.select()">'+
+    '<button onclick="navigator.clipboard.writeText(''+url+'').then(function(){alert('Copied!');})" style="margin-top:8px;width:100%;padding:8px;background:#FF5900;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Copy Link</button>';
+  document.body.appendChild(p);
+  setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',h);}},true);},50);
+}
+function _applyReadOnlyMode(){
+  if(!_isReadOnly)return;
+  if(_shareTokenParam!==(ASSIGNMENTS.shareToken||'')){document.body.innerHTML='<div style="text-align:center;padding:80px;font-size:18px;color:#991b1b">&#128274; Invalid or expired share link.</div>';return;}
+  var banner=document.createElement('div');
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;background:#FF5900;color:#fff;text-align:center;padding:9px;font-size:13px;font-weight:700;z-index:99999';
+  banner.textContent='Read-Only View — You cannot make changes in this mode';
+  document.body.prepend(banner);
+  setTimeout(function(){document.querySelectorAll('button,input,select,textarea').forEach(function(el){if(el.closest('#share-popup')||el.closest('#export-popup'))return;el.disabled=true;el.style.opacity='0.5';el.style.cursor='not-allowed';});},200);
+}
+
+function renderHistory(key){
+  var hist=((ASSIGNMENTS.history||{})[key]||[]).slice().reverse();
+  if(!hist.length)return '<div style="color:var(--muted);font-size:12px;text-align:center;padding:24px">No history yet.</div>';
+  return hist.map(function(h){return '<div style="padding:10px;border-radius:10px;background:var(--bg);border:1px solid var(--border);margin-bottom:8px">'+
+    '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+new Date(h.ts).toLocaleString()+(h.user?' &middot; <strong>'+h.user+'</strong>':'')+'</div>'+
+    '<div style="font-size:12px;color:#374151">'+h.summary+'</div></div>';}).join('');
+}
+function renderComments(key){
+  var comments=((ASSIGNMENTS.comments||{})[key]||[]);
+  var el=document.getElementById('asgn-tab-notes-content');if(!el)return;
+  var html=comments.length?comments.map(function(c){return '<div style="padding:10px;border-radius:10px;background:var(--bg);border:1px solid var(--border);margin-bottom:8px">'+
+    '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">'+new Date(c.ts).toLocaleString()+(c.user?' &middot; <strong>'+c.user+'</strong>':'')+'</div>'+
+    '<div style="font-size:13px;color:#1f2937">'+c.text+'</div></div>';}).join(''):'<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No notes yet.</div>';
+  el.innerHTML=html+'<div style="margin-top:10px"><textarea id="new-comment-input" placeholder="Add a note..." style="width:100%;box-sizing:border-box;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;resize:none" rows="3"></textarea>'+
+    '<button onclick="saveComment(''+key+'')" style="margin-top:6px;width:100%;padding:9px;background:#FF5900;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Add Note</button></div>';
+}
+function saveComment(key){
+  var inp=document.getElementById('new-comment-input');
+  if(!inp||!inp.value.trim())return;
+  if(!ASSIGNMENTS.comments)ASSIGNMENTS.comments={};
+  if(!ASSIGNMENTS.comments[key])ASSIGNMENTS.comments[key]=[];
+  ASSIGNMENTS.comments[key].push({ts:new Date().toISOString(),user:_myTasksMember()||'Coordinator',text:inp.value.trim()});
+  saveAssignments();renderComments(key);
+}
+function switchDrawerTab(tab){
+  ['assign','notes','history'].forEach(function(t){
+    var c=document.getElementById('asgn-tab-'+t+'-content');
+    var b=document.getElementById('asgn-tab-'+t);
+    if(c)c.style.display=t===tab?'block':'none';
+    if(b){b.style.borderBottom=t===tab?'2.5px solid #FF5900':'2.5px solid transparent';b.style.color=t===tab?'#FF5900':'var(--muted)';b.style.fontWeight=t===tab?'800':'600';}
+  });
+  if(tab==='history'){var hEl=document.getElementById('asgn-tab-history-content');if(hEl&&window._mgrEditKey)hEl.innerHTML=renderHistory(window._mgrEditKey);}
+}
 </script>
 <!-- Game Link Modal -->
 <div id="glm-overlay" onclick="closeGameLinkModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000"></div>
@@ -3593,6 +3744,12 @@ function cycleSecItemStatus(secId,itemId){
 <div id="asgn-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:460px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
  <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:6px">✏️ Edit Assignment</div>
  <div id="asgn-title" style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px;line-height:1.4"></div>
+<div id="asgn-tabs" style="display:flex;border-bottom:1px solid var(--border);margin-bottom:12px;margin-top:10px">
+  <div onclick="switchDrawerTab('assign')" id="asgn-tab-assign" style="padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;color:#FF5900;border-bottom:2.5px solid #FF5900">Assign</div>
+  <div onclick="switchDrawerTab('notes')" id="asgn-tab-notes" style="padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent">Notes</div>
+  <div onclick="switchDrawerTab('history')" id="asgn-tab-history" style="padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent">History</div>
+ </div>
+ <div id="asgn-tab-assign-content">
  <div id="asgn-lob-label" style="font-size:11px;color:var(--muted);margin-bottom:18px"></div>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
   <div>
@@ -3656,7 +3813,11 @@ function cycleSecItemStatus(secId,itemId){
    <option value="Done">Done</option>
   </select>
  </div>
-  <div style="display:flex;gap:8px;margin-bottom:6px">
+  <div style="margin-bottom:10px">
+  <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px">&#128269; Peer Reviewer</div>
+  <input type="text" id="asgn-reviewer" placeholder="Enter reviewer name..." style="width:100%;box-sizing:border-box;padding:8px 10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ </div>
+ <div style="display:flex;gap:8px;margin-bottom:6px">
    <button onclick="saveAssignAndNotify()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-size:13px;font-weight:800;cursor:pointer">💌 Save &amp; Notify</button>
    <button onclick="saveAssign()" style="padding:10px 16px;border-radius:10px;border:1.5px solid #8318d8;background:none;color:#8318d8;font-size:13px;font-weight:700;cursor:pointer">Save Only</button>
   </div>
@@ -3664,6 +3825,13 @@ function cycleSecItemStatus(secId,itemId){
    <button onclick="clearAssign()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">Clear</button>
    <button onclick="closeAssignModal()" style="flex:1;padding:8px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
   </div>
+ </div>
+ <div id="asgn-tab-notes-content" style="display:none;min-height:100px;padding:8px 0">
+  <div id="asgn-notes-wrap" style="font-size:13px;color:var(--muted)">Loading notes...</div>
+ </div>
+ <div id="asgn-tab-history-content" style="display:none;min-height:100px;padding:8px 0">
+  <div id="asgn-history-wrap" style="font-size:13px;color:var(--muted)">Loading history...</div>
+ </div>
   <div id="asgn-delete-row" style="display:none">
    <button onclick="deleteFromAssignModal()" style="width:100%;padding:9px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:13px;font-weight:800;cursor:pointer">🗑️ Delete This Article</button>
   </div>
