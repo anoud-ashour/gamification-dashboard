@@ -32,13 +32,13 @@
       "member": "Amal",
       "lob": "",
       "summary": "Status changed to In Progress",
-      "assignedAt": 1786272908589
+      "assignedAt": 1786272909581
     }
   ],
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T10:55:08.892Z",
+  "lastUpdated": "2026-08-09T10:55:11.438Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -54,6 +54,11 @@
       },
       {
         "ts": "2026-08-09T10:55:08.589Z",
+        "user": "Coordinator",
+        "summary": "Status → In Progress"
+      },
+      {
+        "ts": "2026-08-09T10:55:09.581Z",
         "user": "Coordinator",
         "summary": "Status → In Progress"
       }
