@@ -3598,8 +3598,15 @@ function toggleMyTasks(){
   renderTable();
 }
 function _myTasksMember(){
-  if(typeof _memberEmail!=='undefined'&&_memberEmail)return _memberEmail;
-  return '';
+  if(typeof _memberEmail==='undefined'||!_memberEmail) return '';
+  var accounts=(typeof ASSIGNMENTS!=='undefined'&&ASSIGNMENTS.memberAccounts)||[];
+  var acct=accounts.find(function(a){return a.email&&a.email.toLowerCase()===_memberEmail.toLowerCase()&&a.name;});
+  if(acct&&acct.name) return acct.name;
+  var prefix=_memberEmail.split('@')[0].split('.')[0].toLowerCase();
+  var members=Object.values((typeof ASSIGNMENTS!=='undefined'&&ASSIGNMENTS.overrides)||{}).map(function(v){return v.member;}).filter(Boolean);
+  var uniq=members.filter(function(v,i,a){return a.indexOf(v)===i;});
+  var found=uniq.find(function(n){return n.toLowerCase()===prefix;});
+  return found||prefix;
 }
 
 function quickStatusUpdate(key,newStatus){
