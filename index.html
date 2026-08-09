@@ -3071,7 +3071,7 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
  _pushNotif({key:_mgrEditKey+"::notif::"+Date.now(),msg:msg,ts:new Date().toISOString(),member:member,read:false});
  saveAssignments();
  showToast("Notified "+member+" on dashboard",2500);
-}unction clearAssign(){
+}function clearAssign(){
  if(!_mgrEditKey)return;
  delete ASSIGNMENTS.overrides[_mgrEditKey];
  _assignPending=true;
