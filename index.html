@@ -1008,7 +1008,7 @@ function renderTable(){
  const showSop=activeTab==='all';
  const th=$('thead-row');
  if(showSop){
-  th.innerHTML='<th style="width:28px;padding:2px" title="Select for export"><input type="checkbox" id="sel-all-cb" onclick="document.querySelectorAll(\'.exp-cb\').forEach(function(cb){cb.checked=this.checked;var s=window._exportSel=window._exportSel||new Set();this.checked?s.add(cb.dataset.key):s.delete(cb.dataset.key);}.bind(this))"></th><th class="l">Article</th><th class="l">Member</th>'
+  th.innerHTML='<th style="width:28px"><input type="checkbox" id="sel-all-cb" onclick="document.querySelectorAll('.exp-cb').forEach(function(c){c.checked=this.checked;(window._exportSel=window._exportSel||new Set())[this.checked?'add':'delete'](c.dataset.key)}.bind(this))"></th><th class="l">Article</th><th class="l">Member</th>'
    +'<th style="text-align:center;min-width:120px"><span style="color:#FF5900">&#11044;</span> Default</th>'
    +'<th style="text-align:center;min-width:120px"><span style="color:#8318d8">&#11044;</span> TPRO</th>'
    +'<th style="text-align:center;min-width:120px"><span style="color:var(--tkt-accent)">&#11044;</span> Ticketing</th>'
@@ -1019,7 +1019,7 @@ function renderTable(){
   renderAllLops();
   return;
  }
- th.innerHTML='<th style="width:28px;padding:2px" title="Select for export"><input type="checkbox" id="sel-all-cb" onclick="document.querySelectorAll(\'.exp-cb\').forEach(function(cb){cb.checked=this.checked;var s=window._exportSel=window._exportSel||new Set();this.checked?s.add(cb.dataset.key):s.delete(cb.dataset.key);}.bind(this))"></th><th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
+ th.innerHTML='<th style="width:28px"><input type="checkbox" id="sel-all-cb" onclick="document.querySelectorAll('.exp-cb').forEach(function(c){c.checked=this.checked;(window._exportSel=window._exportSel||new Set())[this.checked?'add':'delete'](c.dataset.key)}.bind(this))"></th><th class="l">Article</th><th class="l">Journey</th><th class="l">Member</th>'
   +'<th>Arabic</th><th>English</th><th>LOB %</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th>'
   +'<th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>'
@@ -1037,7 +1037,7 @@ function renderTable(){
   if(r.sopId!==activeTab)return;
   if(!r._extra&&!managerMode&&r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
-  if((_myTasksOn||(!managerMode&&typeof _memberEmail!=='undefined'&&_memberEmail))&&r.member&&r.member!==_myTasksMember())return;
+  if((_myTasksOn||(!managerMode&&typeof _memberEmail!=="undefined"&&_memberEmail))&&r.member&&r.member!==_myTasksMember())return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
   if(fs==='gaps'&&full)return;if(fs==='full'&&!full)return;
@@ -1053,7 +1053,7 @@ function renderTable(){
   if(r._priority){var pc=r._priority==='high'?'#fee2e2;color:#dc2626':r._priority==='medium'?'#fef3c7;color:#d97706':'#e0f2fe;color:#0369a1';artLabel+='<span style="font-size:9px;padding:1px 5px;border-radius:4px;margin-left:5px;background:'+pc+'">'+r._priority.toUpperCase()+'</span>';}
   if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
   var ek2=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-  tr.innerHTML='<td style="width:28px;text-align:center;padding:2px 0" onclick="event.stopPropagation()"><input type="checkbox" class="exp-cb" data-key="'+encodeURIComponent(r.article.toLowerCase().trim()+'::'+r.sopId)+'" onclick="var s=window._exportSel=window._exportSel||new Set();this.checked?s.add(this.dataset.key):s.delete(this.dataset.key)"></td><td class="article">'+artLabel+'</td><td class="jrn">'+r.journey+'</td>'
+  tr.innerHTML='<td style="width:28px;text-align:center" onclick="event.stopPropagation()"><input type="checkbox" class="exp-cb" data-key="'+encodeURIComponent(r.article.toLowerCase().trim()+'::'+r.sopId)+'" onchange="(window._exportSel=window._exportSel||new Set())[this.checked?'add':'delete'](this.dataset.key)"></td><td class="article">'+artLabel+'</td><td class="jrn">'+r.journey+'</td>'
    +'<td class="l"><span class="mem clk" onclick="$(\'search\').value=\''+mm+'\';renderTable()" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
@@ -3595,7 +3595,7 @@ function toggleMyTasks(){
   _myTasksOn=!_myTasksOn;
   var btn=document.getElementById('myTasksBtn');
   if(btn){btn.style.background=_myTasksOn?'#FF5900':'';btn.style.color=_myTasksOn?'#fff':'';}
-  if(typeof activeTab!=='undefined'&&activeTab==='overview'){try{buildOverview();}catch(e){renderTable();}}else{renderTable();}
+  if(typeof activeTab!=="undefined"&&activeTab==="overview"){try{buildOverview();}catch(e){renderTable();}}else{renderTable();}
 }
 function _myTasksMember(){
   if(typeof _memberEmail==='undefined'||!_memberEmail) return '';
@@ -3634,9 +3634,9 @@ function openExportMenu(){
   p.id='export-popup';
   p.style.cssText='position:fixed;top:56px;right:130px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:9999;padding:12px;min-width:150px';
   p.innerHTML='<div style="font-weight:800;font-size:12px;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)">EXPORT AS</div>'+
-    '<button onclick="exportToCSV('all');document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128202; CSV / Excel (All)</button>'+
-    '<button onclick="if(!window._exportSel||window._exportSel.size===0){showToast('Tick checkboxes on rows first',2500);return;}exportToCSV('selected');document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#9989; Export Selected Rows</button>'+
-    '<button onclick="exportToCSV('new');document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128197; Export New / Updated Only</button>'+
+    '<button onclick="exportToCSV(\'all\');document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128202; CSV / Excel (All)</button>'+
+    '<button onclick="if(!window._exportSel||!window._exportSel.size){showToast(\'No rows selected\',2000);return;}exportToCSV(\'selected\');document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#9989; Export Selected Rows</button>'+
+    '<button onclick="exportToCSV(\'new\');document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;background:none;border:none;padding:8px 12px;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128197; Export New / Updated</button>'+
     '<button onclick="exportToPDF();document.getElementById(\'export-popup\').remove()" style="display:block;width:100%;text-align:left;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;color:var(--dark)">&#128438; Print / PDF</button>';
   document.body.appendChild(p);
   setTimeout(function(){document.addEventListener('click',function h(e){if(!p.contains(e.target)){p.remove();document.removeEventListener('click',h);}},true);},50);
@@ -3646,11 +3646,11 @@ function exportToCSV(mode){var newOnly=(mode==='new');var selectedOnly=(mode==='
   var rows=[['Article','Member','LOB','Status','Start Date','Deadline','Notes','Last Updated']];
   Object.keys(ASSIGNMENTS.overrides||{}).forEach(function(key){
     var ov=ASSIGNMENTS.overrides[key];
-    if(selectedOnly){var encKey=encodeURIComponent((ov.article||key).toLowerCase().trim()+'::'+((ov.sopId||ov.lob||'').toLowerCase().indexOf('vip')>-1?'vip':(ov.sopId||ov.lob||'').toLowerCase().indexOf('tkt')>-1?'tkt':'def'));if(!(window._exportSel&&window._exportSel.has(encKey)))return;}if(newOnly&&lastTs>0){var upTs=ov.updatedAt?new Date(ov.updatedAt).getTime():0;if(upTs<=lastTs)return;}
+    if(selectedOnly){var encKey=encodeURIComponent((ov.article||key).toLowerCase().trim()+'::'+((ov.sopId||key.split('::')[1]||'def')));if(!(window._exportSel&&window._exportSel.has(encKey)))return;}if(newOnly&&lastTs>0){var upTs=ov.updatedAt?new Date(ov.updatedAt).getTime():0;if(upTs<=lastTs)return;}
     rows.push([ov.article||key,ov.member||'',ov.lob||'',ov.status||'',ov.startDate||'',ov.deadline||'',ov.notes||'',ov.updatedAt||'']);
   });
   if(rows.length<=1){showToast('No new data to export',2000);return;}
-  if(newOnly)try{localStorage.setItem('lastExportTs',Date.now().toString());}catch(e){}if(selectedOnly){window._exportSel=new Set();document.querySelectorAll('.exp-cb').forEach(function(cb){cb.checked=false;});var scb=document.getElementById('sel-all-cb');if(scb)scb.checked=false;}
+  if(newOnly)try{localStorage.setItem('lastExportTs',Date.now().toString());}catch(e){}if(selectedOnly){window._exportSel=new Set();document.querySelectorAll('.exp-cb').forEach(function(cb){cb.checked=false;});var sa=document.getElementById('sel-all-cb');if(sa)sa.checked=false;}
   var csv=rows.map(function(row){return row.map(function(c){return '"'+c.toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   var url=URL.createObjectURL(blob);
