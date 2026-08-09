@@ -74,10 +74,14 @@
     {
       "email": "dalia.adel@talabat.com",
       "hash": "b8b7ec0daa69fa50eb84c9d3e6fbe7e4a8709905750a6522985289f13acefa84"
+    },
+    {
+      "email": "amal.eldakroury@talabat.com",
+      "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T13:05:49.007Z",
+  "lastUpdated": "2026-08-09T13:06:17.986Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
