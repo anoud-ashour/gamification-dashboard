@@ -53,77 +53,80 @@
       "read": false
     },
     {
-      "id": "mslt6k5j",
-      "key": "change order details::uni::latest",
-      "type": "status",
-      "article": "Change Order Details",
-      "member": "Anoud",
-      "lob": "Universal",
-      "summary": "📋 Status: Done → In Progress",
-      "startDate": "",
-      "assignedAt": "2026-08-09T12:58:40.135Z"
-    },
-    {
       "key": "::notif::1786280320137",
       "msg": "Assignment updated for Anoud: Change Order Details",
       "ts": "2026-08-09T12:58:40.137Z",
       "member": "Anoud",
       "read": false
+    },
+    {
+      "key": "change order details::uni::latest",
+      "type": "status",
+      "article": "change order details::uni",
+      "member": "Anoud",
+      "lob": "",
+      "summary": "Status changed to In Progress",
+      "assignedAt": 1786280567062
     }
   ],
   "mgGroups": [],
   "memberAccounts": [],
   "shareToken": "avvc5pzr",
-  "lastUpdated": "2026-08-09T12:58:41.940Z",
+  "lastUpdated": "2026-08-09T13:02:47.381Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
       {
         "ts": "2026-08-09T10:54:17.528Z",
         "user": "Coordinator",
-        "summary": "ð¤ Assigned to Amal; ð Status: Not Started â On Review; ð Notes updated"
+        "summary": "Ã°ÂÂÂ¤ Assigned to Amal; Ã°ÂÂÂ Status: Not Started Ã¢ÂÂ On Review; Ã°ÂÂÂ Notes updated"
       },
       {
         "ts": "2026-08-09T10:55:02.989Z",
         "user": "Coordinator",
-        "summary": "ð¦ðª AR: â Done"
+        "summary": "Ã°ÂÂÂ¦Ã°ÂÂÂª AR: Ã¢ÂÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:08.589Z",
         "user": "Coordinator",
-        "summary": "Status â In Progress"
+        "summary": "Status Ã¢ÂÂ In Progress"
       },
       {
         "ts": "2026-08-09T10:55:09.581Z",
         "user": "Coordinator",
-        "summary": "Status â In Progress"
+        "summary": "Status Ã¢ÂÂ In Progress"
       },
       {
         "ts": "2026-08-09T10:55:20.400Z",
         "user": "Coordinator",
-        "summary": "Status â Done"
+        "summary": "Status Ã¢ÂÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:20.933Z",
         "user": "Coordinator",
-        "summary": "Status â Done"
+        "summary": "Status Ã¢ÂÂ Done"
       },
       {
         "ts": "2026-08-09T10:55:35.451Z",
         "user": "Coordinator",
-        "summary": "Status â Done"
+        "summary": "Status Ã¢ÂÂ Done"
       }
     ],
     "change order details::uni": [
       {
         "ts": "2026-08-09T12:57:38.722Z",
         "user": "Coordinator",
-        "summary": "👤 Assigned to Anoud; 📋 Status: Not Started → Done; 📝 Notes updated"
+        "summary": "ð¤ Assigned to Anoud; ð Status: Not Started â Done; ð Notes updated"
       },
       {
         "ts": "2026-08-09T12:58:40.135Z",
         "user": "Coordinator",
-        "summary": "📋 Status: Done → In Progress"
+        "summary": "ð Status: Done â In Progress"
+      },
+      {
+        "ts": "2026-08-09T13:02:47.062Z",
+        "user": "Coordinator",
+        "summary": "Status → In Progress"
       }
     ]
   }
