@@ -1,5 +1,18 @@
 {
-  "overrides": {},
+  "overrides": {
+    "rider reports cst wrong address/pinpoint::uni": {
+      "member": "Amal",
+      "ar": 1,
+      "en": 1,
+      "startDate": "2026-08-09",
+      "deadline": "2026-08-11",
+      "reviewer": "",
+      "priority": "",
+      "notes": "Good job",
+      "updatedAt": "2026-08-10T09:30:54.701Z",
+      "status": "On Review"
+    }
+  },
   "extra": [],
   "customTabs": [],
   "managers": [
@@ -12,8 +25,37 @@
   "subCategories": {},
   "articleSubCat": {},
   "customSections": [],
-  "notifications": [],
+  "notifications": [
+    {
+      "id": "msn178fh",
+      "key": "rider reports cst wrong address/pinpoint::uni::latest",
+      "type": "assign",
+      "article": "Rider Reports CST Wrong Address/Pinpoint",
+      "member": "Amal",
+      "lob": "Universal",
+      "summary": "👤 Assigned to Amal<br>📅 Deadline set: 2026-08-11<br>📅 Start date set: 2026-08-09<br>📋 Status: Not Started → On Review<br>📝 Notes updated",
+      "startDate": "2026-08-09",
+      "assignedAt": "2026-08-10T09:30:54.701Z"
+    },
+    {
+      "key": "::notif::1786354254704",
+      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | 📝 Note: Good job",
+      "ts": "2026-08-10T09:30:54.704Z",
+      "member": "Amal",
+      "read": false
+    }
+  ],
   "mgGroups": [],
   "memberAccounts": [],
-  "lastUpdated": "2026-08-10T09:29:01.180Z"
+  "lastUpdated": "2026-08-10T09:30:54.969Z",
+  "customMGSections": [],
+  "history": {
+    "rider reports cst wrong address/pinpoint::uni": [
+      {
+        "ts": "2026-08-10T09:30:54.702Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Amal; 📅 Deadline set: 2026-08-11; 📅 Start date set: 2026-08-09; 📋 Status: Not Started → On Review; 📝 Notes updated"
+      }
+    ]
+  }
 }
