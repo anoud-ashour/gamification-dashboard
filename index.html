@@ -2671,8 +2671,7 @@ function logoutManager(){
 
 // ---- Member Access ----
 function openMemberLogin(){
- if($('mem-login-pw'))$('mem-login-pw').closest('div').style.display='none';
- if($('mem-login-pw'))$('mem-login-pw').closest('div').previousElementSibling&&($('mem-login-pw').closest('div').previousElementSibling.style.display='none');
+ var _pw=$('mem-login-pw');if(_pw&&_pw.parentNode&&_pw.parentNode.parentNode)_pw.parentNode.parentNode.style.display='none';
  var err=$('mem-login-err');if(err)err.style.display='none';
  $('mem-login-email').value='';$('mem-login-pw').value='';
  $('mem-login-overlay').style.display='block';$('mem-login-modal').style.display='block';
