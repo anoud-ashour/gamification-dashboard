@@ -2515,7 +2515,7 @@ function applyAssignments(){
   if(ov.deadline)r._deadline=ov.deadline;
   if(ov.priority)r._priority=ov.priority;
   if(ov.notes)r._notes=ov.notes;
- if(ov.status!==undefined&&ov.status!=='')r._overrideStatus=ov.status;
+ if(ov.status!==undefined&&ov.status!==''){r._overrideStatus=ov.status;if(ov.status==='Done'&&ov.ar===undefined&&ov.en===undefined){r.ar=r.ar>0?r.ar:1;r.en=r.en>0?r.en:1;}}
  });
  // Apply member and status overrides to PROG entries for tracker (non-extra) articles
  Object.keys(ASSIGNMENTS.overrides).forEach(function(k){
