@@ -18,11 +18,11 @@
       "en": 1,
       "startDate": "2026-08-09",
       "deadline": "2026-08-10",
-      "reviewer": "",
+      "reviewer": "anoud.shehata@talabat.com",
       "priority": "",
-      "notes": "",
-      "updatedAt": "2026-08-10T09:34:07.682Z",
-      "status": "Pending Modification"
+      "notes": "test",
+      "updatedAt": "2026-08-10T10:33:12.759Z",
+      "status": "On Review"
     }
   },
   "extra": [],
@@ -53,17 +53,6 @@
       "read": false
     },
     {
-      "id": "msn1bdc2",
-      "key": "change order details::uni::latest",
-      "type": "assign",
-      "article": "Change Order Details",
-      "member": "Anoud",
-      "lob": "Universal",
-      "summary": "ð¤ Assigned to Anoud<br>ð Deadline set: 2026-08-10<br>ð Start date set: 2026-08-09<br>ð Status: Not Started â Pending Modification",
-      "startDate": "2026-08-09",
-      "assignedAt": "2026-08-10T09:34:07.682Z"
-    },
-    {
       "key": "::notif::1786354447684",
       "msg": "Assignment updated for Anoud: Change Order Details | Deadline: 2026-08-10",
       "ts": "2026-08-10T09:34:07.684Z",
@@ -87,6 +76,24 @@
       "ts": "2026-08-10T10:32:43.108Z",
       "member": "Amal",
       "read": false
+    },
+    {
+      "id": "msn3fcqf",
+      "key": "change order details::uni::latest",
+      "type": "status",
+      "article": "Change Order Details",
+      "member": "Anoud",
+      "lob": "Universal",
+      "summary": "📋 Status: Pending Modification → On Review<br>📝 Notes updated",
+      "startDate": "2026-08-09",
+      "assignedAt": "2026-08-10T10:33:12.759Z"
+    },
+    {
+      "key": "::notif::1786357992761",
+      "msg": "Assignment updated for Anoud: Change Order Details | Deadline: 2026-08-10 | 📝 Note: test",
+      "ts": "2026-08-10T10:33:12.761Z",
+      "member": "Anoud",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -96,7 +103,7 @@
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
     }
   ],
-  "lastUpdated": "2026-08-10T10:32:44.951Z",
+  "lastUpdated": "2026-08-10T10:33:13.061Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -121,6 +128,11 @@
         "ts": "2026-08-10T09:34:07.682Z",
         "user": "Coordinator",
         "summary": "ð¤ Assigned to Anoud; ð Deadline set: 2026-08-10; ð Start date set: 2026-08-09; ð Status: Not Started â Pending Modification"
+      },
+      {
+        "ts": "2026-08-10T10:33:12.759Z",
+        "user": "Coordinator",
+        "summary": "📋 Status: Pending Modification → On Review; 📝 Notes updated"
       }
     ]
   }
