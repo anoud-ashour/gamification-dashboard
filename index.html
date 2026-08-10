@@ -594,16 +594,16 @@ function filterOverviewSearch(q){
 function buildOverview(){
  ['sop','jr','dr','lang'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  var el=$('sec-overview');if(!el)return;
- var _dR=ROWS.filter(function(r){return r.sopId==='default';});if(typeof _myTasksOn!=='undefined'&&_myTasksOn&&_myTasksMember()){_dR=_dR.filter(function(r){return r.member===_myTasksMember();});}var _dD=_dR.filter(function(r){return r.ar>0&&r.en>0;}).length;
- var _pR=ROWS.filter(function(r){return r.sopId==='tpro';});var _pD=_pR.filter(function(r){return r.ar>0&&r.en>0;}).length;
- var _tR=ROWS.filter(function(r){return r.sopId==='tkt';});var _tD=_tR.filter(function(r){return r.ar>0&&r.en>0;}).length;
+ var _dR=ROWS.filter(function(r){return r.sopId==='default';});if(typeof _myTasksOn!=='undefined'&&_myTasksOn&&_myTasksMember()){_dR=_dR.filter(function(r){return r.member===_myTasksMember();});}var _dD=_dR.filter(function(r){return (r._overrideStatus==='Done'||r.ar>0&&r.en>0);}).length;
+ var _pR=ROWS.filter(function(r){return r.sopId==='tpro';});var _pD=_pR.filter(function(r){return (r._overrideStatus==='Done'||r.ar>0&&r.en>0);}).length;
+ var _tR=ROWS.filter(function(r){return r.sopId==='tkt';});var _tD=_tR.filter(function(r){return (r._overrideStatus==='Done'||r.ar>0&&r.en>0);}).length;
  var lops=[
   {id:'default',name:'Default (Live Chat)',color:OR,cssCol:'var(--orange)',tab:'default',p:pct(_dD,_dR.length),done:_dD,total:_dR.length},
   {id:'tpro',name:'TPRO (tPro/VIP)',color:PU,cssCol:'var(--purple)',tab:'tpro',p:pct(_pD,_pR.length),done:_pD,total:_pR.length},
   {id:'tkt',name:'Ticketing',color:BR,cssCol:'var(--tkt-accent)',tab:'tkt',p:pct(_tD,_tR.length),done:_tD,total:_tR.length},
  ];
  var uniR=ROWS.filter(function(r){return r.sopId==='uni';});
- var uniDone=uniR.filter(function(r){return r.ar>0&&r.en>0;}).length;
+ var uniDone=uniR.filter(function(r){return (r._overrideStatus==='Done'||r.ar>0&&r.en>0);}).length;
  var uniP=pct(uniDone,uniR.length);
  var cs='background:var(--card);border-radius:20px;padding:30px 26px;border:1px solid var(--border);cursor:pointer;transition:box-shadow .15s,transform .13s;box-shadow:0 2px 8px rgba(0,0,0,.07)';
  var html='<div style="margin-bottom:20px">'
@@ -2515,6 +2515,7 @@ function applyAssignments(){
   if(ov.deadline)r._deadline=ov.deadline;
   if(ov.priority)r._priority=ov.priority;
   if(ov.notes)r._notes=ov.notes;
+ if(ov.status!==undefined&&ov.status!=='')r._overrideStatus=ov.status;
  });
  // Apply member and status overrides to PROG entries for tracker (non-extra) articles
  Object.keys(ASSIGNMENTS.overrides).forEach(function(k){
@@ -2526,6 +2527,7 @@ function applyAssignments(){
    if(p._extraId)return;
    if((p.article||'').toLowerCase().trim()!==artKey)return;
    if(ov.member)p.member=ov.member;
+   if(ov.status!==undefined&&ov.status!=='')p.status=ov.status;
    var st=ov.status||'';
    if(sopId==='uni'){
     // Per-language: ar=1→Done, en=1→Done; otherwise use override status or keep tracker value
@@ -3038,6 +3040,7 @@ function saveAssign(){membersBuilt=false;
  if(_stEl&&_stRow&&_stRow.style.display!=='none'){ov.status=_stEl.value;}
  var _prevOv=Object.assign({},ASSIGNMENTS.overrides[_mgrEditKey]||{});
 ASSIGNMENTS.overrides[_mgrEditKey]=ov;
+if(ov.status!==undefined&&ov.status!==''){var _ak=_mgrEditKey.split('::').slice(0,-1).join('::');(SHEET_TABS||[]).forEach(function(t){(t.rows||[]).forEach(function(row){if((row[0]||'').toLowerCase().trim()===_ak)row[2]=ov.status;});});}
 // Build change-based notification — diff old vs new so coordinator sees exactly what changed
 (function(){
 var artTitle=($('asgn-title').textContent||_mgrEditKey).trim();
