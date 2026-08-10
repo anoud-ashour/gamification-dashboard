@@ -3,14 +3,14 @@
     "rider reports cst wrong address/pinpoint::uni": {
       "member": "Amal",
       "ar": 1,
-      "en": 0,
+      "en": 1,
       "startDate": "2026-08-09",
-      "deadline": "2026-08-11",
+      "deadline": "2026-08-10",
       "reviewer": "",
       "priority": "",
       "notes": "Good job",
-      "updatedAt": "2026-08-10T09:31:18.184Z",
-      "status": "In Progress"
+      "updatedAt": "2026-08-10T10:32:43.105Z",
+      "status": "Done"
     },
     "change order details::uni": {
       "member": "Anoud",
@@ -40,25 +40,14 @@
   "notifications": [
     {
       "key": "::notif::1786354254704",
-      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | Ã°ÂÂÂ Note: Good job",
+      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | ÃÂ°ÃÂÃÂÃÂ Note: Good job",
       "ts": "2026-08-10T09:30:54.704Z",
       "member": "Amal",
       "read": false
     },
     {
-      "id": "msn17qjs",
-      "key": "rider reports cst wrong address/pinpoint::uni::latest",
-      "type": "status",
-      "article": "Rider Reports CST Wrong Address/Pinpoint",
-      "member": "Amal",
-      "lob": "Universal",
-      "summary": "Ã°ÂÂÂ Status: On Review Ã¢ÂÂ In Progress<br>Ã°ÂÂÂ¬Ã°ÂÂÂ§ EN: Ã¢ÂÂ Not done",
-      "startDate": "2026-08-09",
-      "assignedAt": "2026-08-10T09:31:18.184Z"
-    },
-    {
       "key": "::notif::1786354278187",
-      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | Ã°ÂÂÂ Note: Good job",
+      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | ÃÂ°ÃÂÃÂÃÂ Note: Good job",
       "ts": "2026-08-10T09:31:18.187Z",
       "member": "Amal",
       "read": false
@@ -70,7 +59,7 @@
       "article": "Change Order Details",
       "member": "Anoud",
       "lob": "Universal",
-      "summary": "👤 Assigned to Anoud<br>📅 Deadline set: 2026-08-10<br>📅 Start date set: 2026-08-09<br>📋 Status: Not Started → Pending Modification",
+      "summary": "ð¤ Assigned to Anoud<br>ð Deadline set: 2026-08-10<br>ð Start date set: 2026-08-09<br>ð Status: Not Started â Pending Modification",
       "startDate": "2026-08-09",
       "assignedAt": "2026-08-10T09:34:07.682Z"
     },
@@ -79,6 +68,24 @@
       "msg": "Assignment updated for Anoud: Change Order Details | Deadline: 2026-08-10",
       "ts": "2026-08-10T09:34:07.684Z",
       "member": "Anoud",
+      "read": false
+    },
+    {
+      "id": "msn3epup",
+      "key": "rider reports cst wrong address/pinpoint::uni::latest",
+      "type": "timeline",
+      "article": "Rider Reports CST Wrong Address/Pinpoint",
+      "member": "Amal",
+      "lob": "Universal",
+      "summary": "📅 Deadline: 2026-08-11 → 2026-08-10<br>📋 Status: In Progress → Done<br>🇬🇧 EN: ✓ Done",
+      "startDate": "2026-08-09",
+      "assignedAt": "2026-08-10T10:32:43.105Z"
+    },
+    {
+      "key": "::notif::1786357963108",
+      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-10 | 📝 Note: Good job",
+      "ts": "2026-08-10T10:32:43.108Z",
+      "member": "Amal",
       "read": false
     }
   ],
@@ -89,26 +96,31 @@
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
     }
   ],
-  "lastUpdated": "2026-08-10T09:34:09.317Z",
+  "lastUpdated": "2026-08-10T10:32:43.410Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
       {
         "ts": "2026-08-10T09:30:54.702Z",
         "user": "Coordinator",
-        "summary": "Ã°ÂÂÂ¤ Assigned to Amal; Ã°ÂÂÂ Deadline set: 2026-08-11; Ã°ÂÂÂ Start date set: 2026-08-09; Ã°ÂÂÂ Status: Not Started Ã¢ÂÂ On Review; Ã°ÂÂÂ Notes updated"
+        "summary": "ÃÂ°ÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂ°ÃÂÃÂÃÂ Deadline set: 2026-08-11; ÃÂ°ÃÂÃÂÃÂ Start date set: 2026-08-09; ÃÂ°ÃÂÃÂÃÂ Status: Not Started ÃÂ¢ÃÂÃÂ On Review; ÃÂ°ÃÂÃÂÃÂ Notes updated"
       },
       {
         "ts": "2026-08-10T09:31:18.184Z",
         "user": "Coordinator",
-        "summary": "Ã°ÂÂÂ Status: On Review Ã¢ÂÂ In Progress; Ã°ÂÂÂ¬Ã°ÂÂÂ§ EN: Ã¢ÂÂ Not done"
+        "summary": "ÃÂ°ÃÂÃÂÃÂ Status: On Review ÃÂ¢ÃÂÃÂ In Progress; ÃÂ°ÃÂÃÂÃÂ¬ÃÂ°ÃÂÃÂÃÂ§ EN: ÃÂ¢ÃÂÃÂ Not done"
+      },
+      {
+        "ts": "2026-08-10T10:32:43.105Z",
+        "user": "Coordinator",
+        "summary": "📅 Deadline: 2026-08-11 → 2026-08-10; 📋 Status: In Progress → Done; 🇬🇧 EN: ✓ Done"
       }
     ],
     "change order details::uni": [
       {
         "ts": "2026-08-10T09:34:07.682Z",
         "user": "Coordinator",
-        "summary": "👤 Assigned to Anoud; 📅 Deadline set: 2026-08-10; 📅 Start date set: 2026-08-09; 📋 Status: Not Started → Pending Modification"
+        "summary": "ð¤ Assigned to Anoud; ð Deadline set: 2026-08-10; ð Start date set: 2026-08-09; ð Status: Not Started â Pending Modification"
       }
     ]
   }
