@@ -28,7 +28,7 @@
   "notifications": [
     {
       "key": "::notif::1786354254704",
-      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | 📝 Note: Good job",
+      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | ð Note: Good job",
       "ts": "2026-08-10T09:30:54.704Z",
       "member": "Amal",
       "read": false
@@ -40,33 +40,38 @@
       "article": "Rider Reports CST Wrong Address/Pinpoint",
       "member": "Amal",
       "lob": "Universal",
-      "summary": "📋 Status: On Review → In Progress<br>🇬🇧 EN: ✕ Not done",
+      "summary": "ð Status: On Review â In Progress<br>ð¬ð§ EN: â Not done",
       "startDate": "2026-08-09",
       "assignedAt": "2026-08-10T09:31:18.184Z"
     },
     {
       "key": "::notif::1786354278187",
-      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | 📝 Note: Good job",
+      "msg": "Assignment updated for Amal: Rider Reports CST Wrong Address/Pinpoint | Deadline: 2026-08-11 | ð Note: Good job",
       "ts": "2026-08-10T09:31:18.187Z",
       "member": "Amal",
       "read": false
     }
   ],
   "mgGroups": [],
-  "memberAccounts": [],
-  "lastUpdated": "2026-08-10T09:31:18.604Z",
+  "memberAccounts": [
+    {
+      "email": "anoud.shehata@talabat.com",
+      "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
+    }
+  ],
+  "lastUpdated": "2026-08-10T09:32:20.119Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
       {
         "ts": "2026-08-10T09:30:54.702Z",
         "user": "Coordinator",
-        "summary": "👤 Assigned to Amal; 📅 Deadline set: 2026-08-11; 📅 Start date set: 2026-08-09; 📋 Status: Not Started → On Review; 📝 Notes updated"
+        "summary": "ð¤ Assigned to Amal; ð Deadline set: 2026-08-11; ð Start date set: 2026-08-09; ð Status: Not Started â On Review; ð Notes updated"
       },
       {
         "ts": "2026-08-10T09:31:18.184Z",
         "user": "Coordinator",
-        "summary": "📋 Status: On Review → In Progress; 🇬🇧 EN: ✕ Not done"
+        "summary": "ð Status: On Review â In Progress; ð¬ð§ EN: â Not done"
       }
     ]
   }
