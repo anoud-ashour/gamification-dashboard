@@ -2671,6 +2671,8 @@ function logoutManager(){
 
 // ---- Member Access ----
 function openMemberLogin(){
+ if($('mem-login-pw'))$('mem-login-pw').closest('div').style.display='none';
+ if($('mem-login-pw'))$('mem-login-pw').closest('div').previousElementSibling&&($('mem-login-pw').closest('div').previousElementSibling.style.display='none');
  var err=$('mem-login-err');if(err)err.style.display='none';
  $('mem-login-email').value='';$('mem-login-pw').value='';
  $('mem-login-overlay').style.display='block';$('mem-login-modal').style.display='block';
@@ -2689,7 +2691,6 @@ async function attemptMemberLogin(){
  if(match){
   _memberEmail=email;memberMode=true;
   closeMemberLogin();
-  document.querySelectorAll('button.tab').forEach(function(b){b.style.display=(b.getAttribute('data-tab')==='progress')?'':'none';});setTab('progress');
   if($('exportBtn'))$('exportBtn').style.display='none';
   if($('shareBtn'))$('shareBtn').style.display='none';
   var bar=$('mem-save-bar');if(bar)bar.style.display='flex';
@@ -2708,7 +2709,7 @@ async function attemptMemberLogin(){
 }
 function logoutMember(){
  _memberEmail='';memberMode=false;
- document.querySelectorAll('button.tab').forEach(function(b){b.style.display='';});setTab('def');
+
  var bar=$('mem-save-bar');if(bar)bar.style.display='none';
  var hdrBtn=$('mem-login-btn');if(hdrBtn){hdrBtn.textContent='👥 Member';hdrBtn.style.background='var(--card)';hdrBtn.style.color='#0891b2';}
  progressBuilt=false;membersBuilt=false;
@@ -2916,7 +2917,9 @@ var _NOTIF_KEY='gd_notifs';
 function _getNotifs(){try{return JSON.parse(localStorage.getItem(_NOTIF_KEY)||'[]');}catch(e){return [];}}
 (function(){
   try{
-    var nn=(JSON.parse(localStorage.getItem(_NOTIF_KEY)||'[]')||[]).filter(function(x){return!x.msg||x.msg.indexOf('\u00c3')<0;});
+    var nn=(JSON.parse(localStorage.getItem(_NOTIF_KEY)||'[]')||[]).filter(function(x){
+      var s=(x.msg||x.summary||x.details||x.title||'')+'';return s.indexOf('\u00c3')<0&&s.indexOf('\u00c2')<0;
+    });
     localStorage.setItem(_NOTIF_KEY,JSON.stringify(nn));
   }catch(e){}
 })();
