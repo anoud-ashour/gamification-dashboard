@@ -35,6 +35,18 @@
       "notes": "",
       "updatedAt": "2026-08-10T11:18:37.419Z",
       "status": "Pending Modification"
+    },
+    "suspicious cst or order confirmation::uni": {
+      "member": "Amal",
+      "ar": 1,
+      "en": 1,
+      "startDate": "",
+      "deadline": "",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-08-10T11:59:58.485Z",
+      "status": "On Review"
     }
   },
   "extra": [],
@@ -145,6 +157,24 @@
       "ts": "2026-08-10T11:18:37.421Z",
       "member": "Dalia",
       "read": false
+    },
+    {
+      "id": "msn6ixhx",
+      "key": "suspicious cst or order confirmation::uni::latest",
+      "type": "assign",
+      "article": "Suspicious CST Or Order confirmation",
+      "member": "Amal",
+      "lob": "Universal",
+      "summary": "👤 Assigned to Amal<br>📋 Status: Not Started → On Review",
+      "startDate": "",
+      "assignedAt": "2026-08-10T11:59:58.485Z"
+    },
+    {
+      "key": "::notif::1786363198487",
+      "msg": "Assignment updated for Amal: Suspicious CST Or Order confirmation",
+      "ts": "2026-08-10T11:59:58.487Z",
+      "member": "Amal",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -154,7 +184,7 @@
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
     }
   ],
-  "lastUpdated": "2026-08-10T11:59:54.975Z",
+  "lastUpdated": "2026-08-10T11:59:58.820Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -206,6 +236,13 @@
         "ts": "2026-08-10T11:18:37.419Z",
         "user": "Coordinator",
         "summary": "Ã°ÂÂÂ¦Ã°ÂÂÂª AR: Ã¢ÂÂ Not done"
+      }
+    ],
+    "suspicious cst or order confirmation::uni": [
+      {
+        "ts": "2026-08-10T11:59:58.485Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Amal; 📋 Status: Not Started → On Review"
       }
     ]
   },
