@@ -1588,6 +1588,7 @@ function buildUniHtml(tabName,safeId){
   +'</div>'
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
   +'<thead><tr>'
+  +'<th class="uni-cb-th" style="width:28px;text-align:center"><input type="checkbox" id="uni-sel-all" onclick="this.closest(\'table\').querySelectorAll(\'.exp-cb\').forEach(function(c){c.checked=this.checked;},this)"></th>'
   +'<th class="l" style="min-width:200px">ARTICLE</th>'
   +'<th class="l">JOURNEY</th>'
   +'<th class="l">MEMBER</th>'
@@ -1608,6 +1609,7 @@ function buildUniHtml(tabName,safeId){
   if(r._deadline)artLabel+='<br><span style="font-size:10px;color:var(--muted)">📅 '+r._deadline+'</span>';
   var ek3=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   h+='<tr>'
+   +'<td onclick="event.stopPropagation()" style="text-align:center;padding:4px;width:28px"><input type="checkbox" class="exp-cb" data-key="'+gkey+'"></td>'
    +'<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>'
    +'<td style="padding:10px 14px;font-size:13px;color:var(--muted)">'+(r.journey||'Universal')+'</td>'
    +'<td style="padding:10px 14px"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+';cursor:pointer">'+(r.member||'—')+'</span></td>'
@@ -3612,6 +3614,7 @@ function _updateMgrCols(){
  var tr=document.getElementById('thead-row');
  if(tr&&tr.firstElementChild&&tr.firstElementChild.querySelector('#sel-all-cb'))tr.firstElementChild.style.display=managerMode?'':'none';
  document.querySelectorAll('.exp-cb').forEach(function(cb){if(cb.parentElement)cb.parentElement.style.display=managerMode?'':'none';});
+ document.querySelectorAll('.uni-cb-th').forEach(function(th){th.style.display=managerMode?'':'none';});
  if($('fState'))$('fState').style.display=managerMode?'':'none';
  if($('fJourney'))$('fJourney').style.display=managerMode?'':'none';
 }
