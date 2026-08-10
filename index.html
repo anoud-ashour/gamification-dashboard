@@ -732,6 +732,7 @@ function buildDynamicTabs(){
     headers.forEach(function(h){html+='<th class="l" style="padding:10px 14px;font-size:11px">'+String(h||'')+'</th>';});
     html+='</tr></thead><tbody>';
     dataRows.forEach(function(row){
+     if(memberMode&&_memberEmail&&String(row[1]).trim()&&!_memberMatches(String(row[1]).trim()))return;
      html+='<tr>';
      row.forEach(function(cell,ci){
       var s=String(cell==null?'':cell);var display;
@@ -1062,6 +1063,7 @@ function renderTable(){
   tb.appendChild(tr);shown++;
  }
   filteredRows.forEach(renderRow);
+ if(memberMode)_updateMgrCols();
  if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode||memberMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
  if(managerMode){
   var addRow=document.createElement('tr');
