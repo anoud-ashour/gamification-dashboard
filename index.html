@@ -730,9 +730,9 @@ function buildDynamicTabs(){
     var dataRows=rows.slice(1).filter(function(r){return r.some(function(c){return String(c).trim();});});
     html=backBtn+'<div class="card"><h3>'+tab.name+'</h3><div class="controls" style="margin-bottom:10px"><input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px"></div><div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%"><thead><tr>';
     headers.forEach(function(h){html+='<th class="l" style="padding:10px 14px;font-size:11px">'+String(h||'')+'</th>';});
-    html+='</tr></thead><tbody>';
+    html+=(managerMode?'<th style="padding:4px 8px;text-align:center;font-size:11px">Actions</th>':'');html+='</tr></thead><tbody>';
     dataRows.forEach(function(row){
-     if(memberMode&&_memberEmail&&String(row[1]).trim()&&!_memberMatches(String(row[1]).trim()))return;
+     if(!managerMode&&memberMode&&_memberEmail&&String(row[1]).trim()&&!_memberMatches(String(row[1]).trim()))return;
      html+='<tr>';
      row.forEach(function(cell,ci){
       var s=String(cell==null?'':cell);var display;
@@ -741,6 +741,7 @@ function buildDynamicTabs(){
       else{var lb=leaveBadge(s);display=lb||(s||'—');}
       html+='<td style="padding:10px 14px;font-size:13px">'+display+'</td>';
      });
+     html+=(managerMode?'<td style="text-align:center;padding:4px"><button onclick="openAssignEdit(\''+row[0].toLowerCase()+'\',\'uni\')" style="background:#ff6b35;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px">Edit</button></td>':'');
      html+='</tr>';
     });
     html+='</tbody></table></div></div>';
@@ -1038,7 +1039,7 @@ function renderTable(){
   if(r.sopId!==activeTab)return;
   if(!r._extra&&!managerMode&&r.ar===0&&r.en===0)return;
   if(fj&&r.journey!==fj)return;
-  if((_myTasksOn||(typeof memberMode!=="undefined"&&memberMode&&_memberEmail))&&r.member&&!_memberMatches(r.member))return;
+  if(!managerMode&&(_myTasksOn||(typeof memberMode!=="undefined"&&memberMode&&_memberEmail))&&r.member&&!_memberMatches(r.member))return;
   if(q&&!(r.article.toLowerCase().includes(q)||r.member.toLowerCase().includes(q)||r.sopName.toLowerCase().includes(q)))return;
   const full=r.ar&&r.en;
   if(fs==='gaps'&&full)return;if(fs==='full'&&!full)return;
@@ -1157,7 +1158,7 @@ function renderProgress(){
  var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
  PROG.forEach(r=>{
   if(!r.article||r.article==='—')return;
-  if(memberMode&&_memberEmail&&r.member&&!_memberMatches(r.member))return;
+  if(!managerMode&&memberMode&&_memberEmail&&r.member&&!_memberMatches(r.member))return;
   if(q&&!(r.article.toLowerCase().includes(q)||(r.member||'').toLowerCase().includes(q)))return;
   if(statusFilter&&!PCELLS.some(k=>statusOf(r[k])===statusFilter))return;
   const upd=r.def_end||r.vip_end||r.def_start||r.vip_start||'';
@@ -2624,6 +2625,7 @@ function showToast(msg,duration){
  clearTimeout(t._timer);t._timer=setTimeout(function(){t.style.opacity='0';},duration||3000);
 }function _enterManagerMode(){
  managerMode=true;
+memberMode=false;_memberEmail='';
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent='✓ Manager';btn.style.background='#8318d8';btn.style.color='#fff';btn.style.borderColor='#8318d8';}
  var bar=$('mgr-save-bar');if(bar)bar.style.display='flex';
