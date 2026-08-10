@@ -1155,6 +1155,7 @@ function renderProgress(){
  var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
  PROG.forEach(r=>{
   if(!r.article||r.article==='—')return;
+  if(memberMode&&_memberEmail&&r.member&&r.member!==_myTasksMember())return;
   if(q&&!(r.article.toLowerCase().includes(q)||(r.member||'').toLowerCase().includes(q)))return;
   if(statusFilter&&!PCELLS.some(k=>statusOf(r[k])===statusFilter))return;
   const upd=r.def_end||r.vip_end||r.def_start||r.vip_start||'';
@@ -1191,6 +1192,7 @@ function renderProgress(){
  if(!shown&&!doneHidden)tb.innerHTML='<tr><td colspan="'+(memberMode?7:6)+'" class="empty">No articles match'+(statusFilter?' status "'+statusFilter+'"':q?' "'+q+'"':'')+'. '+(statusFilter?'<a href="#" onclick="filterByStatus(statusFilter);return false" style="color:var(--orange)">clear filter</a>':'')+'</td></tr>';
  if(!shown&&doneHidden)tb.innerHTML='<tr><td colspan="'+(memberMode?7:6)+'" class="empty">All articles are Done ✓. '+(q?'':'<a href="#" onclick="var el=$(\'psearch\');if(el){el.value=\'done\';renderProgress();}return false" style="color:var(--orange)">Show Done</a>')+'</td></tr>';
  $('prowcount').textContent=shown+' articles'+(statusFilter?' Â· status: '+statusFilter:'')+(doneHidden?' Â· '+doneHidden+' Done ✓ hidden':'');
+ _updateMgrCols();
 }
 
 function artStatusOverall(cells){
@@ -2631,6 +2633,7 @@ function showToast(msg,duration){
   if(activeTab==='overview'){buildOverview();}
  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
  else{renderTable();}
  document.querySelectorAll('.dynamic-section,.custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+activeTab);});
 }
@@ -2662,6 +2665,7 @@ function logoutManager(){
  renderCustomTabNav();
  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
  else{renderTable();}
 }
 
@@ -2685,7 +2689,6 @@ async function attemptMemberLogin(){
  if(match){
   _memberEmail=email;memberMode=true;
   closeMemberLogin();
-  if($('myTasksBtn'))$('myTasksBtn').style.display='';
   if($('exportBtn'))$('exportBtn').style.display='none';
   if($('shareBtn'))$('shareBtn').style.display='none';
   var bar=$('mem-save-bar');if(bar)bar.style.display='flex';
@@ -3050,6 +3053,7 @@ ASSIGNMENTS.history[_mgrEditKey].push({ts:new Date().toISOString(),user:_myTasks
  else if(activeTab==='progress'){buildProgress();}
  else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
  else{renderTable();}
 }
 
@@ -3083,6 +3087,7 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
  else if(activeTab==='progress'){buildProgress();}
  else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
  else{renderTable();}
 }
 
@@ -3181,6 +3186,7 @@ function saveNewArticleAndNotify(){
  else if(activeTab==='progress'){buildProgress();}
  else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
  else{renderTable();}
 }
 
@@ -3409,6 +3415,7 @@ function saveBulkArticles(){
  else if(activeTab==='progress'){buildProgress();}
  else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
  else{renderTable();}
 }
 
@@ -3603,6 +3610,8 @@ function _updateMgrCols(){
  var tr=document.getElementById('thead-row');
  if(tr&&tr.firstElementChild&&tr.firstElementChild.querySelector('#sel-all-cb'))tr.firstElementChild.style.display=managerMode?'':'none';
  document.querySelectorAll('.exp-cb').forEach(function(cb){if(cb.parentElement)cb.parentElement.style.display=managerMode?'':'none';});
+ if($('fState'))$('fState').style.display=managerMode?'':'none';
+ if($('fJourney'))$('fJourney').style.display=managerMode?'':'none';
 }
 
 function _myTasksMember(){
