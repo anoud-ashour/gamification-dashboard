@@ -1064,7 +1064,7 @@ function renderTable(){
   tb.appendChild(tr);shown++;
  }
   filteredRows.forEach(renderRow);
- if(memberMode)_updateMgrCols();
+ _updateMgrCols();
  if(!shown){tb.innerHTML='<tr><td colspan="'+(managerMode||memberMode?9:8)+'" class="empty">No articles match your search or filters.</td></tr>';}
  if(managerMode){
   var addRow=document.createElement('tr');
