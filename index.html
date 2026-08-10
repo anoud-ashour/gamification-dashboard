@@ -2956,45 +2956,57 @@ function buildNotifBadge(){
  var btn=$('notifBtn');if(btn)btn.style.borderColor=unread>0?'#FF5900':'var(--border)';
 }
 function openNotifPanel(){
- var notifs=_getNotifs().slice().sort(function(a,b){return new Date(b.assignedAt)-new Date(a.assignedAt);});
- var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
- try{localStorage.setItem('notif_last_seen',Date.now().toString());}catch(e){}
+ var notifs=_getNotifs().slice().sort(function(a,b){return new Date(b.assignedAt||b.ts||0)-new Date(a.assignedAt||a.ts||0);});
+ var upd=notifs.map(function(n){var o=Object.assign({},n);o.read=true;return o;});
+ _setNotifs(upd);
  buildNotifBadge();
- var list=$('notif-list');if(!list)return;
- if(!notifs.length){
-  list.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;line-height:1.8">No notifications yet.<br><span style="font-size:12px">Assignment changes, timeline updates and status changes will appear here.</span></div>';
- }else{
-  var typeIcon={'assign':'👤','timeline':'📅','status':'📋','update':'✏️','default':'🔔'};
-  var typeLabel={'assign':'New Assignment','timeline':'Timeline Updated','status':'Status Changed','update':'Assignment Updated','default':'Update'};
-  list.innerHTML=notifs.map(function(n){
-   var isNew=new Date(n.assignedAt).getTime()>lastSeen;
-   var at=new Date(n.assignedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-   var tkey=n.type||'default';
-   var icon=typeIcon[tkey]||typeIcon.default;
-   var label=typeLabel[tkey]||typeLabel.default;
-   var summary=n.summary||'';
-   // Build a fallback summary from old-format notifications
-   if(!summary){
-    if(n.member)summary='👤 Assigned to '+n.member;
-    if(n.startDate)summary+=(summary?' Â· ':'')+'📅 '+n.startDate;
-   }
-   var lobColor={'Default LOB':'#0891b2','TPRO':'#16a34a','TKT':'#d97706','Universal':'#6366f1'};
-   var lc=lobColor[n.lob]||'#8318d8';
-   return '<div style="padding:14px 16px;border-radius:14px;margin-bottom:10px;background:'+(isNew?'#fff7ed':'var(--bg)')+';border:1.5px solid '+(isNew?'#FF5900':'var(--border)')+'">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
-    +'<span style="font-size:10px;font-weight:800;color:'+(isNew?'#FF5900':'#6b7280')+';letter-spacing:.5px;display:flex;align-items:center;gap:4px">'
-    +(isNew?'<span style="width:6px;height:6px;border-radius:50%;background:#FF5900;display:inline-block"></span>':'')
-    +icon+' '+label+'</span>'
-    +(n.lob?'<span style="background:'+lc+'22;color:'+lc+';padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">'+n.lob+'</span>':'')
-    +'</div>'
-    +'<div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px;line-height:1.4">'+n.article+'</div>'
-    +(summary?'<div style="font-size:11px;font-weight:600;color:#374151;background:var(--bg);padding:6px 10px;border-radius:8px;margin-bottom:8px;line-height:1.6">'+summary+'</div>':'')
-    +'<div style="font-size:10px;color:var(--muted);font-weight:600">'+at+'</div>'
-    +(n.key?'<div style="margin-top:8px;display:flex;gap:6px" data-nk="'+n.key.replace('::latest','')+'"><button onclick="quickStatusUpdate(this.parentNode.getAttribute(\'data-nk\'),\'In Progress\')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:1.5px solid #FF5900;color:#FF5900;background:none;cursor:pointer">&#8635; In Progress</button><button onclick="quickStatusUpdate(this.parentNode.getAttribute(\'data-nk\'),\'Done\')" style="font-size:10px;padding:3px 8px;border-radius:6px;border:none;background:#FF5900;color:white;cursor:pointer">&#10003; Done</button></div>':'')
-    +'</div>';
-  }).join('');
+ function fmtDate(d){
+  if(!d)return '';
+  try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return '';}
  }
- $('notif-overlay').style.display='block';$('notif-panel').style.display='block';
+ function clean(s){
+  if(!s)return '';
+  return s.replace(/[\u00c3][\u0082-\u00bf]/g,'').replace(/[\u00c2][\u0080-\u00bf]/g,'').replace(/[\xc0-\xff][\x80-\xbf]+/g,'').trim();
+ }
+ var p=$('notif-panel');
+ if(!p)return;
+ var html='<div style="padding:14px 18px 10px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#fff7ed,#fff)">'+'<span style="font-weight:800;font-size:15px;color:#111827">🔔 Notifications</span>'+'<button onclick="$(\'notif-panel\').style.display=\'none\'" style="border:none;background:none;cursor:pointer;color:#9ca3af;font-size:22px;line-height:1">&times;</button>'+'</div>';
+ if(!notifs.length){
+  html+='<div style="padding:40px 20px;text-align:center;color:#9ca3af;font-size:13px;line-height:1.8">No notifications yet.<br><span style="font-size:12px">Assignment changes and timeline updates will appear here.</span></div>';
+ }else{
+  html+='<div style="max-height:520px;overflow-y:auto">';
+  notifs.forEach(function(n){
+   var isNew=!n.read,type=n.type||'',article=n.article||'',member=n.member||'',lob=n.lob||'';
+   var sum=clean(n.summary||n.msg||''),at=n.assignedAt||n.ts||'',dateStr=fmtDate(at);
+   var bc,bg,bBg,bCol,bLabel,icon,title,btn;
+   if(type==='timeline'){bc='#f59e0b';bg=isNew?'#fffdf5':'#fff';bBg='#fef3c7';bCol='#92400e';bLabel='🟡 Time Change';icon='⏰';title='Time Change Alert';btn='<button onclick="$(\'notif-panel\').style.display=\'none\'" style="font-size:11px;padding:5px 14px;border:1.5px solid #f59e0b;border-radius:8px;background:#fffbeb;color:#b45309;cursor:pointer;font-weight:700">⏰ View Updated Task</button>';}
+   else if(type==='assignment'){bc='#3b82f6';bg=isNew?'#f0f7ff':'#fff';bBg='#dbeafe';bCol='#1e3a8a';bLabel='🔵 New Article';icon='📄';title='New Article Assigned';btn='<button onclick="$(\'notif-panel\').style.display=\'none\'" style="font-size:11px;padding:5px 14px;border:1.5px solid #3b82f6;border-radius:8px;background:#eff6ff;color:#1d4ed8;cursor:pointer;font-weight:700">📄 Review Article</button>';}
+   else if(type==='status'){bc='#10b981';bg=isNew?'#f0fdf8':'#fff';bBg='#d1fae5';bCol='#064e3b';bLabel='✅ Status Update';icon='📊';title='Status Updated';btn='';}
+   else{bc='#e5e7eb';bg=isNew?'#fafafa':'#fff';bBg='#f3f4f6';bCol='#374151';bLabel='📬 Update';icon='🔔';title='Update';btn='';}
+   html+='<div style="padding:14px 16px;border-bottom:1px solid #f3f4f6;background:'+bg+';border-left:4px solid '+bc+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
+    +'<div style="display:flex;align-items:center;gap:6px">'
+    +'<span style="font-size:15px">'+icon+'</span>'
+    +'<span style="font-weight:700;font-size:13px;color:#111827">'+title+'</span>'
+    +(isNew?'<span style="background:#ef4444;color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:10px">NEW</span>':'')
+    +'</div><span style="font-size:10px;color:#d1d5db">'+dateStr+'</span></div>'
+    +'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px">'
+    +'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:'+bBg+';color:'+bCol+'">'+bLabel+'</span>'
+    +(member?'<span style="font-size:11px;color:#6b7280;font-weight:600">'+member+'</span>':'')
+    +(lob?'<span style="font-size:10px;color:#9ca3af;border:1px solid #e5e7eb;border-radius:8px;padding:1px 6px">'+lob+'</span>':'')
+    +'</div>'
+    +(article?'<div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:6px;padding:6px 10px;background:#f9fafb;border-radius:6px;border:1px solid #e5e7eb">📄 &ldquo;'+article+'&rdquo;</div>':'')
+    +(sum?'<div style="font-size:11px;color:#6b7280;line-height:1.7;margin-bottom:8px;padding:6px 10px;background:#f9fafb;border-radius:6px">'+sum.replace(/\n/g,'<br>')+'</div>':'')
+    +(btn?'<div style="margin-top:4px">'+btn+'</div>':'')
+    +'</div>';
+  });
+  html+='</div>';
+ }
+ html+='<div style="padding:8px 16px;border-top:1px solid #e5e7eb;text-align:right;background:#fafafa">'
+  +'<button onclick="_setNotifs([]);buildNotifBadge();openNotifPanel();" style="font-size:11px;padding:4px 10px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;color:#9ca3af;cursor:pointer">Clear all</button>'
+  +'</div>';
+ p.innerHTML=html;
+ p.style.display='block';
 }
 function closeNotifPanel(){
  $('notif-overlay').style.display='none';$('notif-panel').style.display='none';
@@ -3582,32 +3594,7 @@ function cycleSecItemStatus(secId,itemId){
 
 function buildDueWeekCard() {
   var wrap = document.getElementById('due-week-wrap');
-  if (!wrap) return;
-  var today = new Date(); today.setHours(0,0,0,0);
-  var nextWeek = new Date(today.getTime() + 7*24*60*60*1000);
-  var items = [];
-  Object.keys(ASSIGNMENTS.overrides||{}).forEach(function(key) {
-    var ov = ASSIGNMENTS.overrides[key];
-    if (!ov || !ov.startDate || ov.status === 'Done') return;
-    var d = new Date(ov.startDate);
-    if (d >= today && d <= nextWeek)
-      items.push({key:key,article:ov.article||key,member:ov.member||'',date:ov.startDate,status:ov.status||'Not Started'});
-  });
-  if (!items.length) { wrap.style.display='none'; return; }
-  wrap.style.display='block';
-  var sc={'Done':'#d1fae5','In Progress':'#dbeafe','On Review':'#ede9fe','Not Started':'#fee2e2'};
-  var st={'Done':'#065f46','In Progress':'#1e40af','On Review':'#5b21b6','Not Started':'#991b1b'};
-  wrap.innerHTML='<div style="background:linear-gradient(135deg,#fff7ed,#fff);border:1.5px solid #FF5900;border-radius:16px;padding:16px 20px;margin-bottom:16px">'+
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'+
-    '<span style="font-size:18px">&#128197;</span>'+
-    '<span style="font-weight:800;font-size:15px;color:#FF5900">Due This Week</span>'+
-    '<span style="background:#FF5900;color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700">'+items.length+'</span></div>'+
-    items.map(function(it){return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #FF590022">'+
-      '<span style="font-size:12px;flex:1;color:#1f2937;font-weight:600">'+it.article+'</span>'+
-      '<span style="font-size:11px;color:#6b7280;min-width:60px">'+it.member+'</span>'+
-      '<span style="font-size:10px;background:'+(sc[it.status]||'#f3f4f6')+';color:'+(st[it.status]||'#374151')+';padding:2px 8px;border-radius:20px;font-weight:700">'+it.status+'</span></div>';
-    }).join('')+'</div>';
-_updateMgrCols();
+  if (wrap) wrap.style.display = 'none';
 }
 
 var _myTasksOn=false;
