@@ -1441,7 +1441,7 @@ function buildUpdateProjects(){
   +'<div style="width:'+overallPct+'%;height:100%;background:var(--orange);border-radius:3px"></div></div>'
   +'</div></div>';
  // Table (hidden by default, toggled on click)
- html+='<div id="do-table-wrap" style="display:none"><div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
+ html+='<div id="do-table-wrap" style="display:none"><div class="card"><div style="text-align:right;margin-bottom:8px"><button onclick="exportUpdatesCSV()" style="background:none;border:1px solid var(--orange);color:var(--orange);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px">&#11015; Export CSV</button></div><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
  // Apply assignment overrides for updates tab
  doRows.forEach(function(r){
   var k=r.article.toLowerCase().trim()+'::updates';
@@ -1584,6 +1584,7 @@ function buildUniHtml(tabName,safeId){
   +'<input type="text" id="dynSearch-'+safeId+'" placeholder="🔍 Search article or member…" oninput="filterDynTab(\''+safeId+'\',this.value)" style="width:100%;max-width:340px">'
   +(managerMode?'<button onclick="toggleEditLinksMode()" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+elBg+';color:'+elCol+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+elLabel+'</button>':'')
   +(managerMode?'<button onclick="exportArticleLinks()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #16a34a;background:none;color:#16a34a;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">📋 Export Links</button>':'')
+  +(managerMode?'<button onclick="exportUniCSV(\''+tabName+'\')" style="background:none;border:1px solid var(--orange);color:var(--orange);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;margin-left:6px">&#11015; Export CSV</button>':'')
   +'</div>'
   +'<div class="tbl-wrap"><table id="dyntbl-'+safeId+'" style="width:100%">'
   +'<thead><tr>'
@@ -3654,6 +3655,43 @@ function quickStatusUpdate(key,newStatus){
   showToast('Status updated for '+member+' - '+newStatus,2000);
   renderTable();
 }
+function downloadCSV(rows,filename){
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c||'').replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename||'export.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+function exportUniCSV(tabName){
+  var lob=null;
+  (SHEET_TABS||[]).forEach(function(t){if(t.name===tabName)lob=t;});
+  var headers=['Article','Member','Status','AR Status','EN Status','Start Date','End Date'];
+  var rows=[headers];
+  (lob?(lob.rows||[]):[]).forEach(function(row){
+    if(!managerMode&&memberMode&&_memberEmail&&row[1]&&!_memberMatches(String(row[1])))return;
+    rows.push(row.map(function(c){return c||'';}));
+  });
+  downloadCSV(rows,(tabName||'universal').toLowerCase().replace(/\s+/g,'-')+'_export.csv');
+}
+function exportUpdatesCSV(){
+  var tbl=document.querySelector('#do-table-wrap table');
+  if(!tbl){showToast('No updates data to export');return;}
+  var rows=[];
+  tbl.querySelectorAll('tr').forEach(function(tr){
+    var row=[];
+    tr.querySelectorAll('th,td').forEach(function(cell){
+      if(cell.querySelector('input[type="checkbox"]'))return;
+      var txt=cell.innerText.trim();
+      if(!txt&&cell.querySelector('button'))return;
+      row.push(txt);
+    });
+    if(row.some(function(v){return v;}))rows.push(row);
+  });
+  if(!rows.length){showToast('No data to export');return;}
+  downloadCSV(rows,'updates_export.csv');
+}
+
 function openExportMenu(){
   var ex=document.getElementById('export-popup');
   if(ex){ex.remove();return;}
