@@ -2972,7 +2972,7 @@ function openNotifPanel(){
  }
  var p=$('notif-panel');
  if(!p)return;
- var html='<div style="padding:14px 18px 10px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#fff7ed,#fff)">'+'<span style="font-weight:800;font-size:15px;color:#111827">🔔 Notifications</span>'+'<button onclick="$(\'notif-panel\').style.display=\'none\'" style="border:none;background:none;cursor:pointer;color:#9ca3af;font-size:22px;line-height:1">&times;</button>'+'</div>';
+ var html='<div style="padding:14px 18px 10px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;background:#F4EDE3">'+'<span style="font-weight:800;font-size:15px;color:#111827">🔔 Notifications</span>'+'<button onclick="$(\'notif-panel\').style.display=\'none\'" style="border:none;background:none;cursor:pointer;color:#9ca3af;font-size:22px;line-height:1">&times;</button>'+'</div>';
  if(!notifs.length){
   html+='<div style="padding:40px 20px;text-align:center;color:#9ca3af;font-size:13px;line-height:1.8">No notifications yet.<br><span style="font-size:12px">Assignment changes and timeline updates will appear here.</span></div>';
  }else{
@@ -2997,8 +2997,8 @@ function openNotifPanel(){
     +(member?'<span style="font-size:11px;color:#6b7280;font-weight:600">'+member+'</span>':'')
     +(lob?'<span style="font-size:10px;color:#9ca3af;border:1px solid #e5e7eb;border-radius:8px;padding:1px 6px">'+lob+'</span>':'')
     +'</div>'
-    +(article?'<div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:6px;padding:6px 10px;background:#f9fafb;border-radius:6px;border:1px solid #e5e7eb">📄 &ldquo;'+article+'&rdquo;</div>':'')
-    +(sum?'<div style="font-size:11px;color:#6b7280;line-height:1.7;margin-bottom:8px;padding:6px 10px;background:#f9fafb;border-radius:6px">'+sum.replace(/\n/g,'<br>')+'</div>':'')
+    +(article?'<div style="font-size:12px;font-weight:700;color:#1f2937;margin-bottom:6px;padding:6px 10px;background:#EDE3D9;border-radius:6px;border:1px solid #d9cfc6">📄 &ldquo;'+article+'&rdquo;</div>':'')
+    +(sum?'<div style="font-size:11px;color:#6b7280;line-height:1.7;margin-bottom:8px;padding:6px 10px;background:#EDE3D9;border-radius:6px">'+sum.replace(/\n/g,'<br>')+'</div>':'')
     +(btn?'<div style="margin-top:4px">'+btn+'</div>':'')
     +'</div>';
   });
