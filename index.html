@@ -1441,7 +1441,7 @@ function buildUpdateProjects(){
   +'<div style="width:'+overallPct+'%;height:100%;background:var(--orange);border-radius:3px"></div></div>'
   +'</div></div>';
  // Table (hidden by default, toggled on click)
- html+='<div id="do-table-wrap" style="display:none"><div class="card"><div style="text-align:right;margin-bottom:8px"><button onclick="exportUpdatesCSV()" style="background:none;border:1px solid var(--orange);color:var(--orange);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px">&#11015; Export CSV</button></div><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
+ html+='<div id="do-table-wrap" style="display:none"><div class="card"><div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;min-width:880px">';
  // Apply assignment overrides for updates tab
  doRows.forEach(function(r){
   var k=r.article.toLowerCase().trim()+'::updates';
