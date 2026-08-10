@@ -26,14 +26,14 @@
     },
     "smoking service::uni": {
       "member": "Dalia",
-      "ar": 1,
+      "ar": 0,
       "en": 1,
       "startDate": "2026-08-10",
       "deadline": "2026-08-11",
       "reviewer": "",
       "priority": "",
       "notes": "",
-      "updatedAt": "2026-08-10T11:18:08.514Z",
+      "updatedAt": "2026-08-10T11:18:37.419Z",
       "status": "In Progress"
     }
   },
@@ -122,20 +122,27 @@
       "read": false
     },
     {
-      "id": "msn514si",
-      "key": "smoking service::uni::latest",
-      "type": "assign",
-      "article": "Smoking Service",
-      "member": "Dalia",
-      "lob": "Universal",
-      "summary": "👤 Assigned to Dalia<br>📅 Deadline set: 2026-08-11<br>📅 Start date set: 2026-08-10<br>📋 Status: Not Started → In Progress",
-      "startDate": "2026-08-10",
-      "assignedAt": "2026-08-10T11:18:08.514Z"
-    },
-    {
       "key": "::notif::1786360688516",
       "msg": "Assignment updated for Dalia: Smoking Service | Deadline: 2026-08-11",
       "ts": "2026-08-10T11:18:08.516Z",
+      "member": "Dalia",
+      "read": false
+    },
+    {
+      "id": "msn51r3f",
+      "key": "smoking service::uni::latest",
+      "type": "update",
+      "article": "Smoking Service",
+      "member": "Dalia",
+      "lob": "Universal",
+      "summary": "🇦🇪 AR: ✕ Not done",
+      "startDate": "2026-08-10",
+      "assignedAt": "2026-08-10T11:18:37.419Z"
+    },
+    {
+      "key": "::notif::1786360717421",
+      "msg": "Assignment updated for Dalia: Smoking Service | Deadline: 2026-08-11",
+      "ts": "2026-08-10T11:18:37.421Z",
       "member": "Dalia",
       "read": false
     }
@@ -147,7 +154,7 @@
       "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
     }
   ],
-  "lastUpdated": "2026-08-10T11:18:10.353Z",
+  "lastUpdated": "2026-08-10T11:18:37.723Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
@@ -194,6 +201,11 @@
         "ts": "2026-08-10T11:18:08.515Z",
         "user": "Coordinator",
         "summary": "👤 Assigned to Dalia; 📅 Deadline set: 2026-08-11; 📅 Start date set: 2026-08-10; 📋 Status: Not Started → In Progress"
+      },
+      {
+        "ts": "2026-08-10T11:18:37.419Z",
+        "user": "Coordinator",
+        "summary": "🇦🇪 AR: ✕ Not done"
       }
     ]
   }
