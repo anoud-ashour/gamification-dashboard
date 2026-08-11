@@ -520,32 +520,6 @@
       "status": "Not Started"
     },
     {
-      "id": "msormkvp",
-      "article": "Wrong Item(s) Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "2026-08-13",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "msormkvq",
-      "article": "Wrong Order Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-11",
-      "deadline": "2026-08-13",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msormkvr",
       "article": "LC | Bad Quality (Order/Item)",
       "lob": "default",
@@ -650,6 +624,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:38:43.485Z",
+  "lastUpdated": "2026-08-11T14:38:47.081Z",
   "customMGSections": []
 }
