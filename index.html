@@ -1515,7 +1515,7 @@ function buildUpdateProjects(){
     +'</div>':'')
    +'</div></div>';
   csh+='<div id="'+wrapId+'" style="display:none"><div class="card">';
-  if(managerMode){csh+='<div style="margin-bottom:10px"><button onclick="openAddSecItem(\''+safeSecId+'\')" style="padding:6px 16px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Item</button></div>';}
+  if(managerMode){csh+='<div style="margin-bottom:10px;display:flex;gap:8px"><button onclick="openAddSecItem(\''+safeSecId+'\')" style="flex:1;padding:6px 16px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Item</button><button onclick="openBulkSecItems(\''+safeSecId+'\')" style="flex:1;padding:11.5px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Bulk</button></div>';}
   if(!secItems.length){
    csh+='<div style="padding:18px;color:var(--muted);font-size:13px;text-align:center">No items yet.'+(managerMode?' Click &quot;+ Add Item&quot; to add one.':'')+'</div>';
   }else{
@@ -3585,6 +3585,41 @@ function saveNewSecItem(){
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddSecItem();buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
+var _bulkSecTarget='';
+function openBulkSecItems(secId){
+ _bulkSecTarget=secId;
+ var pa=$('bsi-paste');if(pa)pa.value='';
+ var da=$('bsi-def-assignee');if(da)da.value='';
+ var ds=$('bsi-def-status');if(ds)ds.value='Not Started';
+ var ov=$('bulk-secitem-overlay');if(ov)ov.style.display='block';
+ var m=$('bulk-secitem-modal');if(m)m.style.display='block';
+}
+function closeBulkSecItems(){
+ var ov=$('bulk-secitem-overlay');if(ov)ov.style.display='none';
+ var m=$('bulk-secitem-modal');if(m)m.style.display='none';
+}
+function saveBulkSecItems(){
+ if(!_bulkSecTarget)return;
+ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===_bulkSecTarget;});
+ if(!sec)return;
+ if(!sec.items)sec.items=[];
+ var raw=(($('bsi-paste')||{}).value)||'';
+ var defAssignee=((($('bsi-def-assignee')||{}).value)||'').trim();
+ var defStatus=($('bsi-def-status')||{}).value||'Not Started';
+ var lines=raw.split(String.fromCharCode(10)).map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+ if(!lines.length){closeBulkSecItems();return;}
+ lines.forEach(function(line,i){
+  var parts=line.split('|');
+  var text=(parts[0]||'').trim();
+  var assignee=parts.length>1?(parts[1]||'').trim():defAssignee;
+  if(!text)return;
+  sec.items.push({id:Date.now().toString(36)+i+Math.random().toString(36).slice(2,6),text:text,status:defStatus,assignee:assignee,startDate:'',endDate:'',lang:'Both',lob:''});
+ });
+ closeBulkSecItems();
+ try{saveAssignments().catch(function(){});}catch(e){}
+ try{buildUpdateProjects();}catch(e){}
+}
+
 function deleteSecItem(secId,itemId){
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
  if(!confirm('Delete this item?'))return;
@@ -4296,6 +4331,22 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
  </div>
 </div>
 <div id="addtab-overlay" onclick="closeAddTab()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9200"></div>
+<div id="bulk-secitem-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9210" onclick="closeBulkSecItems()"></div>
+<div id="bulk-secitem-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:28px;width:520px;max-width:94vw;z-index:9211;box-shadow:0 24px 64px rgba(0,0,0,.28);max-height:88vh;overflow:auto">
+<div style="font-weight:800;font-size:17px;margin-bottom:4px">Bulk Add Items</div>
+<div style="font-size:12px;color:#666;margin-bottom:14px">One item per line. Add "| Member Name" at the end of a line to assign it to someone specific.</div>
+<textarea id="bsi-paste" placeholder="Review homepage copy | Dalia
+Update FAQ page
+Translate banner text | Anoud" style="width:100%;box-sizing:border-box;min-height:140px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;resize:vertical"></textarea>
+<div style="display:flex;gap:10px;margin-top:14px">
+<div style="flex:1"><div style="font-size:12px;font-weight:600;margin-bottom:6px">Default Assignee</div><input id="bsi-def-assignee" type="text" placeholder="e.g. Dalia" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px"></div>
+<div style="flex:1"><div style="font-size:12px;font-weight:600;margin-bottom:6px">Default Status</div><select id="bsi-def-status" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="On Review">On Review</option><option value="Pending Modification">Pending Modification</option><option value="Done">Done</option></select></div>
+</div>
+<div style="display:flex;gap:8px;margin-top:18px">
+<button onclick="closeBulkSecItems()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-weight:700;cursor:pointer">Cancel</button>
+<button onclick="saveBulkSecItems()" style="flex:1;padding:11px;border-radius:10px;border:none;background:#0d9488;color:#fff;font-weight:700;cursor:pointer">Add All</button>
+</div>
+</div>
 <div id="addtab-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:420px;max-width:93vw;z-index:9201;box-shadow:0 20px 60px rgba(0,0,0,.25)">
  <div id="addtab-title" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#8318d8;margin-bottom:14px">+ Create New LOB</div>
  <div style="display:flex;gap:4px;background:#f3f4f6;border-radius:10px;padding:4px;margin-bottom:16px">
