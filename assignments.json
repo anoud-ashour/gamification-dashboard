@@ -507,19 +507,6 @@
       "status": "Not Started"
     },
     {
-      "id": "msore22n",
-      "article": "LC | Incomplete Orders",
-      "lob": "default",
-      "member": "Dalia",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msormkvs",
       "article": "LC | Expired & Nearly Expired tMart & NFV (Order/Item)",
       "lob": "default",
@@ -585,6 +572,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:38:52.336Z",
+  "lastUpdated": "2026-08-11T14:38:54.134Z",
   "customMGSections": []
 }
