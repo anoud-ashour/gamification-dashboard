@@ -79,7 +79,7 @@
     },
     {
       "id": "msore21p",
-      "article": "LC | Bad Smell – Bad Taste (Item/Order)",
+      "article": "LC | Bad Smell â Bad Taste (Item/Order)",
       "lob": "default",
       "member": "Dalia",
       "journey": "General",
@@ -326,7 +326,7 @@
     },
     {
       "id": "msore228",
-      "article": "TMP – Order Never Delivered \"",
+      "article": "TMP â Order Never Delivered \"",
       "lob": "default",
       "member": "Amal",
       "journey": "General",
@@ -531,6 +531,136 @@
       "deadline": "",
       "priority": "",
       "status": "Not Started"
+    },
+    {
+      "id": "msormkvo",
+      "article": "Missing Item(s) Complaints",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvp",
+      "article": "Wrong Item(s) Complaints",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvq",
+      "article": "Wrong Order Complaints",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvr",
+      "article": "LC | Bad Quality (Order/Item)",
+      "lob": "default",
+      "member": "Amal",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvs",
+      "article": "LC | Expired & Nearly Expired tMart & NFV (Order/Item)",
+      "lob": "default",
+      "member": "Amal",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvt",
+      "article": "LC | Bad Smell – Bad Taste (Item/Order)",
+      "lob": "default",
+      "member": "Amal",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvu",
+      "article": "LC | Temperature Issues (Items-Full Order)",
+      "lob": "default",
+      "member": "Dalia",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvv",
+      "article": "LC | Food Portion & Packaging Issues (Order/Item)",
+      "lob": "default",
+      "member": "Dalia",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvw",
+      "article": "LC | Dented or Bruised (Order/Item)",
+      "lob": "default",
+      "member": "Dalia",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msormkvx",
+      "article": "LC | Spilled, Damaged, or Broken (Item/Order)",
+      "lob": "default",
+      "member": "Dalia",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-11",
+      "deadline": "2026-08-13",
+      "priority": "",
+      "status": "Not Started"
     }
   ],
   "customTabs": [],
@@ -572,6 +702,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:31:49.670Z",
+  "lastUpdated": "2026-08-11T14:38:27.504Z",
   "customMGSections": []
 }
