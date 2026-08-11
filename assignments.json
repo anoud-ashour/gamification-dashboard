@@ -26,7 +26,25 @@
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
-  "customSections": [],
+  "customSections": [
+    {
+      "id": "msorrvig",
+      "name": "New Updates",
+      "color": "#9675b8",
+      "items": [
+        {
+          "id": "msorsltq",
+          "text": "Wrong item test",
+          "status": "Not Started",
+          "assignee": "Anoud",
+          "startDate": "2026-08-12",
+          "endDate": "2026-08-13",
+          "lang": "Both",
+          "lob": "Default"
+        }
+      ]
+    }
+  ],
   "notifications": [],
   "mgGroups": [],
   "memberAccounts": [
@@ -51,6 +69,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:41:27.626Z",
+  "lastUpdated": "2026-08-11T14:43:22.199Z",
   "customMGSections": []
 }
