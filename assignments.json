@@ -13,32 +13,6 @@
   },
   "extra": [
     {
-      "id": "msore21q",
-      "article": "LC | Temperature Issues (Items-Full Order)",
-      "lob": "default",
-      "member": "Amal",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "msore21r",
-      "article": "LC | Food Portion & Packaging Issues (Order/Item)",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msore21s",
       "article": "LC | Dented or Bruised (Order/Item)",
       "lob": "default",
@@ -442,6 +416,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:40:18.131Z",
+  "lastUpdated": "2026-08-11T14:40:22.722Z",
   "customMGSections": []
 }
