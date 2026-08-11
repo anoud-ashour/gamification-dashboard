@@ -1,1 +1,39 @@
-{"overrides":{"rider reports cst wrong address/pinpoint::uni":{"ar":1,"en":1,"status":"Done"}},"extra":[],"customTabs":[],"managers":[{"email":"anoud.shehata@talabat.com","hash":"1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"}],"memberStatus":{},"subCategories":{},"articleSubCat":{},"customSections":[],"notifications":[],"mgGroups":[],"memberAccounts":[{"email":"dalia.adel@talabat.com","hash":"b8b7ec0daa69fa50eb84c9d3e6fbe7e4a8709905750a6522985289f13acefa84"},{"email":"anoud.shehata@talabat.com","hash":"1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"}],"lastUpdated":"2026-08-11T12:56:23.222Z","customMGSections":[]}
+{
+  "overrides": {
+    "rider reports cst wrong address/pinpoint::uni": {
+      "ar": 1,
+      "en": 1,
+      "status": "Done"
+    }
+  },
+  "extra": [],
+  "customTabs": [],
+  "managers": [
+    {
+      "email": "anoud.shehata@talabat.com",
+      "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
+    }
+  ],
+  "memberStatus": {},
+  "subCategories": {},
+  "articleSubCat": {},
+  "customSections": [],
+  "notifications": [],
+  "mgGroups": [],
+  "memberAccounts": [
+    {
+      "email": "dalia.adel@talabat.com",
+      "hash": "b8b7ec0daa69fa50eb84c9d3e6fbe7e4a8709905750a6522985289f13acefa84"
+    },
+    {
+      "email": "anoud.shehata@talabat.com",
+      "hash": "1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"
+    },
+    {
+      "email": "race.test.returning@talabat.com",
+      "hash": "fe85d79010b5fd08dd9fe001d4c3b145b8c1375b77114328d4a169f55d639db8"
+    }
+  ],
+  "lastUpdated": "2026-08-11T13:09:24.087Z",
+  "customMGSections": []
+}
