@@ -13,36 +13,10 @@
   },
   "extra": [
     {
-      "id": "msore21k",
-      "article": "Missing Item(s) Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msore21l",
       "article": "Wrong Item(s) Complaints",
       "lob": "default",
       "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "msore21m",
-      "article": "Wrong Order Complaints",
-      "lob": "default",
-      "member": "Dalia",
       "journey": "General",
       "ar": 0,
       "en": 0,
@@ -79,7 +53,7 @@
     },
     {
       "id": "msore21p",
-      "article": "LC | Bad Smell â Bad Taste (Item/Order)",
+      "article": "LC | Bad Smell Ã¢ÂÂ Bad Taste (Item/Order)",
       "lob": "default",
       "member": "Dalia",
       "journey": "General",
@@ -326,7 +300,7 @@
     },
     {
       "id": "msore228",
-      "article": "TMP â Order Never Delivered \"",
+      "article": "TMP Ã¢ÂÂ Order Never Delivered \"",
       "lob": "default",
       "member": "Amal",
       "journey": "General",
@@ -572,6 +546,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:38:54.134Z",
+  "lastUpdated": "2026-08-11T14:39:56.796Z",
   "customMGSections": []
 }
