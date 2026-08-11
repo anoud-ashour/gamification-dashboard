@@ -4,6 +4,11 @@
       "ar": 1,
       "en": 1,
       "status": "Done"
+    },
+    "smoking service::uni": {
+      "ar": 0,
+      "en": 0,
+      "status": "Not Started"
     }
   },
   "extra": [],
@@ -42,6 +47,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T13:45:15.144Z",
+  "lastUpdated": "2026-08-11T13:45:30.609Z",
   "customMGSections": []
 }
