@@ -11,6 +11,9 @@
       "notes": "",
       "updatedAt": "2026-08-11T08:12:18.839Z",
       "status": "On Review"
+    },
+    "smoking service::uni": {
+      "status": "In Progress"
     }
   },
   "extra": [],
@@ -33,7 +36,7 @@
       "article": "Rider Reports CST Wrong Address/Pinpoint",
       "member": "Amal",
       "lob": "Universal",
-      "summary": "Ã°ÂÂÂ¤ Assigned to Amal<br>Ã°ÂÂÂ Status: Not Started Ã¢ÂÂ On Review",
+      "summary": "ÃÂ°ÃÂÃÂÃÂ¤ Assigned to Amal<br>ÃÂ°ÃÂÃÂÃÂ Status: Not Started ÃÂ¢ÃÂÃÂ On Review",
       "startDate": "",
       "assignedAt": "2026-08-11T08:12:18.839Z"
     }
@@ -45,14 +48,14 @@
       "hash": "bc7af9ed2b323a7a8434074090be9cb9b17b6fd28aa0aa2969184cbe087a044c"
     }
   ],
-  "lastUpdated": "2026-08-11T08:14:52.533Z",
+  "lastUpdated": "2026-08-11T08:15:13.614Z",
   "customMGSections": [],
   "history": {
     "rider reports cst wrong address/pinpoint::uni": [
       {
         "ts": "2026-08-11T08:12:18.840Z",
         "user": "Coordinator",
-        "summary": "Ã°ÂÂÂ¤ Assigned to Amal; Ã°ÂÂÂ Status: Not Started Ã¢ÂÂ On Review"
+        "summary": "ÃÂ°ÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂ°ÃÂÃÂÃÂ Status: Not Started ÃÂ¢ÃÂÃÂ On Review"
       }
     ]
   }
