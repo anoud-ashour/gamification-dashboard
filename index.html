@@ -2457,7 +2457,6 @@ async function _refreshLiveData(){
   build();
  }
 }
-load();
 setInterval(handleRefresh,3*60*1000);
 
 // ===== MANAGER MODE =====
@@ -2501,6 +2500,7 @@ async function loadAssignments(){
  }catch(e){}
 }
 
+load();
 function applyAssignments(){
  ROWS.forEach(function(r){
   var k=r.article.toLowerCase().trim()+'::'+r.sopId;
