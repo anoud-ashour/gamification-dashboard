@@ -4144,7 +4144,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
 
 <!-- Member Login modal -->
 <div id="mem-login-overlay" onclick="closeMemberLogin()" style="display: block; position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.5); z-index: 9400;"></div>
-<div id="mem-login-modal" style="display: block; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgb(255, 255, 255); border-radius: 20px; padding: 36px 32px; width: 380px; max-width: 93vw; z-index: 9401; box-shadow: rgba(0, 0, 0, 0.28) 0px 24px 64px;">
+<div id="mem-login-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgb(255, 255, 255); border-radius: 20px; padding: 36px 32px; width: 380px; max-width: 93vw; z-index: 9401; box-shadow: rgba(0, 0, 0, 0.28) 0px 24px 64px;">
  <div style="text-align:center;margin-bottom:24px">
   <div style="font-size:36px;margin-bottom:10px">👥</div>
   <div style="font-size:18px;font-weight:900;color:var(--dark)">Member Login</div>
@@ -4162,7 +4162,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
   </div>
  </div>
  <div id="mem-login-err" style="display:none;font-size:12px;color:#dc2626;background:#fee2e2;padding:9px 12px;border-radius:8px;margin-bottom:14px;font-weight:600"></div>
- <button id="mem-login-btn-modal" onclick="attemptMemberLogin()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#0891b2;color:#fff;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px" disabled="">Checking…</button>
+ <button id="mem-login-btn-modal" onclick="attemptMemberLogin()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#0891b2;color:#fff;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:.3px" disabled="">Sign In</button>
  <button onclick="closeMemberLogin()" style="width:100%;margin-top:8px;padding:11px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
 </div>
 <!-- Member floating bar -->
