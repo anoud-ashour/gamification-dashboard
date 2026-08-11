@@ -2691,7 +2691,7 @@ async function attemptMemberLogin(){
  var hash=await mgHash(email,pw);
  var accounts=ASSIGNMENTS.memberAccounts||[];
  var match=accounts.find(function(m){return m.email.toLowerCase()===email&&(!m.hash||m.hash===hash);});
- if(!match){var _isManager=(ASSIGNMENTS.managers||[]).some(function(m){return m.email.toLowerCase()===email;});if(!_isManager){var _na={email:email,hash:hash};ASSIGNMENTS.memberAccounts=(ASSIGNMENTS.memberAccounts||[]);ASSIGNMENTS.memberAccounts.push(_na);match=_na;try{saveAssignments().catch(function(){});}catch(e){}}}
+ if(!match){var _isManager=(ASSIGNMENTS.managers||[]).some(function(m){return m.email.toLowerCase()===email;});var _emailTaken=accounts.some(function(m){return m.email.toLowerCase()===email;});if(!_isManager&&!_emailTaken){var _na={email:email,hash:hash};ASSIGNMENTS.memberAccounts=(ASSIGNMENTS.memberAccounts||[]);ASSIGNMENTS.memberAccounts.push(_na);match=_na;try{saveAssignments().catch(function(){});}catch(e){}}}
  if(match){
   _memberEmail=email;memberMode=true;
   closeMemberLogin();
