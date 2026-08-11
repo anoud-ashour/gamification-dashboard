@@ -520,19 +520,6 @@
       "status": "Not Started"
     },
     {
-      "id": "msormkvr",
-      "article": "LC | Bad Quality (Order/Item)",
-      "lob": "default",
-      "member": "Amal",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-11",
-      "deadline": "2026-08-13",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msormkvs",
       "article": "LC | Expired & Nearly Expired tMart & NFV (Order/Item)",
       "lob": "default",
@@ -624,6 +611,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:38:47.081Z",
+  "lastUpdated": "2026-08-11T14:38:48.923Z",
   "customMGSections": []
 }
