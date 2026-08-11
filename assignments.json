@@ -26,19 +26,6 @@
       "status": "Not Started"
     },
     {
-      "id": "msore21p",
-      "article": "LC | Bad Smell Ã¢ÂÂ Bad Taste (Item/Order)",
-      "lob": "default",
-      "member": "Dalia",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msore21q",
       "article": "LC | Temperature Issues (Items-Full Order)",
       "lob": "default",
@@ -69,19 +56,6 @@
       "article": "LC | Dented or Bruised (Order/Item)",
       "lob": "default",
       "member": "Dalia",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "msore21t",
-      "article": "LC | Spilled, Damaged, or Broken (Item/Order)",
-      "lob": "default",
-      "member": "Amal",
       "journey": "General",
       "ar": 0,
       "en": 0,
@@ -520,6 +494,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:40:00.522Z",
+  "lastUpdated": "2026-08-11T14:40:04.149Z",
   "customMGSections": []
 }
