@@ -36,8 +36,12 @@
     {
       "email": "race.test.2@talabat.com",
       "hash": "ba3ae83f7783ce7bc59cb60ef1d37198b3d5b0dde8624b98dadd1844b009e680"
+    },
+    {
+      "email": "sandbox.test@talabat.com",
+      "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T13:09:32.455Z",
+  "lastUpdated": "2026-08-11T13:11:56.222Z",
   "customMGSections": []
 }
