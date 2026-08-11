@@ -1,1 +1,19 @@
-{"overrides":{"rider reports cst wrong address/pinpoint::uni":{"member":"Amal","ar":1,"en":1,"startDate":"","deadline":"","reviewer":"","priority":"","notes":"","updatedAt":"2026-08-11T08:25:26.116Z","status":"Done"},"smoking service::uni":{"status":"Done"}},"extra":[],"customTabs":[],"managers":[{"email":"anoud.shehata@talabat.com","hash":"1228656914262df902671b459e73db97315fe41d9d30e276fcf02668cefbb164"}],"memberStatus":{},"subCategories":{},"articleSubCat":{},"customSections":[],"notifications":[{"id":"msoeavs4","key":"rider reports cst wrong address/pinpoint::uni::latest","type":"status","article":"Rider Reports CST Wrong Address/Pinpoint","member":"Amal","lob":"Universal","summary":"Ã°ÂÂÂ Status: On Review Ã¢ÂÂ Done","startDate":"","assignedAt":"2026-08-11T08:25:26.116Z"}],"mgGroups":[],"memberAccounts":[{"email":"dalia.adel@talabat.com","hash":"bc7af9ed2b323a7a8434074090be9cb9b17b6fd28aa0aa2969184cbe087a044c"}],"lastUpdated":"2026-08-11T08:42:56.870Z","customMGSections":[],"history":{"rider reports cst wrong address/pinpoint::uni":[{"ts":"2026-08-11T08:12:18.840Z","user":"Coordinator","summary":"ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Status: Not Started ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ On Review"},{"ts":"2026-08-11T08:25:26.116Z","user":"Coordinator","summary":"Ã°ÂÂÂ Status: On Review Ã¢ÂÂ Done"}]}}
+{
+  "overrides": {},
+  "extra": [],
+  "customTabs": [],
+  "managers": [],
+  "memberStatus": {},
+  "subCategories": {},
+  "articleSubCat": {},
+  "customSections": [],
+  "notifications": [],
+  "mgGroups": [],
+  "memberAccounts": [
+    {
+      "email": "dalia.adel@talabat.com",
+      "hash": "bc7af9ed2b323a7a8434074090be9cb9b17b6fd28aa0aa2969184cbe087a044c"
+    }
+  ],
+  "lastUpdated": "2026-08-11T12:11:17.041Z"
+}
