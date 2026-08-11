@@ -2736,7 +2736,7 @@ function openMemberEdit(artKey,lob){
  $('mem-edit-title').textContent=_dispRow?(_dispRow.article||artKey):artKey;
  $('mem-edit-lob').textContent=lobLabel;
  $('mem-edit-ar').value=(ov.ar===1||ov.ar>0)?'1':'0';
- $('mem-edit-en').value=(ov.en===1||ov.en>0)?'1':'0';
+ $('mem-edit-en').value=(ov.en===1||ov.en>0)?'1':'0'; if($('mem-edit-status'))$('mem-edit-status').value=ov.status||'Not Started';
  $('mem-edit-overlay').style.display='block';$('mem-edit-modal').style.display='block';
 }
 function closeMemberEdit(){$('mem-edit-overlay').style.display='none';$('mem-edit-modal').style.display='none';_memEditKey='';}
@@ -2747,7 +2747,8 @@ async function saveMemberStatus(){
  var ov=ASSIGNMENTS.overrides[_memEditKey]||{};
  ov.ar=arVal;
  ov.en=enVal;
- if(arVal>0&&enVal>0)ov.status='Done';ASSIGNMENTS.overrides[_memEditKey]=ov;
+ if(arVal>0&&enVal>0)ov.status='Done';
+ var _msSel=$('mem-edit-status');if(_msSel&&_msSel.value)ov.status=_msSel.value;ASSIGNMENTS.overrides[_memEditKey]=ov;
  // Sync to ASSIGNMENTS.extra if this is an extra/custom article
  var _mkLast=_memEditKey.lastIndexOf('::');
  if(_mkLast>-1){
@@ -4166,6 +4167,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
  <div id="mem-edit-title" style="font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px;line-height:1.4">Rider Reports CST Wrong Address/Pinpoint</div>
  <div id="mem-edit-lob" style="font-size:11px;color:#0891b2;font-weight:700;margin-bottom:18px">Universal</div>
  <div style="display:flex;gap:12px;margin-bottom:18px"><div style="flex:1"><div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">AR Status</div><select id="mem-edit-ar" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);color:var(--dark);outline:none"><option value="0">❌ Not Done</option><option value="1">✓ Done</option></select></div><div style="flex:1"><div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">EN Status</div><select id="mem-edit-en" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);color:var(--dark);outline:none"><option value="0">❌ Not Done</option><option value="1">✓ Done</option></select></div></div>
+ <div style="margin-bottom:14px"><div style="font-size:12px;font-weight:600;color:#091b2;margin-bottom:6px">Status</div><select id="mem-edit-status" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none"><option value="Not Started">Not Started</option><option value="In Progress">In Progress</option><option value="On Review">On Review</option><option value="Pending Modification">Pending Modification</option><option value="Done">Done</option></select></div>
  <div style="display:flex;gap:8px">
   <button onclick="saveMemberStatus()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#0891b2;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save Status</button>
   <button onclick="closeMemberEdit()" style="padding:10px 16px;border-radius:10px;border:1.5px solid var(--border);background:none;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
