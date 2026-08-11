@@ -533,19 +533,6 @@
       "status": "Not Started"
     },
     {
-      "id": "msormkvo",
-      "article": "Missing Item(s) Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "2026-08-13",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
       "id": "msormkvp",
       "article": "Wrong Item(s) Complaints",
       "lob": "default",
@@ -635,19 +622,6 @@
       "deadline": "2026-08-13",
       "priority": "",
       "status": "Not Started"
-    },
-    {
-      "id": "msormkvw",
-      "article": "LC | Dented or Bruised (Order/Item)",
-      "lob": "default",
-      "member": "Dalia",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-11",
-      "deadline": "2026-08-13",
-      "priority": "",
-      "status": "Not Started"
     }
   ],
   "customTabs": [],
@@ -689,6 +663,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-11T14:38:36.985Z",
+  "lastUpdated": "2026-08-11T14:38:41.588Z",
   "customMGSections": []
 }
