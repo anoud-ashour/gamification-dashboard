@@ -31,38 +31,7 @@
       "id": "msptdcxj",
       "name": "New Updates",
       "color": "#f26464",
-      "items": [
-        {
-          "id": "msptdxji0j6xh",
-          "text": "Missing Item(s) Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "msptdxji1hd0r",
-          "text": "Wrong Item(s) Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "msptdxji2hpvb",
-          "text": "Wrong Order Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        }
-      ]
+      "items": []
     }
   ],
   "notifications": [],
@@ -89,6 +58,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T08:16:43.844Z",
+  "lastUpdated": "2026-08-12T10:47:43.040Z",
   "customMGSections": []
 }
