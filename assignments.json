@@ -11,7 +11,60 @@
       "status": "Done"
     }
   },
-  "extra": [],
+  "extra": [
+    {
+      "id": "msptf2at",
+      "article": "Missing Item(s) Complaints",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msptf2au",
+      "article": "Wrong Item(s) Complaints",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msptf2av",
+      "article": "Wrong Order Complaints",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msptf2aw",
+      "article": "LC | Bad Quality (Order/Item)",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "",
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
+    }
+  ],
   "customTabs": [],
   "managers": [
     {
@@ -89,6 +142,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T08:15:29.480Z",
+  "lastUpdated": "2026-08-12T08:16:22.118Z",
   "customMGSections": []
 }
