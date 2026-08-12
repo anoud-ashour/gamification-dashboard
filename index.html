@@ -1057,7 +1057,7 @@ function renderTable(){
    +'<td>'+cell(r.ar)+'</td><td>'+cell(r.en)+'</td>'
    +'<td class="pct" style="color:'+(sp===100?'#16a34a':(sp>=50?'#f59e0b':'#dc2626'))+'">'+sp+'%</td>'
    +glCell(gkey,'ar')+glCell(gkey,'en')
-   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek2+'\',\''+r.sopId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek2+'\',\''+activeTab+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extra?'<br><input type="checkbox" class="lobextra-cb" data-extra-id="'+r._extraId+'" style="margin-right:3px"><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek2+'\',\''+r.sopId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   tb.appendChild(tr);shown++;
  }
   filteredRows.forEach(renderRow);
@@ -1515,14 +1515,13 @@ function buildUpdateProjects(){
     +'</div>':'')
    +'</div></div>';
   csh+='<div id="'+wrapId+'" style="display:none"><div class="card">';
-  if(managerMode){csh+='<div style="margin-bottom:10px;display:flex;gap:8px"><button onclick="openAddSecItem(\''+safeSecId+'\')" style="flex:1;padding:6px 16px;border-radius:8px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">+ Add Item</button><button onclick="openBulkSecItems(\''+safeSecId+'\')" style="flex:1;padding:11.5px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Bulk</button></div>';}
+  if(managerMode){csh+='<div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button onclick="openBulkAddForSection(\''+safeSecId+'\')" style="flex:1;min-width:140px;padding:11.5px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Items</button><select id="secmove-'+safeSecId+'" style="padding:8px 9px;border:1.5px solid var(--border);border-radius:8px;font-size:12px">'+(ASSIGNMENTS.customSections||[]).filter(function(s){return s.id!==csec.id;}).map(function(s){return '<option value="'+s.id+'">→ '+s.name+'</option>';}).join('')+'</select><button onclick="bulkMoveSecItems(\''+safeSecId+'\')" style="padding:8px 12px;border-radius:8px;border:1.5px solid #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">Move Selected</button><button onclick="bulkDeleteSecItems(\''+safeSecId+'\')" style="padding:8px 12px;border-radius:8px;border:1.5px solid #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">Delete Selected</button></div>';}
   if(!secItems.length){
-   csh+='<div style="padding:18px;color:var(--muted);font-size:13px;text-align:center">No items yet.'+(managerMode?' Click &quot;+ Add Item&quot; to add one.':'')+'</div>';
+   csh+='<div style="padding:18px;color:var(--muted);font-size:13px;text-align:center">No items yet.'+(managerMode?' Click &quot;+ Add Items&quot; to add one.':'')+'</div>';
   }else{
    csh+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
     csh+='<div class="tbl-wrap"><table style="width:100%;border-collapse:collapse">';
-    csh+='<thead><tr>'
-     +'<th style="background:'+secCol+';color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:800">Item / Project</th>'
+    csh+='<thead><tr>' +(managerMode?'<th style="width:26px;background:'+secCol+'"><input type="checkbox" onclick="toggleAllSecCb(this,\''+safeSecId+'\')"></th>':'') +'<th style="background:'+secCol+';color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:800">Item / Project</th>'
      +'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">LOB</th>'
      +'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Language</th>'
      +'<th style="background:'+secCol+';color:#fff;padding:10px 8px;text-align:center;font-size:12px;font-weight:800">Timeline</th>'
@@ -1538,8 +1537,7 @@ function buildUpdateProjects(){
      var langBadge=it.lang==='Arabic'?'<span style="padding:2px 7px;border-radius:5px;background:#fef3c7;color:#d97706;font-size:10px;font-weight:800">AR</span>'
       :it.lang==='English'?'<span style="padding:2px 7px;border-radius:5px;background:#e0f2fe;color:#0369a1;font-size:10px;font-weight:800">EN</span>'
       :'<span style="padding:2px 7px;border-radius:5px;background:#f3f4f6;color:#374151;font-size:10px;font-weight:800">AR+EN</span>';
-     csh+='<tr style="background:'+bg+'">'
-      +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
+     csh+='<tr style="background:'+bg+'">' +(managerMode?'<td style="padding:9px 4px;text-align:center;border-bottom:1px solid var(--border)"><input type="checkbox" class="secitem-cb" data-item-id="'+safeItId+'"></td>':'') +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)">'+(it.lob||'—')+'</td>'
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+langBadge+'</td>'
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">'+tl+'</td>'
@@ -1562,6 +1560,39 @@ function buildUpdateProjects(){
   el.insertAdjacentHTML('beforeend','<div style="margin-top:16px"><button onclick="openAddCustomSection()" style="padding:8px 20px;border-radius:10px;border:1.5px dashed #6366f1;background:none;color:#6366f1;font-size:13px;font-weight:800;cursor:pointer">+ Add New Section</button></div>');
  }
 }
+
+function toggleAllSecCb(master,secId){
+  var wrap=document.getElementById('cssec-wrap-'+secId);if(!wrap)return;
+  var boxes=wrap.querySelectorAll('.secitem-cb');
+  Array.prototype.forEach.call(boxes,function(b){b.checked=master.checked;});
+}
+function bulkDeleteSecItems(secId){
+  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec)return;
+  var wrap=document.getElementById('cssec-wrap-'+secId);if(!wrap)return;
+  var ids=Array.prototype.map.call(wrap.querySelectorAll('.secitem-cb:checked'),function(b){return b.dataset.itemId;});
+  if(!ids.length){alert('Select at least one item first.');return;}
+  if(!confirm('Delete '+ids.length+' selected item'+(ids.length!==1?'s':'')+'?'))return;
+  sec.items=(sec.items||[]).filter(function(it){return ids.indexOf(it.id)===-1;});
+  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+  try{saveAssignments().catch(function(){});}catch(e){}
+  buildUpdateProjects();if(typeof activeTab!=='undefined'&&activeTab==='overview'){try{buildOverview();}catch(e){}}
+}
+function bulkMoveSecItems(secId){
+  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec)return;
+  var sel=$('secmove-'+secId);if(!sel||!sel.value){alert('Choose a destination section first.');return;}
+  var target=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===sel.value;});if(!target)return;
+  var wrap=document.getElementById('cssec-wrap-'+secId);if(!wrap)return;
+  var ids=Array.prototype.map.call(wrap.querySelectorAll('.secitem-cb:checked'),function(b){return b.dataset.itemId;});
+  if(!ids.length){alert('Select at least one item first.');return;}
+  if(!target.items)target.items=[];
+  var moved=(sec.items||[]).filter(function(it){return ids.indexOf(it.id)>-1;});
+  sec.items=(sec.items||[]).filter(function(it){return ids.indexOf(it.id)===-1;});
+  moved.forEach(function(it){target.items.push(it);});
+  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+  try{saveAssignments().catch(function(){});}catch(e){}
+  buildUpdateProjects();if(typeof activeTab!=='undefined'&&activeTab==='overview'){try{buildOverview();}catch(e){}}
+}
+
 function toggleDoTable(){
  var wrap=$('do-table-wrap');var icon=$('do-toggle-icon');if(!wrap)return;
  var open=wrap.style.display==='none';
@@ -1614,7 +1645,7 @@ function buildUniHtml(tabName,safeId){
    +'<td style="text-align:center;padding:10px 6px">'+cell(r.en)+'</td>'
    +'<td style="text-align:center;padding:10px 14px"><span style="font-weight:700;color:'+pCol+'">'+sp+'%</span></td>'
    +glCellForLob(gkey,'ar','uni')+glCellForLob(gkey,'en','uni')
-   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?'<br><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block;margin-top:2px">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'')
+   +(managerMode?'<td style="text-align:center"><button onclick="openAssignEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?'<br><input type="checkbox" class="lobextra-cb" data-extra-id="'+r._extraId+'" style="margin-right:3px"><span onclick="deleteExtraArticle(\''+r._extraId+'\')" style="font-size:9px;color:#dc2626;cursor:pointer;display:block;margin-top:2px">✕ remove</span>':'')+'</td>':memberMode?'<td style="text-align:center"><button onclick="openMemberEdit(\''+ek3+'\',\'uni\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'')
    +'</tr>';
  });
  if(!rows.length)h+='<tr><td colspan="'+colCount+'" class="empty" style="padding:20px;text-align:center">No articles found.</td></tr>';
@@ -3224,6 +3255,87 @@ function saveNewArticleAndNotify(){
  else{renderTable();try{renderProgress();}catch(e){}}
 }
 
+
+
+function _visibleCheckedLobExtras(){
+  return Array.prototype.filter.call(document.querySelectorAll('.lobextra-cb:checked'), function(cb){ return cb.offsetParent!==null; });
+}
+function updateLobBulkBar(){
+  var boxes=_visibleCheckedLobExtras();
+  var bar=$('lob-bulk-bar');if(!bar)return;
+  if(boxes.length){
+    bar.style.display='flex';
+    var cnt=$('lob-bulk-count');if(cnt)cnt.textContent=boxes.length+' selected';
+    var sel=$('lob-bulk-target'); if(sel && !sel.dataset.filled){ sel.innerHTML=_bulkLobOptions(); sel.dataset.filled='1'; }
+  } else { bar.style.display='none'; }
+}
+function clearLobBulkSelection(){
+  Array.prototype.forEach.call(document.querySelectorAll('.lobextra-cb:checked'), function(cb){cb.checked=false;});
+  updateLobBulkBar();
+}
+document.addEventListener('change', function(e){
+  if(e.target && e.target.classList && e.target.classList.contains('lobextra-cb')){ updateLobBulkBar(); }
+});
+function bulkDeleteExtraArticles(){
+  var boxes=_visibleCheckedLobExtras();
+  if(!boxes.length){alert('Select at least one article first.');return;}
+  var ids=boxes.map(function(cb){return cb.dataset.extraId;});
+  if(!confirm('Delete '+ids.length+' selected article'+(ids.length!==1?'s':'')+'? This cannot be undone.'))return;
+  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return ids.indexOf(e.id)===-1;});
+  ids.forEach(function(id){ var ovKey=Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);}); if(ovKey)delete ASSIGNMENTS.overrides[ovKey]; });
+  updateLobBulkBar();
+  buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
+ buildOverview();
+ saveAssignments();
+ var isUniActive=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
+ if(isUniActive){
+  var pSeen2=new Set();
+  var uniRows2=PROG.filter(function(r){if(!r.article||r.article==='—')return false;var k2=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();if(pSeen2.has(k2))return false;pSeen2.add(k2);return true;});
+  window._uniRows=uniRows2;
+  if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,uniRows2);
+ }else if(activeTab==='members'){buildMembers();}
+ else if(activeTab==='progress'){buildProgress();}
+ else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
+ else{renderTable();try{renderProgress();}catch(e){}}
+}
+function bulkMoveExtraArticles(){
+  var boxes=_visibleCheckedLobExtras();
+  if(!boxes.length){alert('Select at least one article first.');return;}
+  var sel=$('lob-bulk-target'); var target=sel?sel.value:'';
+  if(!target){alert('Choose a destination first.');return;}
+  var ids=boxes.map(function(cb){return cb.dataset.extraId;});
+  if(target.indexOf('sec-')===0){
+    var secId=target.slice(4);
+    var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});
+    if(!sec){alert('Section not found.');return;}
+    if(!sec.items)sec.items=[];
+    ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){
+      if(ids.indexOf(e.id)===-1)return true;
+      sec.items.push({id:e.id,text:e.article,status:e.status||'Not Started',assignee:e.member||'',startDate:e.startDate||'',endDate:e.deadline||'',lang:'Both',lob:''});
+      return false;
+    });
+  } else {
+    ASSIGNMENTS.extra.forEach(function(e){ if(ids.indexOf(e.id)>-1){ e.lob=target; } });
+  }
+  updateLobBulkBar();
+  buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
+ buildOverview();
+ saveAssignments();
+ var isUniActive=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
+ if(isUniActive){
+  var pSeen2=new Set();
+  var uniRows2=PROG.filter(function(r){if(!r.article||r.article==='—')return false;var k2=(r.article||'').toLowerCase().replace(/[^a-z0-9]/g,' ').replace(/\s+/g,' ').trim();if(pSeen2.has(k2))return false;pSeen2.add(k2);return true;});
+  window._uniRows=uniRows2;
+  if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,uniRows2);
+ }else if(activeTab==='members'){buildMembers();}
+ else if(activeTab==='progress'){buildProgress();}
+ else if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
+ else if(activeTab==='updates'){buildUpdateProjects();}
+ else if(activeTab==='progress'){renderProgress();}
+ else{renderTable();try{renderProgress();}catch(e){}}
+}
 function renderCustomTabNav(){
  var secs=$('custom-tab-secs');
  document.querySelectorAll('.tab[data-ctab]').forEach(function(b){b.remove();});
@@ -3283,7 +3395,7 @@ function buildCustomTab(tabId){
    +'<td style="text-align:center;padding:10px 6px">'+cell(r.ar||0)+'</td>'
    +'<td style="text-align:center;padding:10px 6px">'+cell(r.en||0)+'</td>'
    +glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId)
-   +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':memberMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openMemberEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
+   +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <input type="checkbox" class="lobextra-cb" data-extra-id="'+r._extraId+'" style="margin-right:3px"> <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':memberMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openMemberEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   ctTb.appendChild(tr);
  }
  if(!ctRows.length){
@@ -3317,6 +3429,7 @@ function _bulkLobOptions(){
  (ASSIGNMENTS.customTabs||[]).forEach(function(ct){
   opts+='<option value="ctab-'+ct.id+'">'+ct.name+'</option>';
  });
+ if((ASSIGNMENTS.customSections||[]).length){ opts+='<optgroup label="Update Projects">'; (ASSIGNMENTS.customSections||[]).forEach(function(s){ opts+='<option value="sec-'+s.id+'">'+s.name+'</option>'; }); opts+='</optgroup>'; }
  return opts;
 }
 function _bulkMembOptions(){
@@ -3333,6 +3446,11 @@ function openBulkAdd(){
  if(dl){dl.innerHTML=_bulkLobOptions();var _curTab=(typeof activeTab!=='undefined')?activeTab:'';if(['default','tpro','tkt','uni'].indexOf(_curTab)>-1||(_curTab||'').indexOf('ctab-')===0){dl.value=_curTab;}}
  m.style.display='flex';o.style.display='block';
  _updateBulkCount();
+}
+function openBulkAddForSection(secId){
+  openBulkAdd();
+  var dl=$('bulk-def-lob');
+  if(dl){ dl.value='sec-'+secId; }
 }
 function closeBulkAdd(){
  var m=$('bulk-modal');var o=$('bulk-overlay');
@@ -3433,8 +3551,12 @@ function saveBulkArticles(){
   var startDate=tr.querySelector('.bk-start')?tr.querySelector('.bk-start').value:'';
   var deadline=tr.querySelector('.bk-dl').value;
   var id=(ts+saved).toString(36);
-  ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,startDate:startDate,deadline:deadline,priority:priority,status:status});
-  saved++;
+      if((lob||'').indexOf('sec-')===0){
+        var _secTarget=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===lob.slice(4);});
+        if(_secTarget){ if(!_secTarget.items)_secTarget.items=[]; _secTarget.items.push({id:id,text:name,status:status||'Not Started',assignee:member,startDate:startDate,endDate:deadline,lang:'Both',lob:''}); saved++; }
+        return;
+      }
+      ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,startDate:startDate,deadline:deadline,priority:priority,status:status}); saved++;
  });
  if(!saved){alert('Please fill in at least one article name.');return;}
  _assignPending=true;
@@ -3442,7 +3564,7 @@ function saveBulkArticles(){
  closeBulkAdd();
  buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
  buildOverview();
- saveAssignments();
+ saveAssignments(); try{buildUpdateProjects();}catch(e){}
  var isUniAct2=window._uniSafeId&&(activeTab==='sheet-'+window._uniSafeId||activeTab===window._uniSafeId);
  if(isUniAct2){if(window._uniSec)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId);}
  else if(activeTab==='members'){buildMembers();}
@@ -4115,7 +4237,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
   </table>
  </div>
  <div style="display:flex;gap:8px;align-items:center;border-top:1px solid #f3f4f6;padding-top:12px">
-  <button onclick="addBulkRow()" style="padding:7px 14px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Row</button>
+  <button onclick="addBulkRow('',(($('bulk-def-lob')||{}).value)||'default',(($('bulk-def-mem')||{}).value)||'')" style="padding:7px 14px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Row</button>
   <span id="bulk-count" style="font-size:11px;color:#9ca3af"></span>
   <div style="flex:1"></div>
   <button onclick="closeBulkAdd()" style="padding:8px 16px;border-radius:8px;border:none;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer">Cancel</button>
@@ -4440,4 +4562,11 @@ Translate banner text | Anoud" style="width:100%;box-sizing:border-box;min-heigh
 </div>
 
 
+<div id="lob-bulk-bar" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:12px 18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:9500;gap:10px;align-items:center;font-size:13px">
+<span id="lob-bulk-count">0 selected</span>
+<select id="lob-bulk-target" style="padding:6px 8px;border-radius:8px;border:none;font-size:12px"></select>
+<button onclick="bulkMoveExtraArticles()" style="padding:6px 12px;border-radius:8px;border:none;background:#6366f1;color:#fff;font-size:12px;font-weight:700;cursor:pointer">Move</button>
+<button onclick="bulkDeleteExtraArticles()" style="padding:6px 12px;border-radius:8px;border:none;background:#dc2626;color:#fff;font-size:12px;font-weight:700;cursor:pointer">Delete</button>
+<button onclick="clearLobBulkSelection()" style="padding:6px 10px;border-radius:8px;border:1px solid #555;background:none;color:#ccc;font-size:12px;cursor:pointer">Clear</button>
+</div>
 </body></html>
