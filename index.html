@@ -1153,7 +1153,7 @@ function renderProgress(){
  var _pthead=$('ptbl').querySelector('thead tr');
  if(_pthead){_pthead.innerHTML='<th class="l">Article</th><th class="l">Member</th><th>Arabic</th><th>English</th><th class="l">Due</th><th class="l">Timeline</th>'+(memberMode?'<th></th>':'');}
  var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
- PROG.forEach(r=>{
+ PROG.concat(_fakeProgRows()).forEach(r=>{
   if(!r.article||r.article==='—')return;
   if(!managerMode&&memberMode&&_memberEmail&&r.member&&!_memberMatches(r.member))return;
   if(q&&!(r.article.toLowerCase().includes(q)||(r.member||'').toLowerCase().includes(q)))return;
@@ -1241,7 +1241,7 @@ function artSopBadges(r){
 }
 function renderMbTable(){
  var tbody=$('mbtbl-body');if(!tbody)return;tbody.innerHTML='';
- var src=PROG.length?PROG:FALLBACK_PROG;
+ var src=(PROG.length?PROG:FALLBACK_PROG).concat(_fakeProgRows());
  var rows=src.filter(function(r){return r.article&&r.article!=='—';});
  if(mbfFilter)rows=rows.filter(function(r){
   var cells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
@@ -1274,7 +1274,7 @@ function renderMbTable(){
 }
 function renderSopTable(){
  var tbody=$('soptbl-body');if(!tbody)return;tbody.innerHTML='';
- var src=PROG.length?PROG:FALLBACK_PROG;
+ var src=(PROG.length?PROG:FALLBACK_PROG).concat(_fakeProgRows());
  var count=0;
  src.filter(function(r){return r.article&&r.article!=='—';}).forEach(function(r){
   var allCells=['vip_ar','vip_en','def_ar','def_en','tkt_ar','tkt_en'].map(function(k){return r[k];}).filter(function(v){return isStatusValue(v);});
@@ -1559,7 +1559,7 @@ function buildUpdateProjects(){
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">'+tl+'</td>'
       +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(it.assignee||'—')+'</span></td>'
       +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)">'
-      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':(memberMode&&_memberMatches(it.assignee)?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status)))
+      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':(memberMode&&_memberMatches(it.assignee)?'<span id="secstat-'+safeSecId+'-'+safeItId+'">'+_secStatusBadge(it.status)+'</span> <button type="button" onclick="openMemberStatusEdit(\''+safeSecId+'\',\''+safeItId+'\')" style="border:none;background:none;cursor:pointer;font-size:12px;padding:0 2px" title="Change status">✏️</button>':_secStatusBadge(it.status)))
       +'</td>'
       +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'
        +'<button onclick="openEditSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 7px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer;margin-right:3px">✏️</button>'
@@ -3801,6 +3801,42 @@ function deleteSecItem(secId,itemId){
  sec.items=sec.items.filter(function(it){return it.id!==itemId;});
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  buildUpdateProjects();if(activeTab==='overview')buildOverview();
+}
+
+function _fakeProgRows(){
+  function _normSt2(s){ s=(s||'').toString().trim(); if(!s)return 'Not Started'; var l=s.toLowerCase(); if(l==='done')return 'Done'; if(l==='in progress')return 'In Progress'; if(l==='on review')return 'On Review'; if(l==='pending modification')return 'Pending Modification'; return 'Not Started'; }
+  var out2=[];
+  (ASSIGNMENTS.extra||[]).forEach(function(e){
+    var st=_normSt2(e.status);
+    out2.push({article:e.article,member:e.member||'Unassigned',vip_ar:st,vip_en:st,def_ar:st,def_en:st,tkt_ar:st,tkt_en:st,vip_end:e.deadline||'',def_end:e.deadline||'',vip_start:e.startDate||'',def_start:e.startDate||'',_sop:{label:'Extra',color:'#8b5cf6'}});
+  });
+  (ASSIGNMENTS.customSections||[]).forEach(function(sec){
+    (sec.items||[]).forEach(function(it){
+      var st=_normSt2(it.status);
+      out2.push({article:it.text,member:it.assignee||'Unassigned',vip_ar:st,vip_en:st,def_ar:st,def_en:st,tkt_ar:st,tkt_en:st,vip_end:it.endDate||'',def_end:it.endDate||'',vip_start:it.startDate||'',def_start:it.startDate||'',_sop:{label:'Update Projects',color:'#f97316'}});
+    });
+  });
+  return out2;
+}
+function openMemberStatusEdit(secId,itemId){
+  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec)return;
+  var item=(sec.items||[]).find(function(it){return it.id===itemId;});if(!item)return;
+  var opts=['Not Started','In Progress','On Review','Pending Modification','Done'];
+  var cur=item.status||'Not Started';
+  var html='<select onchange="setSecItemStatus(\''+secId+'\',\''+itemId+'\',this.value)" style="font-size:11px;padding:3px 5px;border-radius:6px;border:1px solid var(--border)">'+opts.map(function(o){return '<option value="'+o+'"'+(o===cur?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
+  var cell=document.getElementById('secstat-'+secId+'-'+itemId);
+  if(cell)cell.outerHTML='<span id="secstat-'+secId+'-'+itemId+'">'+html+'</span>';
+}
+function setSecItemStatus(secId,itemId,newStatus){
+  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
+  var item=sec.items.find(function(it){return it.id===itemId;});if(!item)return;
+  var oldStatus=item.status||'Not Started';
+  item.status=newStatus;
+  try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+newStatus,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
+  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+  try{saveAssignments().catch(function(){});}catch(e){}
+  try{buildUpdateProjectsProgressSummary();}catch(e){}
+  buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
 function cycleSecItemStatus(secId,itemId){
   var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
