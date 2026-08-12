@@ -11,60 +11,7 @@
       "status": "Done"
     }
   },
-  "extra": [
-    {
-      "id": "mspywqaa",
-      "article": "Missing Item(s) Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-13",
-      "deadline": "2026-08-14",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "mspywqab",
-      "article": "Wrong Item(s) Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-13",
-      "deadline": "2026-08-14",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "mspywqac",
-      "article": "Wrong Order Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-13",
-      "deadline": "2026-08-14",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "mspywqad",
-      "article": "LC | Bad Quality (Order/Item)",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "2026-08-13",
-      "deadline": "2026-08-14",
-      "priority": "",
-      "status": "Not Started"
-    }
-  ],
+  "extra": [],
   "customTabs": [],
   "managers": [
     {
@@ -124,6 +71,46 @@
           "endDate": "2026-08-14",
           "lang": "Both",
           "lob": ""
+        },
+        {
+          "id": "mspywqaa",
+          "text": "Missing Item(s) Complaints",
+          "status": "Not Started",
+          "assignee": "Anoud",
+          "startDate": "2026-08-13",
+          "endDate": "2026-08-14",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mspywqab",
+          "text": "Wrong Item(s) Complaints",
+          "status": "Not Started",
+          "assignee": "Anoud",
+          "startDate": "2026-08-13",
+          "endDate": "2026-08-14",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mspywqac",
+          "text": "Wrong Order Complaints",
+          "status": "Not Started",
+          "assignee": "Anoud",
+          "startDate": "2026-08-13",
+          "endDate": "2026-08-14",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mspywqad",
+          "text": "LC | Bad Quality (Order/Item)",
+          "status": "Not Started",
+          "assignee": "Anoud",
+          "startDate": "2026-08-13",
+          "endDate": "2026-08-14",
+          "lang": "Both",
+          "lob": ""
         }
       ]
     }
@@ -152,6 +139,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T10:50:21.513Z",
+  "lastUpdated": "2026-08-12T10:50:34.712Z",
   "customMGSections": []
 }
