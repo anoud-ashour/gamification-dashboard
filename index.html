@@ -162,7 +162,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <div class="kpi"><div class="v" id="p-pend" style="color:#d97706">–</div><div class="l">Pending Modification</div></div>
 </div>
 <div id="palerts" class="alerts"></div>
-<div id="pdigest" class="sub" style="margin:0 0 14px"></div>
+<div id="pdigest" class="sub" style="margin:0 0 14px"></div> <div id="upt-progress-summary"></div>
 <div class="card" style="margin-bottom:16px">
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
 <h3 style="margin:0">Status by Member</h3>
@@ -1320,8 +1320,7 @@ function showToast(msg,color){
  t.textContent=msg;document.body.appendChild(t);
  setTimeout(function(){t.style.opacity='0';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},450);},2500);
 }
-function buildProgress(){
- if(progressBuilt)return;progressBuilt=true;
+function buildProgress(){ try{buildUpdateProjectsProgressSummary();}catch(e){} if(progressBuilt)return;progressBuilt=true;
  ['psop','pmem'].forEach(k=>{if(charts[k]){try{charts[k].destroy();}catch(e){}charts[k]=null;}});
  const noMsgEl=$('sec-progress').querySelector('.prog-empty-msg');if(noMsgEl)noMsgEl.remove();
  if(!PROG.length){const d=document.createElement('div');d.className='sub prog-empty-msg';d.textContent='No status rows found in the tracker sheet.';$('sec-progress').querySelector('.card').prepend(d);}
@@ -1543,7 +1542,7 @@ function buildUpdateProjects(){
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">'+tl+'</td>'
       +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(it.assignee||'—')+'</span></td>'
       +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)">'
-      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status))
+      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':(memberMode&&_memberMatches(it.assignee)?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status)))
       +'</td>'
       +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'
        +'<button onclick="openEditSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 7px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer;margin-right:3px">✏️</button>'
@@ -3809,14 +3808,44 @@ function deleteSecItem(secId,itemId){
  buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
 function cycleSecItemStatus(secId,itemId){
- var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
- var item=sec.items.find(function(it){return it.id===itemId;});if(!item)return;
- item.status=_secNextStatus(item.status);
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- buildUpdateProjects();if(activeTab==='overview')buildOverview();
+  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec||!sec.items)return;
+  var item=sec.items.find(function(it){return it.id===itemId;});if(!item)return;
+  var oldStatus=item.status||'Not Started';
+  item.status=_secNextStatus(item.status);
+  try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+item.status,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
+  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+  try{saveAssignments().catch(function(){});}catch(e){}
+  try{buildUpdateProjectsProgressSummary();}catch(e){}
+  buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
 
-// == Anoud Feature Pack ==
+function buildUpdateProjectsProgressSummary(){
+  var wrap=$('upt-progress-summary'); if(!wrap) return;
+  var items=[];
+  (ASSIGNMENTS.customSections||[]).forEach(function(sec){
+    (sec.items||[]).forEach(function(it){ items.push({text:it.text, section:sec.name, assignee:it.assignee||'', status:it.status||'Not Started'}); });
+  });
+  if(!items.length){ wrap.innerHTML=''; return; }
+  var counts={'Not Started':0,'In Progress':0,'On Review':0,'Pending Modification':0,'Done':0};
+  items.forEach(function(it){ counts[it.status]=(counts[it.status]||0)+1; });
+  var html='<div class="card" style="margin-bottom:16px">';
+  html+='<h3 style="margin:0 0 12px">Update Projects</h3>';
+  html+='<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">';
+  [['Not Started','#6b7280'],['In Progress','#ea580c'],['On Review','#3b82f6'],['Pending Modification','#ca8a04'],['Done','#16a34a']].forEach(function(pair){
+    html+='<div style="flex:1;min-width:100px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center">'+
+      '<div style="font-size:20px;font-weight:900;color:'+pair[1]+'">'+(counts[pair[0]]||0)+'</div>'+
+      '<div style="font-size:10px;color:var(--muted);font-weight:700">'+pair[0]+'</div></div>';
+  });
+  html+='</div>';
+  html+='<div class="tbl-wrap"><table style="width:100%"><thead><tr><th class="l">Item</th><th class="l">Section</th><th class="l">Assignee</th><th>Status</th></tr></thead><tbody>';
+  items.forEach(function(it){
+    html+='<tr><td class="l">'+it.text+'</td><td class="l">'+it.section+'</td><td class="l">'+(it.assignee||'—')+'</td><td style="text-align:center">'+_secStatusBadge(it.status)+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  html+='</div>';
+  wrap.innerHTML=html;
+}
+
 
 function buildDueWeekCard() {
   var wrap = document.getElementById('due-week-wrap');
