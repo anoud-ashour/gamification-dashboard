@@ -1559,7 +1559,7 @@ function buildUpdateProjects(){
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">'+tl+'</td>'
       +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(it.assignee||'—')+'</span></td>'
       +'<td style="padding:9px 10px;text-align:center;border-bottom:1px solid var(--border)">'
-      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':(memberMode&&_memberMatches(it.assignee)?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':(memberMode&&_memberMatches(it.assignee)?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status))))
+      +(managerMode?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':(memberMode&&_memberMatches(it.assignee)?'<span onclick="cycleSecItemStatus(\''+safeSecId+'\',\''+safeItId+'\')" style="cursor:pointer" title="Click to change">'+_secStatusBadge(it.status)+'</span>':_secStatusBadge(it.status)))
       +'</td>'
       +(managerMode?'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'
        +'<button onclick="openEditSecItem(\''+safeSecId+'\',\''+safeItId+'\')" style="padding:3px 7px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer;margin-right:3px">✏️</button>'
@@ -3173,29 +3173,7 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
 }
 
 var _savingNow=false;
-async function saveAssignments(){
- if(_savingNow){setTimeout(saveAssignments,1500);return;}
- _savingNow=true;
- var saveBtn=$('mgr-save-btn');
- if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…';}
- try{
-  var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE;
-  var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};
-  var shaResp=await fetch(apiUrl,{headers:hdrs});
-  var sha=null;if(shaResp.ok){var sj=await shaResp.json();sha=sj.sha;}
-  ASSIGNMENTS.lastUpdated=new Date().toISOString();
-  var content=btoa(unescape(encodeURIComponent(JSON.stringify(ASSIGNMENTS,null,2))));
-  var body={message:'Manager update: assignments',content:content};if(sha)body.sha=sha;
-  var putResp=await fetch(apiUrl,{method:'PUT',headers:hdrs,body:JSON.stringify(body)});
-  if(putResp.ok){
-   _assignPending=false;
-   var ind=$('mgr-pending');if(ind)ind.style.display='none';
-   if(saveBtn){saveBtn.textContent='✓ Saved!';setTimeout(function(){saveBtn.textContent='💾 Save Changes';saveBtn.disabled=false;},2500);}
-  }else{throw new Error('Failed');}
- }catch(e){if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='⚠️ Retry Save';}}
- finally{_savingNow=false;}
-}
-
+async function saveAssignments(){ if(_savingNow){setTimeout(saveAssignments,1500);return;} _savingNow=true; var saveBtn=$('mgr-save-btn'); if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving\u2026';} var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE; var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}; var ok=false; for(var attempt=0;attempt<3&&!ok;attempt++){ try{ if(attempt>0)await new Promise(function(res){setTimeout(res,700*attempt);}); var shaResp=await fetch(apiUrl,{headers:hdrs,cache:'no-store'}); var sha=null;if(shaResp.ok){var sj=await shaResp.json();sha=sj.sha;} ASSIGNMENTS.lastUpdated=new Date().toISOString(); var content=btoa(unescape(encodeURIComponent(JSON.stringify(ASSIGNMENTS,null,2)))); var body={message:'Manager update: assignments',content:content};if(sha)body.sha=sha; var putResp=await fetch(apiUrl,{method:'PUT',headers:hdrs,body:JSON.stringify(body)}); if(putResp.ok){ok=true;} }catch(e){} } if(ok){ _assignPending=false; var ind=$('mgr-pending');if(ind)ind.style.display='none'; if(saveBtn){saveBtn.textContent='\u2713 Saved!';setTimeout(function(){saveBtn.textContent='\uD83D\uDCBE Save Changes';saveBtn.disabled=false;},2500);} }else{if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='\u26A0\uFE0F Retry Save';}} _savingNow=false; }
 function openAddArticle(){
  $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
  if($('addart-startdate'))$('addart-startdate').value='';
