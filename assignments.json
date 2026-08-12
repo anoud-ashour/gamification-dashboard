@@ -35,7 +35,7 @@
         {
           "id": "mspyv1p2",
           "text": "Missing Item(s) Complaints",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Anoud",
           "startDate": "2026-08-13",
           "endDate": "2026-08-14",
@@ -115,7 +115,17 @@
       ]
     }
   ],
-  "notifications": [],
+  "notifications": [
+    {
+      "key": "secitem::mspyv1p2::status::1786548462624",
+      "type": "status",
+      "article": "Missing Item(s) Complaints",
+      "member": "Anoud",
+      "lob": "New Updates",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-08-12T15:27:42.624Z"
+    }
+  ],
   "mgGroups": [],
   "memberAccounts": [
     {
@@ -139,6 +149,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T10:50:34.712Z",
+  "lastUpdated": "2026-08-12T15:27:43.630Z",
   "customMGSections": []
 }
