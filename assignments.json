@@ -11,34 +11,7 @@
       "status": "Done"
     }
   },
-  "extra": [
-    {
-      "id": "msptf2av",
-      "article": "Wrong Order Complaints",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "msptf2aw",
-      "article": "LC | Bad Quality (Order/Item)",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 0,
-      "en": 0,
-      "startDate": "",
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
-    }
-  ],
+  "extra": [],
   "customTabs": [],
   "managers": [
     {
@@ -116,6 +89,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T08:16:38.191Z",
+  "lastUpdated": "2026-08-12T08:16:42.389Z",
   "customMGSections": []
 }
