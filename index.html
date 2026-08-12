@@ -1515,7 +1515,7 @@ function buildUpdateProjects(){
     +'</div>':'')
    +'</div></div>';
   csh+='<div id="'+wrapId+'" style="display:none"><div class="card">';
-  if(managerMode){csh+='<div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button onclick="openBulkAddForSection(\''+safeSecId+'\')" style="flex:1;min-width:140px;padding:11.5px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Items</button><select id="secmove-'+safeSecId+'" style="padding:8px 9px;border:1.5px solid var(--border);border-radius:8px;font-size:12px">'+(ASSIGNMENTS.customSections||[]).filter(function(s){return s.id!==csec.id;}).map(function(s){return '<option value="'+s.id+'">→ '+s.name+'</option>';}).join('')+'</select><button onclick="bulkMoveSecItems(\''+safeSecId+'\')" style="padding:8px 12px;border-radius:8px;border:1.5px solid #6366f1;background:none;color:#6366f1;font-size:12px;font-weight:700;cursor:pointer">Move Selected</button><button onclick="bulkDeleteSecItems(\''+safeSecId+'\')" style="padding:8px 12px;border-radius:8px;border:1.5px solid #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">Delete Selected</button></div>';}
+  if(managerMode){csh+='<div style="margin-bottom:10px;display:flex;gap:8px"><button onclick="openBulkAddForSection(\''+safeSecId+'\')" style="flex:1;padding:11.5px;border-radius:8px;border:1.5px dashed #0d9488;background:none;color:#0d9488;font-size:12px;font-weight:700;cursor:pointer">+ Add Items</button></div>';}
   if(!secItems.length){
    csh+='<div style="padding:18px;color:var(--muted);font-size:13px;text-align:center">No items yet.'+(managerMode?' Click &quot;+ Add Items&quot; to add one.':'')+'</div>';
   }else{
@@ -1537,7 +1537,7 @@ function buildUpdateProjects(){
      var langBadge=it.lang==='Arabic'?'<span style="padding:2px 7px;border-radius:5px;background:#fef3c7;color:#d97706;font-size:10px;font-weight:800">AR</span>'
       :it.lang==='English'?'<span style="padding:2px 7px;border-radius:5px;background:#e0f2fe;color:#0369a1;font-size:10px;font-weight:800">EN</span>'
       :'<span style="padding:2px 7px;border-radius:5px;background:#f3f4f6;color:#374151;font-size:10px;font-weight:800">AR+EN</span>';
-     csh+='<tr style="background:'+bg+'">' +(managerMode?'<td style="padding:9px 4px;text-align:center;border-bottom:1px solid var(--border)"><input type="checkbox" class="secitem-cb" data-item-id="'+safeItId+'"></td>':'') +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
+     csh+='<tr style="background:'+bg+'">' +(managerMode?'<td style="padding:9px 4px;text-align:center;border-bottom:1px solid var(--border)"><input type="checkbox" class="secitem-cb lobextra-cb" data-item-id="'+safeItId+'"></td>':'') +'<td style="padding:9px 14px;font-size:12px;font-weight:700;color:var(--dark);border-bottom:1px solid var(--border)">'+it.text+'</td>'
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted)">'+(it.lob||'—')+'</td>'
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)">'+langBadge+'</td>'
       +'<td style="padding:9px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:10px;color:var(--muted);white-space:nowrap">'+tl+'</td>'
@@ -3278,12 +3278,19 @@ document.addEventListener('change', function(e){
 });
 function bulkDeleteExtraArticles(){
   var boxes=_visibleCheckedLobExtras();
-  if(!boxes.length){alert('Select at least one article first.');return;}
-  var ids=boxes.map(function(cb){return cb.dataset.extraId;});
-  if(!confirm('Delete '+ids.length+' selected article'+(ids.length!==1?'s':'')+'? This cannot be undone.'))return;
-  ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return ids.indexOf(e.id)===-1;});
-  ids.forEach(function(id){ var ovKey=Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);}); if(ovKey)delete ASSIGNMENTS.overrides[ovKey]; });
+  if(!boxes.length){alert('Select at least one item first.');return;}
+  var extraIds=boxes.filter(function(cb){return cb.dataset.extraId;}).map(function(cb){return cb.dataset.extraId;});
+  var itemIds=boxes.filter(function(cb){return cb.dataset.itemId;}).map(function(cb){return cb.dataset.itemId;});
+  if(!confirm('Delete '+boxes.length+' selected item'+(boxes.length!==1?'s':'')+'? This cannot be undone.'))return;
+  if(extraIds.length){
+    ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){return extraIds.indexOf(e.id)===-1;});
+    extraIds.forEach(function(id){ var ovKey=Object.keys(ASSIGNMENTS.overrides).find(function(k){return k.endsWith('::'+id);}); if(ovKey)delete ASSIGNMENTS.overrides[ovKey]; });
+  }
+  if(itemIds.length){
+    (ASSIGNMENTS.customSections||[]).forEach(function(sec){ sec.items=(sec.items||[]).filter(function(it){return itemIds.indexOf(it.id)===-1;}); });
+  }
   updateLobBulkBar();
+  try{buildUpdateProjects();}catch(e){}
   buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
  buildOverview();
  saveAssignments();
@@ -3302,24 +3309,37 @@ function bulkDeleteExtraArticles(){
 }
 function bulkMoveExtraArticles(){
   var boxes=_visibleCheckedLobExtras();
-  if(!boxes.length){alert('Select at least one article first.');return;}
+  if(!boxes.length){alert('Select at least one item first.');return;}
   var sel=$('lob-bulk-target'); var target=sel?sel.value:'';
   if(!target){alert('Choose a destination first.');return;}
-  var ids=boxes.map(function(cb){return cb.dataset.extraId;});
+  var extraIds=boxes.filter(function(cb){return cb.dataset.extraId;}).map(function(cb){return cb.dataset.extraId;});
+  var itemIds=boxes.filter(function(cb){return cb.dataset.itemId;}).map(function(cb){return cb.dataset.itemId;});
+  var itemsToMove=[];
+  (ASSIGNMENTS.customSections||[]).forEach(function(sec){ (sec.items||[]).forEach(function(it){ if(itemIds.indexOf(it.id)>-1)itemsToMove.push({sec:sec,item:it}); }); });
   if(target.indexOf('sec-')===0){
     var secId=target.slice(4);
-    var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});
-    if(!sec){alert('Section not found.');return;}
-    if(!sec.items)sec.items=[];
+    var destSec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});
+    if(!destSec){alert('Section not found.');return;}
+    if(!destSec.items)destSec.items=[];
     ASSIGNMENTS.extra=ASSIGNMENTS.extra.filter(function(e){
-      if(ids.indexOf(e.id)===-1)return true;
-      sec.items.push({id:e.id,text:e.article,status:e.status||'Not Started',assignee:e.member||'',startDate:e.startDate||'',endDate:e.deadline||'',lang:'Both',lob:''});
+      if(extraIds.indexOf(e.id)===-1)return true;
+      destSec.items.push({id:e.id,text:e.article,status:e.status||'Not Started',assignee:e.member||'',startDate:e.startDate||'',endDate:e.deadline||'',lang:'Both',lob:''});
       return false;
     });
+    itemsToMove.forEach(function(pair){
+      if(pair.sec.id===destSec.id)return;
+      pair.sec.items=pair.sec.items.filter(function(it){return it.id!==pair.item.id;});
+      destSec.items.push(pair.item);
+    });
   } else {
-    ASSIGNMENTS.extra.forEach(function(e){ if(ids.indexOf(e.id)>-1){ e.lob=target; } });
+    ASSIGNMENTS.extra.forEach(function(e){ if(extraIds.indexOf(e.id)>-1){ e.lob=target; } });
+    itemsToMove.forEach(function(pair){
+      pair.sec.items=pair.sec.items.filter(function(it){return it.id!==pair.item.id;});
+      ASSIGNMENTS.extra.push({id:pair.item.id,article:pair.item.text,lob:target,member:pair.item.assignee||'',journey:'General',ar:0,en:0,startDate:pair.item.startDate||'',deadline:pair.item.endDate||'',priority:'',status:pair.item.status||'Not Started'});
+    });
   }
   updateLobBulkBar();
+  try{buildUpdateProjects();}catch(e){}
   buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
  buildOverview();
  saveAssignments();
@@ -3336,6 +3356,7 @@ function bulkMoveExtraArticles(){
  else if(activeTab==='progress'){renderProgress();}
  else{renderTable();try{renderProgress();}catch(e){}}
 }
+
 function renderCustomTabNav(){
  var secs=$('custom-tab-secs');
  document.querySelectorAll('.tab[data-ctab]').forEach(function(b){b.remove();});
