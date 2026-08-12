@@ -1332,6 +1332,23 @@ function buildProgress(){ try{buildUpdateProjectsProgressSummary();}catch(e){} i
  $('p-rev').textContent=_vp.filter(r=>PCELLS.some(k=>statusOf(r[k])==='On Review')&&!PCELLS.some(k=>statusOf(r[k])==='In Progress')).length;
  $('p-not').textContent=_vp.filter(r=>PCELLS.every(k=>statusOf(r[k])==='Not started')).length;
  if($('p-pend'))$('p-pend').textContent=_vp.filter(r=>PCELLS.some(k=>statusOf(r[k])==='Pending Modification')).length;
+(function(){
+  function _normSt(s){ s=(s||'').toString().trim(); if(!s)return 'Not Started'; var l=s.toLowerCase(); if(l==='done')return 'Done'; if(l==='in progress')return 'In Progress'; if(l==='on review')return 'On Review'; if(l==='pending modification')return 'Pending Modification'; return 'Not Started'; }
+  var extraSt=(ASSIGNMENTS.extra||[]).map(function(e){return _normSt(e.status);});
+  var secSt=[]; (ASSIGNMENTS.customSections||[]).forEach(function(sec){(sec.items||[]).forEach(function(it){secSt.push(_normSt(it.status));});});
+  var allExtra=extraSt.concat(secSt);
+  var combTotal=tot+allExtra.length;
+  var combDone=done+allExtra.filter(function(s){return s==='Done';}).length;
+  var combProg=Number($('p-prog').textContent||0)+allExtra.filter(function(s){return s==='In Progress';}).length;
+  var combRev=Number($('p-rev').textContent||0)+allExtra.filter(function(s){return s==='On Review';}).length;
+  var combNot=Number($('p-not').textContent||0)+allExtra.filter(function(s){return s==='Not Started';}).length;
+  var combPend=Number(($('p-pend')&&$('p-pend').textContent)||0)+allExtra.filter(function(s){return s==='Pending Modification';}).length;
+  $('p-done').textContent=pct(combDone,combTotal||1)+'%';
+  $('p-prog').textContent=combProg;
+  $('p-rev').textContent=combRev;
+  $('p-not').textContent=combNot;
+  if($('p-pend'))$('p-pend').textContent=combPend;
+})();
  // Build filter buttons for Status by Member
  var mbBtnsEl=$('mbf-btns');
  if(mbBtnsEl){mbBtnsEl.innerHTML='';
@@ -3080,7 +3097,7 @@ var lobLabel=$('asgn-lob-label').textContent||'';
 var now=new Date().toISOString();
 var changes=[];var notifType='update';
 var om=_prevOv.member||'',nm=ov.member||'';
-if(nm!==om){if(!om&&nm){changes.push('👤 Assigned to '+nm);notifType='assign';}else if(om&&nm&&om!==nm){changes.push('👤 Reassigned: '+om+' → '+nm);notifType='assign';}else if(om&&!nm){changes.push('👤 Unassigned (was '+om+')');}}else if(nm&&!_prevOv.deadline&&!_prevOv.startDate&&!_prevOv.status){changes.push('👤 Assigned to '+nm);notifType='assign';}
+if(nm!==om){if(!om&&nm){changes.push('👤 Assigned to '+nm);notifType='assignment';}else if(om&&nm&&om!==nm){changes.push('👤 Reassigned: '+om+' → '+nm);notifType='assignment';}else if(om&&!nm){changes.push('👤 Unassigned (was '+om+')');}}else if(nm&&!_prevOv.deadline&&!_prevOv.startDate&&!_prevOv.status){changes.push('👤 Assigned to '+nm);notifType='assignment';}
 var od=_prevOv.deadline||'',nd=ov.deadline||'';
 if(nd!==od){if(!od&&nd)changes.push('📅 Deadline set: '+nd);else if(od&&nd)changes.push('📅 Deadline: '+od+' → '+nd);else if(od&&!nd)changes.push('📅 Deadline removed');if(notifType==='update')notifType='timeline';}
 var osd=_prevOv.startDate||'',nsd=ov.startDate||'';
@@ -3573,10 +3590,10 @@ function saveBulkArticles(){
   var id=(ts+saved).toString(36);
       if((lob||'').indexOf('sec-')===0){
         var _secTarget=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===lob.slice(4);});
-        if(_secTarget){ if(!_secTarget.items)_secTarget.items=[]; _secTarget.items.push({id:id,text:name,status:status||'Not Started',assignee:member,startDate:startDate,endDate:deadline,lang:'Both',lob:''}); saved++; }
+        if(_secTarget){ if(!_secTarget.items)_secTarget.items=[]; _secTarget.items.push({id:id,text:name,status:status||'Not Started',assignee:member,startDate:startDate,endDate:deadline,lang:'Both',lob:''}); if(member){try{_pushNotif({id:Date.now().toString(36)+'_'+id,key:'secitem::'+id+'::assign::'+ts,type:'assignment',article:name,member:member,lob:_secTarget.name||'',summary:'👤 Assigned to '+member,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}} saved++; }
         return;
       }
-      ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,startDate:startDate,deadline:deadline,priority:priority,status:status}); saved++;
+      ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,startDate:startDate,deadline:deadline,priority:priority,status:status}); if(member){try{_pushNotif({id:Date.now().toString(36)+'_'+id,key:'extra::'+id+'::assign::'+ts,type:'assignment',article:name,member:member,lob:lob,summary:'👤 Assigned to '+member,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}} saved++;
  });
  if(!saved){alert('Please fill in at least one article name.');return;}
  _assignPending=true;
