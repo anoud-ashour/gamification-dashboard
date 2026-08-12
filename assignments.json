@@ -11,7 +11,60 @@
       "status": "Done"
     }
   },
-  "extra": [],
+  "extra": [
+    {
+      "id": "mspywqaa",
+      "article": "Missing Item(s) Complaints",
+      "lob": "tkt",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-13",
+      "deadline": "2026-08-14",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "mspywqab",
+      "article": "Wrong Item(s) Complaints",
+      "lob": "tkt",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-13",
+      "deadline": "2026-08-14",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "mspywqac",
+      "article": "Wrong Order Complaints",
+      "lob": "tkt",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-13",
+      "deadline": "2026-08-14",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "mspywqad",
+      "article": "LC | Bad Quality (Order/Item)",
+      "lob": "tkt",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-13",
+      "deadline": "2026-08-14",
+      "priority": "",
+      "status": "Not Started"
+    }
+  ],
   "customTabs": [],
   "managers": [
     {
@@ -99,6 +152,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T10:48:45.967Z",
+  "lastUpdated": "2026-08-12T10:50:04.217Z",
   "customMGSections": []
 }
