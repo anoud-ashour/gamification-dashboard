@@ -1518,7 +1518,7 @@ function buildUpdateProjects(){
    +'onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
    +'<div style="font-size:18px;font-weight:900;color:var(--dark)">'+csec.name+'</div>'
-   +'<span id="'+iconId+'" style="font-size:20px;color:'+secCol+';font-weight:900;line-height:1;transition:transform .2s">›</span></div>'
+   +'<span id="'+iconId+'" style="font-size:20px;color:'+secCol+';font-weight:900;line-height:1;transition:transform .2s">›</span></div>' +(csec.description?'<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4">'+csec.description+'</div>':'')
    +'<div style="display:flex;align-items:baseline;gap:8px;margin-top:10px">'
    +'<div style="font-size:32px;font-weight:900;color:'+secCol+';line-height:1;letter-spacing:-1px">'+secPct+'%</div>'
    +'<div style="font-size:12px;color:var(--muted);font-weight:600">items done</div></div>'
@@ -3659,7 +3659,7 @@ function _secNextStatus(s){
 }
 var _addSecItemTarget='';
 function openAddCustomSection(){
- $('custsec-name-inp').value='';$('custsec-color-inp').value='#6366f1';
+ $('custsec-name-inp').value='';$('custsec-color-inp').value='#6366f1'; if($('custsec-desc-inp'))$('custsec-desc-inp').value='';
  $('custsec-overlay').style.display='block';$('custsec-modal').style.display='block';
  setTimeout(function(){var e=$('custsec-name-inp');if(e)e.focus();},80);
 }
@@ -3667,8 +3667,8 @@ function closeAddCustomSection(){$('custsec-overlay').style.display='none';$('cu
 function saveNewCustomSection(){
  var name=($('custsec-name-inp').value||'').trim();if(!name)return;
  var color=$('custsec-color-inp').value||'#6366f1';
- if(!ASSIGNMENTS.customSections)ASSIGNMENTS.customSections=[];
- ASSIGNMENTS.customSections.push({id:Date.now().toString(36),name:name,color:color,items:[]});
+ var description=(($('custsec-desc-inp')||{}).value||'').trim(); if(!ASSIGNMENTS.customSections)ASSIGNMENTS.customSections=[];
+ ASSIGNMENTS.customSections.push({id:Date.now().toString(36),name:name,color:color,description:description,items:[]});
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddCustomSection();buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
@@ -3681,7 +3681,7 @@ function deleteCustomSection(secId){
 function renameCustomSection(secId){
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;});if(!sec)return;
  var n=prompt('Rename section:',sec.name);if(!n||!n.trim())return;
- sec.name=n.trim();_assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
+ sec.name=n.trim(); var d=prompt('Description (optional):',sec.description||''); if(d!==null)sec.description=d.trim();_assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  buildUpdateProjects();if(activeTab==='overview')buildOverview();
 }
 var _addSecItemTarget='';var _editSecItemId='';
@@ -4537,7 +4537,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Section Name *</div>
   <input id="custsec-name-inp" type="text" placeholder="e.g. Q3 Updates, New Articles…" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')saveNewCustomSection()">
  </div>
- <div style="margin-bottom:18px;display:flex;align-items:center;gap:10px">
+ <div style="margin-bottom:14px"> <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Description (optional)</div> <textarea id="custsec-desc-inp" placeholder="What is this update about?" rows="2" style="width:100%;box-sizing:border-box;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;resize:vertical;font-family:inherit"></textarea> </div> <div style="margin-bottom:18px;display:flex;align-items:center;gap:10px">
   <div style="font-size:11px;font-weight:700;color:#6b7280">Color</div>
   <input id="custsec-color-inp" type="color" value="#6366f1" style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px">
  </div>
