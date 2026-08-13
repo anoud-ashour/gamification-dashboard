@@ -122,7 +122,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: Not Started ÃÂ¢ÃÂÃÂ In Progress",
+      "summary": "Status: Not Started ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ In Progress",
       "assignedAt": "2026-08-12T15:27:42.624Z"
     },
     {
@@ -131,7 +131,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: In Progress ÃÂ¢ÃÂÃÂ On Review",
+      "summary": "Status: In Progress ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ On Review",
       "assignedAt": "2026-08-12T15:28:46.317Z"
     },
     {
@@ -140,7 +140,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: On Review Ã¢ÂÂ Pending Modification",
+      "summary": "Status: On Review ÃÂ¢ÃÂÃÂ Pending Modification",
       "assignedAt": "2026-08-12T15:34:57.578Z"
     },
     {
@@ -149,7 +149,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: Pending Modification Ã¢ÂÂ Done",
+      "summary": "Status: Pending Modification ÃÂ¢ÃÂÃÂ Done",
       "assignedAt": "2026-08-12T15:35:00.216Z"
     },
     {
@@ -158,7 +158,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: Done Ã¢ÂÂ Not Started",
+      "summary": "Status: Done ÃÂ¢ÃÂÃÂ Not Started",
       "assignedAt": "2026-08-12T15:35:06.418Z"
     },
     {
@@ -167,7 +167,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: Not Started Ã¢ÂÂ In Progress",
+      "summary": "Status: Not Started ÃÂ¢ÃÂÃÂ In Progress",
       "assignedAt": "2026-08-12T15:35:09.305Z"
     },
     {
@@ -176,7 +176,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: In Progress â Done",
+      "summary": "Status: In Progress Ã¢ÂÂ Done",
       "assignedAt": "2026-08-12T15:51:08.884Z"
     },
     {
@@ -185,7 +185,7 @@
       "article": "Missing Item(s) Complaints",
       "member": "Anoud",
       "lob": "New Updates",
-      "summary": "Status: Done → In Progress",
+      "summary": "Status: Done â In Progress",
       "assignedAt": "2026-08-12T15:52:34.332Z"
     }
   ],
@@ -212,6 +212,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-12T15:52:35.154Z",
+  "lastUpdated": "2026-08-13T10:32:30.122Z",
   "customMGSections": []
 }
