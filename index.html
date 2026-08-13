@@ -1526,7 +1526,7 @@ function buildUpdateProjects(){
    +'<div style="height:5px;border-radius:3px;background:var(--border);margin-top:12px;overflow:hidden">'
    +'<div style="width:'+secPct+'%;height:100%;background:'+secCol+';border-radius:3px"></div></div>'
    +(managerMode?'<div style="margin-top:10px;display:flex;gap:6px" onclick="event.stopPropagation()">'
-    +'<button onclick="renameCustomSection(\''+safeSecId+'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer">✏️ Rename</button>'
+    +'<button onclick="openAddCustomSection(\''+safeSecId+'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #6366f1;background:none;color:#6366f1;font-size:11px;cursor:pointer">✏️ Edit</button>'
     +'<button onclick="deleteCustomSection(\''+safeSecId+'\')" style="padding:3px 10px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑 Delete</button>'
     +'</div>':'')
    +'</div></div>';
@@ -3658,20 +3658,9 @@ function _secNextStatus(s){
  return order[idx===-1?1:((idx+1)%order.length)];
 }
 var _addSecItemTarget='';
-function openAddCustomSection(){
- $('custsec-name-inp').value='';$('custsec-color-inp').value='#6366f1'; if($('custsec-desc-inp'))$('custsec-desc-inp').value='';
- $('custsec-overlay').style.display='block';$('custsec-modal').style.display='block';
- setTimeout(function(){var e=$('custsec-name-inp');if(e)e.focus();},80);
-}
-function closeAddCustomSection(){$('custsec-overlay').style.display='none';$('custsec-modal').style.display='none';}
-function saveNewCustomSection(){
- var name=($('custsec-name-inp').value||'').trim();if(!name)return;
- var color=$('custsec-color-inp').value||'#6366f1';
- var description=(($('custsec-desc-inp')||{}).value||'').trim(); if(!ASSIGNMENTS.customSections)ASSIGNMENTS.customSections=[];
- ASSIGNMENTS.customSections.push({id:Date.now().toString(36),name:name,color:color,description:description,items:[]});
- _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
- closeAddCustomSection();buildUpdateProjects();if(activeTab==='overview')buildOverview();
-}
+function openAddCustomSection(secId){ window._editingSecId=secId||''; var sec=secId?(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===secId;}):null; $('custsec-name-inp').value=sec?sec.name:''; $('custsec-color-inp').value=sec?(sec.color||'#6366f1'):'#6366f1'; if($('custsec-desc-inp'))$('custsec-desc-inp').value=sec?(sec.description||''):''; var t=$('custsec-modal-title');if(t)t.textContent=sec?'✏️ Edit Section':'+ Add Section'; var b=$('custsec-save-btn');if(b)b.textContent=sec?'Save Changes':'Create Section'; $('custsec-overlay').style.display='block';$('custsec-modal').style.display='block'; setTimeout(function(){var e=$('custsec-name-inp');if(e)e.focus();},80); }
+function closeAddCustomSection(){window._editingSecId='';$('custsec-overlay').style.display='none';$('custsec-modal').style.display='none';}
+function saveNewCustomSection(){ var name=($('custsec-name-inp').value||'').trim();if(!name)return; var color=$('custsec-color-inp').value||'#6366f1'; var description=(($('custsec-desc-inp')||{}).value||'').trim(); if(window._editingSecId){ var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===window._editingSecId;}); if(sec){sec.name=name;sec.color=color;sec.description=description;} window._editingSecId=''; } else { if(!ASSIGNMENTS.customSections)ASSIGNMENTS.customSections=[]; ASSIGNMENTS.customSections.push({id:Date.now().toString(36),name:name,color:color,description:description,items:[]}); } _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline'; closeAddCustomSection();buildUpdateProjects();if(activeTab==='overview')buildOverview(); }
 function deleteCustomSection(secId){
  if(!confirm('Delete this section and all its items?'))return;
  ASSIGNMENTS.customSections=(ASSIGNMENTS.customSections||[]).filter(function(s){return s.id!==secId;});
@@ -4531,7 +4520,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
 <!-- Add Custom Section modal -->
 <div id="custsec-overlay" onclick="closeAddCustomSection()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9300"></div>
 <div id="custsec-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:18px;padding:28px;width:400px;max-width:93vw;z-index:9301;box-shadow:0 20px 60px rgba(0,0,0,.25)">
- <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px">+ Add Section</div>
+ <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#6366f1;margin-bottom:6px" id="custsec-modal-title">+ Add Section</div>
  <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Create a collapsible section in Update Projects and Overview.</div>
  <div style="margin-bottom:14px">
   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Section Name *</div>
@@ -4542,7 +4531,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
   <input id="custsec-color-inp" type="color" value="#6366f1" style="width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px">
  </div>
  <div style="display:flex;gap:8px">
-  <button onclick="saveNewCustomSection()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Section</button>
+  <button id="custsec-save-btn" onclick="saveNewCustomSection()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#6366f1;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Create Section</button>
   <button onclick="closeAddCustomSection()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
 </div>
