@@ -2677,7 +2677,7 @@ function showToast(msg,duration){
 memberMode=false;_memberEmail='';
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent='✓ Manager';btn.style.background='#8318d8';btn.style.color='#fff';btn.style.borderColor='#8318d8';}
- var bar=$('mgr-save-bar');if(bar)bar.style.display='flex';
+ var bar=$('mgr-save-bar');if(bar)bar.style.display='flex';document.body.style.paddingBottom='130px';
  ['exportBtn','shareBtn'].forEach(function(id){var el=$(id);if(el)el.style.display='';});
  if($('myTasksBtn'))$('myTasksBtn').style.display='none';
  var el=$('mgr-email-label');if(el)el.textContent='👤 '+_managerEmail;
@@ -2698,7 +2698,7 @@ function toggleManagerMode(){
   managerMode=false;
   var btn=$('mgr-mode-btn');
   if(btn){btn.textContent='👩‍💼 Manager';btn.style.background='none';btn.style.color='#8318d8';btn.style.borderColor='#8318d8';}
-  var bar=$('mgr-save-bar');if(bar)bar.style.display='none';
+  var bar=$('mgr-save-bar');if(bar)bar.style.display='none';document.body.style.paddingBottom='20px';
   renderCustomTabNav();
   buildWorkload();
   if(activeTab==='overview'){buildOverview();}
@@ -2714,7 +2714,7 @@ function logoutManager(){
  _managerEmail='';managerMode=false;
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent='👩‍💼 Manager';btn.style.background='none';btn.style.color='#8318d8';btn.style.borderColor='#8318d8';}
- var bar=$('mgr-save-bar');if(bar)bar.style.display='none';
+ var bar=$('mgr-save-bar');if(bar)bar.style.display='none';document.body.style.paddingBottom='20px';
  renderCustomTabNav();
  if(activeTab.indexOf('ctab-')===0){buildCustomTab(activeTab);}
  else if(activeTab==='updates'){buildUpdateProjects();}
