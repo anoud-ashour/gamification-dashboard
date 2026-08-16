@@ -3795,10 +3795,6 @@ function deleteSecItem(secId,itemId){
 function _fakeProgRows(){
   function _normSt2(s){ s=(s||'').toString().trim(); if(!s)return 'Not Started'; var l=s.toLowerCase(); if(l==='done')return 'Done'; if(l==='in progress')return 'In Progress'; if(l==='on review')return 'On Review'; if(l==='pending modification')return 'Pending Modification'; return 'Not Started'; }
   var out2=[];
-  (ASSIGNMENTS.extra||[]).forEach(function(e){
-    var st=_normSt2(e.status);
-    out2.push({article:e.article,member:e.member||'Unassigned',vip_ar:st,vip_en:st,def_ar:st,def_en:st,tkt_ar:st,tkt_en:st,vip_end:e.deadline||'',def_end:e.deadline||'',vip_start:e.startDate||'',def_start:e.startDate||'',_sop:{label:'Extra',color:'#8b5cf6'}});
-  });
   (ASSIGNMENTS.customSections||[]).forEach(function(sec){
     (sec.items||[]).forEach(function(it){
       var st=_normSt2(it.status);
