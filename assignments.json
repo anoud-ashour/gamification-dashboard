@@ -60,15 +60,7 @@
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
-  "customSections": [
-    {
-      "id": "msptdcxj",
-      "name": "New LC LP Games",
-      "color": "#f26464",
-      "items": [],
-      "description": ""
-    }
-  ],
+  "customSections": [],
   "notifications": [
     {
       "key": "secitem::mspyv1p2::status::1786548462624",
@@ -186,6 +178,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-16T09:41:53.844Z",
+  "lastUpdated": "2026-08-16T09:42:06.027Z",
   "customMGSections": []
 }
