@@ -1336,7 +1336,7 @@ function buildProgress(){ try{buildUpdateProjectsProgressSummary();}catch(e){} i
   function _normSt(s){ s=(s||'').toString().trim(); if(!s)return 'Not Started'; var l=s.toLowerCase(); if(l==='done')return 'Done'; if(l==='in progress')return 'In Progress'; if(l==='on review')return 'On Review'; if(l==='pending modification')return 'Pending Modification'; return 'Not Started'; }
   var extraSt=(ASSIGNMENTS.extra||[]).map(function(e){return _normSt(e.status);});
   var secSt=[]; (ASSIGNMENTS.customSections||[]).forEach(function(sec){(sec.items||[]).forEach(function(it){secSt.push(_normSt(it.status));});});
-  var allExtra=extraSt.concat(secSt);
+  var allExtra=secSt;
   var combTotal=tot+allExtra.length;
   var combDone=done+allExtra.filter(function(s){return s==='Done';}).length;
   var combProg=Number($('p-prog').textContent||0)+allExtra.filter(function(s){return s==='In Progress';}).length;
