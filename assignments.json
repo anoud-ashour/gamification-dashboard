@@ -12,7 +12,14 @@
     }
   },
   "extra": [],
-  "customTabs": [],
+  "customTabs": [
+    {
+      "id": "msvm85fr",
+      "name": "New LC",
+      "type": "lob",
+      "color": "#0d9488"
+    }
+  ],
   "managers": [
     {
       "email": "anoud.shehata@talabat.com",
@@ -173,6 +180,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-16T09:41:00.185Z",
+  "lastUpdated": "2026-08-16T09:41:40.636Z",
   "customMGSections": []
 }
