@@ -33,66 +33,6 @@
       "color": "#f26464",
       "items": [
         {
-          "id": "mspyv1p4",
-          "text": "Wrong Order Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-13",
-          "endDate": "2026-08-14",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "mspyv1p5",
-          "text": "LC | Bad Quality (Order/Item)",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-13",
-          "endDate": "2026-08-14",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "mspywqaa",
-          "text": "Missing Item(s) Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-13",
-          "endDate": "2026-08-14",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "mspywqab",
-          "text": "Wrong Item(s) Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-13",
-          "endDate": "2026-08-14",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "mspywqac",
-          "text": "Wrong Order Complaints",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-13",
-          "endDate": "2026-08-14",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "mspywqad",
-          "text": "LC | Bad Quality (Order/Item)",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-13",
-          "endDate": "2026-08-14",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
           "id": "msvlxndv",
           "text": "Contact driver Scenarios",
           "status": "Not Started",
@@ -233,6 +173,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-16T09:40:11.335Z",
+  "lastUpdated": "2026-08-16T09:40:29.871Z",
   "customMGSections": []
 }
