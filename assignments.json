@@ -11,7 +11,34 @@
       "status": "Done"
     }
   },
-  "extra": [],
+  "extra": [
+    {
+      "id": "msvlxndv",
+      "article": "Contact driver Scenarios",
+      "lob": "ctab-msvm85fr",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-17",
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
+    },
+    {
+      "id": "msvlxndw",
+      "article": "Refund Scenarios",
+      "lob": "ctab-msvm85fr",
+      "member": "Amal",
+      "journey": "General",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-17",
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
+    }
+  ],
   "customTabs": [
     {
       "id": "msvm85fr",
@@ -38,28 +65,7 @@
       "id": "msptdcxj",
       "name": "New LC LP Games",
       "color": "#f26464",
-      "items": [
-        {
-          "id": "msvlxndv",
-          "text": "Contact driver Scenarios",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "2026-08-17",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "msvlxndw",
-          "text": "Refund Scenarios",
-          "status": "Not Started",
-          "assignee": "Amal",
-          "startDate": "2026-08-17",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        }
-      ],
+      "items": [],
       "description": ""
     }
   ],
@@ -180,6 +186,6 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-16T09:41:40.636Z",
+  "lastUpdated": "2026-08-16T09:41:53.844Z",
   "customMGSections": []
 }
