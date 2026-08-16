@@ -2609,20 +2609,22 @@ function applyAssignments(){
  ASSIGNMENTS.extra.forEach(function(e){
   if(!e.article||!e.lob)return;
   var sop=sopById(e.lob);
-  if(!sop&&e.lob.indexOf('ctab-')!==0&&e.lob!=='uni')return;
-  var sd=sop||{name:e.lob,cls:'',id:e.lob};
-  var exists=ROWS.some(function(r){return r._extraId===e.id;});
-  if(!exists)ROWS.push({sopId:e.lob,sopName:sd.name,cls:sd.cls||'',article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
-  // Inject into PROG so this article appears in the Progress tab
-  var st=e.status||'Not Started';
-  var pe={article:e.article,member:e.member||'Unassigned',leave_status:'',
-   vip_ar:'',vip_en:'',vip_start:'',vip_end:'',
-   def_ar:'',def_en:'',def_start:e.startDate||'',def_end:e.deadline||'',
-   tkt_ar:'',tkt_en:'',_extraId:e.id,_extra:true};
-  if(e.lob==='tpro'){pe.vip_ar=st;pe.vip_en=st;}
-  else if(e.lob==='tkt'){pe.tkt_ar=st;pe.tkt_en=st;}
-  else{pe.def_ar=st;pe.def_en=st;}
-  PROG.push(pe);
+ if(!sop&&e.lob.indexOf('ctab-')!==0&&e.lob!=='uni')return;
+ var _ctab=(!sop&&e.lob.indexOf('ctab-')===0)?(ASSIGNMENTS.customTabs||[]).find(function(t){return t.id===e.lob.slice(5);}):null;
+ var sd=sop||(_ctab?{name:_ctab.name,cls:'',id:e.lob}:{name:e.lob,cls:'',id:e.lob});
+ var exists=ROWS.some(function(r){return r._extraId===e.id;});
+ if(!exists)ROWS.push({sopId:e.lob,sopName:sd.name,cls:sd.cls||'',article:e.article,member:e.member||'',journey:e.journey||'General',ar:e.ar||0,en:e.en||0,_deadline:e.deadline||'',_priority:e.priority||'',_notes:e.notes||'',_extra:true,_extraId:e.id});
+ // Inject into PROG so this article appears in the Progress tab
+ var st=e.status||'Not Started';
+ var pe={article:e.article,member:e.member||'Unassigned',leave_status:'',
+ vip_ar:'',vip_en:'',vip_start:'',vip_end:'',
+ def_ar:'',def_en:'',def_start:e.startDate||'',def_end:e.deadline||'',
+ tkt_ar:'',tkt_en:'',_extraId:e.id,_extra:true};
+ if(e.lob==='tpro'){pe.vip_ar=st;pe.vip_en=st;}
+ else if(e.lob==='tkt'){pe.tkt_ar=st;pe.tkt_en=st;}
+ else{pe.def_ar=st;pe.def_en=st;}
+ if(_ctab)pe._sop={label:_ctab.name,color:_ctab.color||'#0d9488'};
+ PROG.push(pe);
  });
 }
 
