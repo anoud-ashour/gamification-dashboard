@@ -24,14 +24,14 @@
     },
     "refund scenarios::ctab-msvm85fr": {
       "member": "Amal",
-      "ar": 0,
+      "ar": 1,
       "en": 0,
       "startDate": "2026-08-16",
       "deadline": "2026-08-23",
       "reviewer": "",
       "priority": "",
       "notes": "",
-      "updatedAt": "2026-08-21T13:28:55.885Z",
+      "updatedAt": "2026-08-21T21:00:05.130Z",
       "status": "In Progress"
     },
     "cancelation reasons::ctab-msvm85fr": {
@@ -61,7 +61,7 @@
       "lob": "ctab-msvm85fr",
       "member": "Amal",
       "journey": "General",
-      "ar": 0,
+      "ar": 1,
       "en": 0,
       "startDate": "2026-08-17",
       "deadline": "2026-08-23",
@@ -104,7 +104,19 @@
   "subCategories": {},
   "articleSubCat": {},
   "customSections": [],
-  "notifications": [],
+  "notifications": [
+    {
+      "id": "mt3fnvyi",
+      "key": "refund scenarios::ctab-msvm85fr::latest",
+      "type": "update",
+      "article": "Refund Scenarios",
+      "member": "Amal",
+      "lob": "New LC",
+      "summary": "🇦🇪 AR: ✓ Done",
+      "startDate": "2026-08-16",
+      "assignedAt": "2026-08-21T21:00:05.130Z"
+    }
+  ],
   "mgGroups": [],
   "memberAccounts": [
     {
@@ -128,7 +140,7 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-21T15:51:17.868Z",
+  "lastUpdated": "2026-08-21T21:00:06.346Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -149,6 +161,11 @@
         "ts": "2026-08-21T13:28:55.886Z",
         "user": "Coordinator",
         "summary": "ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¤ Assigned to Amal; ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Deadline set: 2026-08-23; ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Start date set: 2026-08-16"
+      },
+      {
+        "ts": "2026-08-21T21:00:05.130Z",
+        "user": "Coordinator",
+        "summary": "🇦🇪 AR: ✓ Done"
       }
     ]
   }
