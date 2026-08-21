@@ -3423,8 +3423,8 @@ function buildCustomTab(tabId){
   var tr=document.createElement('tr');
   tr.innerHTML='<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>'
    +'<td style="padding:10px 14px"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>'
-   +'<td style="text-align:center;padding:10px 6px">'+cell(r.ar||0)+'</td>'
-   +'<td style="text-align:center;padding:10px 6px">'+cell(r.en||0)+'</td>'
+   +'<td style="text-align:center;padding:10px 6px">'+(r.ar?cell(1):'<span style="color:#9ca3af;font-size:12px">N/A</span>')+'</td>'
+   +'<td style="text-align:center;padding:10px 6px">'+(r.en?cell(1):'<span style="color:#9ca3af;font-size:12px">N/A</span>')+'</td>'
    +glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId)
    +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <input type="checkbox" class="lobextra-cb" data-extra-id="'+r._extraId+'" style="margin-right:3px"> <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':memberMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openMemberEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   ctTb.appendChild(tr);
