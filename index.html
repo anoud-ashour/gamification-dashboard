@@ -1171,8 +1171,8 @@ function renderProgress(){
   const tlBadge=e?(exceeded?'<span style="padding:2px 9px;border-radius:10px;background:#fee2e2;color:#dc2626;font-size:11px;font-weight:700">Exceeded</span>':'<span style="padding:2px 9px;border-radius:10px;background:#d1fae5;color:#065f46;font-size:11px;font-weight:700">On Time</span>'):'—';
   const arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
   const enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
-  const arStatus=arCells.length?artStatusOverall(arCells):'Not started';
-  const enStatus=enCells.length?artStatusOverall(enCells):'Not started';
+  const arStatus=arCells.length?artStatusOverall(arCells):(r._extra?'N/A':'Not started');
+ const enStatus=enCells.length?artStatusOverall(enCells):(r._extra?'N/A':'Not started');
   tr.innerHTML='<td class="article"'+(exceeded?' style="color:#dc2626;font-weight:700"':'')+'>'+(exceeded?'⚠ ':al==='overdue'?'⚠ ':'')+r.article+'</td>'
    +'<td class="l"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
    +'<td>'+artBadge(arStatus)+'</td>'
