@@ -2800,33 +2800,35 @@ async function saveMemberStatus(){
  // Sync to ASSIGNMENTS.extra if this is an extra/custom article
  var _mkLast=_memEditKey.lastIndexOf('::');
  if(_mkLast>-1){
-  var _mkArt=_memEditKey.slice(0,_mkLast);var _mkLob=_memEditKey.slice(_mkLast+2);
-  // Sync extra article record if applicable
-  var _exMatch=ASSIGNMENTS.extra.find(function(e){return (e.article||'').toLowerCase().trim()===_mkArt&&e.lob===_mkLob;});
-  if(_exMatch)_exMatch.status=status;
-  // Direct PROG mutation — set ALL 6 cells so status appears in every LOB view immediately
-  var _progUpdated=false;
-  PROG.forEach(function(p){
-   if((p.article||'').toLowerCase().trim()!==_mkArt||p._extraId)return;
-   _progUpdated=true;
-   PCELLS.forEach(function(k){p[k]=status;});
-  });
-  // Article not in PROG yet — inject with all cells so it appears everywhere
-  if(!_progUpdated){
-   var _rowRef=ROWS.find(function(r){return (r.article||'').toLowerCase().trim()===_mkArt;});
-   var _artName=_rowRef?_rowRef.article:_mkArt;
-   var _mem=_rowRef?(_rowRef.member||''):'';
-   var _pe={article:_artName,member:_mem,leave_status:'',
-    vip_ar:status,vip_en:status,def_ar:status,def_en:status,
-    tkt_ar:status,tkt_en:status,vip_start:'',vip_end:'',def_start:'',def_end:'',_injected:true};
-   PROG.push(_pe);
-  }
+ var _mkArt=_memEditKey.slice(0,_mkLast);var _mkLob=_memEditKey.slice(_mkLast+2);
+ // Sync extra article record if applicable
+ var _exMatch=ASSIGNMENTS.extra.find(function(e){return (e.article||'').toLowerCase().trim()===_mkArt&&e.lob===_mkLob;});
+ if(_exMatch)_exMatch.status=ov.status;
+ // Direct PROG mutation — set ALL 6 cells so status appears in every LOB view immediately
+ var _progUpdated=false;
+ PROG.forEach(function(p){
+ if((p.article||'').toLowerCase().trim()!==_mkArt)return;
+ if(_exMatch){if(p._extraId!==_exMatch.id)return;}
+ else if(p._extraId)return;
+ _progUpdated=true;
+ PCELLS.forEach(function(k){p[k]=ov.status;});
+ });
+ // Article not in PROG yet — inject with all cells so it appears everywhere
+ if(!_progUpdated){
+ var _rowRef=ROWS.find(function(r){return (r.article||'').toLowerCase().trim()===_mkArt;});
+ var _artName=_rowRef?_rowRef.article:_mkArt;
+ var _mem=_rowRef?(_rowRef.member||''):'';
+ var _pe={article:_artName,member:_mem,leave_status:'',
+ vip_ar:ov.status,vip_en:ov.status,def_ar:ov.status,def_en:ov.status,
+ tkt_ar:ov.status,tkt_en:ov.status,vip_start:'',vip_end:'',def_start:'',def_end:'',_injected:true};
+ PROG.push(_pe);
+ }
  }
  closeMemberEdit();
  buildRows();applyAssignments();
  renderProgress();renderMbTable();renderSopTable();
  refreshProgressKPIs();
- showToast('✓ Status updated to '+status+(status==='Done'?' Â· hidden from active view':''),'#16a34a');
+ showToast('✓ Status updated to '+ov.status+(ov.status==='Done'?' Â· hidden from active view':''),'#16a34a');
  var bar=$('mem-save-bar');
  var origTxt='You can edit article status only';
  if(bar){var si=bar.querySelector('span:nth-child(3)');if(si)si.textContent='Saving…';}
