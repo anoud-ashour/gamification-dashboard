@@ -2526,7 +2526,7 @@ async function loadAssignments(){
   var r=await fetch(apiUrl,{headers:hdrs,cache:'no-store'});
   if(r.ok){
    var sj=await r.json();
-   var j=JSON.parse(atob(sj.content.replace(/\n/g,'')));ASSIGNMENTS=j;
+   var j=JSON.parse(decodeURIComponent(escape(atob(sj.content.replace(/\n/g,'')))));ASSIGNMENTS=j;
    if(!ASSIGNMENTS.overrides)ASSIGNMENTS.overrides={};
    if(!ASSIGNMENTS.extra)ASSIGNMENTS.extra=[];
    if(!ASSIGNMENTS.customTabs)ASSIGNMENTS.customTabs=[];
