@@ -35,8 +35,15 @@
       "status": "In Progress"
     },
     "cancelation reasons::ctab-msvm85fr": {
-      "ar": 0,
+      "member": "Dalia",
+      "ar": 1,
       "en": 0,
+      "startDate": "",
+      "deadline": "",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-08-21T21:00:12.104Z",
       "status": "In Progress"
     }
   },
@@ -75,11 +82,12 @@
       "lob": "ctab-msvm85fr",
       "member": "Dalia",
       "journey": "General",
-      "ar": 0,
+      "ar": 1,
       "en": 0,
-      "deadline": "2026-08-23",
+      "deadline": "",
       "priority": "",
-      "status": "In Progress"
+      "status": "In Progress",
+      "notes": ""
     }
   ],
   "customTabs": [
@@ -115,6 +123,17 @@
       "summary": "🇦🇪 AR: ✓ Done",
       "startDate": "2026-08-16",
       "assignedAt": "2026-08-21T21:00:05.130Z"
+    },
+    {
+      "id": "mt3fo1c8",
+      "key": "cancelation reasons::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "Cancelation Reasons",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia<br>🇦🇪 AR: ✓ Done",
+      "startDate": "",
+      "assignedAt": "2026-08-21T21:00:12.104Z"
     }
   ],
   "mgGroups": [],
@@ -140,7 +159,7 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-21T21:00:06.346Z",
+  "lastUpdated": "2026-08-21T21:00:14.332Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -166,6 +185,13 @@
         "ts": "2026-08-21T21:00:05.130Z",
         "user": "Coordinator",
         "summary": "🇦🇪 AR: ✓ Done"
+      }
+    ],
+    "cancelation reasons::ctab-msvm85fr": [
+      {
+        "ts": "2026-08-21T21:00:12.105Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Dalia; 🇦🇪 AR: ✓ Done"
       }
     ]
   }
