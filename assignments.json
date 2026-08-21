@@ -21,6 +21,18 @@
       "notes": "",
       "updatedAt": "2026-08-21T13:28:42.491Z",
       "status": "Not Started"
+    },
+    "refund scenarios::ctab-msvm85fr": {
+      "member": "Amal",
+      "ar": 0,
+      "en": 0,
+      "startDate": "2026-08-16",
+      "deadline": "2026-08-23",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-08-21T13:28:55.885Z",
+      "status": "Not Started"
     }
   },
   "extra": [
@@ -47,9 +59,10 @@
       "ar": 0,
       "en": 0,
       "startDate": "2026-08-17",
-      "deadline": "",
+      "deadline": "2026-08-23",
       "priority": "",
-      "status": "Not Started"
+      "status": "Not Started",
+      "notes": ""
     }
   ],
   "customTabs": [
@@ -177,6 +190,17 @@
       "summary": "👤 Assigned to Anoud<br>📅 Deadline set: 2026-08-23<br>📅 Start date set: 2026-08-16",
       "startDate": "2026-08-16",
       "assignedAt": "2026-08-21T13:28:42.491Z"
+    },
+    {
+      "id": "mt2zjp71",
+      "key": "refund scenarios::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "Refund Scenarios",
+      "member": "Amal",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Amal<br>📅 Deadline set: 2026-08-23<br>📅 Start date set: 2026-08-16",
+      "startDate": "2026-08-16",
+      "assignedAt": "2026-08-21T13:28:55.885Z"
     }
   ],
   "mgGroups": [],
@@ -202,7 +226,7 @@
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
     }
   ],
-  "lastUpdated": "2026-08-21T13:28:43.440Z",
+  "lastUpdated": "2026-08-21T13:28:56.532Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -211,6 +235,13 @@
         "ts": "2026-08-21T13:28:42.492Z",
         "user": "Coordinator",
         "summary": "👤 Assigned to Anoud; 📅 Deadline set: 2026-08-23; 📅 Start date set: 2026-08-16"
+      }
+    ],
+    "refund scenarios::ctab-msvm85fr": [
+      {
+        "ts": "2026-08-21T13:28:55.886Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Amal; 📅 Deadline set: 2026-08-23; 📅 Start date set: 2026-08-16"
       }
     ]
   }
