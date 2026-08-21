@@ -2620,9 +2620,9 @@ function applyAssignments(){
  vip_ar:'',vip_en:'',vip_start:'',vip_end:'',
  def_ar:'',def_en:'',def_start:e.startDate||'',def_end:e.deadline||'',
  tkt_ar:'',tkt_en:'',_extraId:e.id,_extra:true};
- if(e.lob==='tpro'){pe.vip_ar=st;pe.vip_en=st;}
- else if(e.lob==='tkt'){pe.tkt_ar=st;pe.tkt_en=st;}
- else{pe.def_ar=st;pe.def_en=st;}
+ if(e.lob==='tpro'){pe.vip_ar=e.ar?st:'';pe.vip_en=e.en?st:'';}
+ else if(e.lob==='tkt'){pe.tkt_ar=e.ar?st:'';pe.tkt_en=e.en?st:'';}
+ else{pe.def_ar=e.ar?st:'';pe.def_en=e.en?st:'';}
  if(_ctab)pe._sop={label:_ctab.name,color:_ctab.color||'#0d9488'};
  PROG.push(pe);
  });
@@ -2811,7 +2811,12 @@ async function saveMemberStatus(){
  if(_exMatch){if(p._extraId!==_exMatch.id)return;}
  else if(p._extraId)return;
  _progUpdated=true;
- PCELLS.forEach(function(k){p[k]=ov.status;});
+ if(_exMatch){
+ var _lob=_exMatch.lob;
+ if(_lob==='tpro'){ if(_exMatch.ar)p.vip_ar=ov.status; if(_exMatch.en)p.vip_en=ov.status; }
+ else if(_lob==='tkt'){ if(_exMatch.ar)p.tkt_ar=ov.status; if(_exMatch.en)p.tkt_en=ov.status; }
+ else{ if(_exMatch.ar)p.def_ar=ov.status; if(_exMatch.en)p.def_en=ov.status; }
+ } else { PCELLS.forEach(function(k){p[k]=ov.status;}); }
  });
  // Article not in PROG yet — inject with all cells so it appears everywhere
  if(!_progUpdated){
@@ -2819,8 +2824,14 @@ async function saveMemberStatus(){
  var _artName=_rowRef?_rowRef.article:_mkArt;
  var _mem=_rowRef?(_rowRef.member||''):'';
  var _pe={article:_artName,member:_mem,leave_status:'',
- vip_ar:ov.status,vip_en:ov.status,def_ar:ov.status,def_en:ov.status,
- tkt_ar:ov.status,tkt_en:ov.status,vip_start:'',vip_end:'',def_start:'',def_end:'',_injected:true};
+ vip_ar:'',vip_en:'',def_ar:'',def_en:'',
+ tkt_ar:'',tkt_en:'',vip_start:'',vip_end:'',def_start:'',def_end:'',_injected:true};
+ if(_exMatch){
+ var _lob2=_exMatch.lob;
+ if(_lob2==='tpro'){ if(_exMatch.ar)_pe.vip_ar=ov.status; if(_exMatch.en)_pe.vip_en=ov.status; }
+ else if(_lob2==='tkt'){ if(_exMatch.ar)_pe.tkt_ar=ov.status; if(_exMatch.en)_pe.tkt_en=ov.status; }
+ else{ if(_exMatch.ar)_pe.def_ar=ov.status; if(_exMatch.en)_pe.def_en=ov.status; }
+ } else { _pe.vip_ar=ov.status;_pe.vip_en=ov.status;_pe.def_ar=ov.status;_pe.def_en=ov.status;_pe.tkt_ar=ov.status;_pe.tkt_en=ov.status; }
  PROG.push(_pe);
  }
  }
