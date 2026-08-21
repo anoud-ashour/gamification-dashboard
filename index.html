@@ -2931,6 +2931,9 @@ async function changeMyPassword(){
  var b=$('mgr-pw-change-btn');if(b){b.textContent='✓ Updated';setTimeout(function(){b.textContent='Update';},2000);}
 }
 
+function _langToAr(v){return (v==='both'||v==='ar')?1:0;}
+function _langToEn(v){return (v==='both'||v==='en')?1:0;}
+function _arEnToLang(ar,en){ar=Number(ar)||0;en=Number(en)||0;if(ar&&en)return 'both';if(ar)return 'ar';if(en)return 'en';return 'none';}
 function openAssignEdit(artKey,lob){
  _mgrEditKey=artKey+'::'+lob;
  var ov=ASSIGNMENTS.overrides[_mgrEditKey]||{};
@@ -2941,8 +2944,7 @@ function openAssignEdit(artKey,lob){
  $('asgn-lob-label').textContent=lobLabel;
  $('asgn-member').value=ov.member!==undefined?ov.member:(row?row.member||'':'');
  var _revEl=document.getElementById('asgn-reviewer');if(_revEl)_revEl.value=ov.reviewer||'';
- $('asgn-ar').value=ov.ar!==undefined?String(ov.ar):(row?String(row.ar):'0');
- $('asgn-en').value=ov.en!==undefined?String(ov.en):(row?String(row.en):'0');
+ $('asgn-lang').value=_arEnToLang(ov.ar!==undefined?ov.ar:(row?row.ar:0), ov.en!==undefined?ov.en:(row?row.en:0));
  $('asgn-startdate').value=ov.startDate||'';
  $('asgn-deadline').value=ov.deadline||'';
  $('asgn-priority').value=ov.priority||'';
@@ -3082,8 +3084,7 @@ function saveAssign(){membersBuilt=false;
  if(!_mgrEditKey)return;
  var ov={};
  ov.member=$('asgn-member').value;
- ov.ar=Number($('asgn-ar').value);
- ov.en=Number($('asgn-en').value);
+ var _lv=$('asgn-lang').value; ov.ar=_langToAr(_lv); ov.en=_langToEn(_lv);
  ov.startDate=$('asgn-startdate').value;
  ov.deadline=$('asgn-deadline').value;
  var _ri=document.getElementById('asgn-reviewer');if(_ri)ov.reviewer=_ri.value;
@@ -3203,7 +3204,7 @@ function saveNewArticle(){
  if(!name)return;
  var id=Date.now().toString(36);
  var artStatus=$('addart-status')?$('addart-status').value:'Not Started';
- ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:0,en:0,deadline:$('addart-deadline').value,priority:$('addart-priority').value,status:artStatus});
+ ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:$('addart-member').value,journey:($('addart-journey').value||'').trim()||'General',ar:_langToAr(($('addart-lang')||{}).value),en:_langToEn(($('addart-lang')||{}).value),deadline:$('addart-deadline').value,priority:$('addart-priority').value,status:artStatus});
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddArticle();buildRows();applyAssignments();membersBuilt=false;progressBuilt=false;
@@ -3506,7 +3507,8 @@ function addBulkRow(artName,lobDef,memDef,jourDef,prioDef,statDef,startDef,dlDef
   +'<td style="padding:3px 4px"><select class="bk-prio" style="'+sel+'">'
    +'<option value="">None</option><option value="high">🔴 High</option><option value="medium">🟡 Medium</option><option value="low">🔵 Low</option>'
   +'</select></td>'
-  +'<td style="padding:3px 4px"><select class="bk-stat" style="'+sel+'">'
+ +'<td style="padding:3px 4px"><select class="bk-lang" style="'+sel+'"><option value="both">Both AR+EN</option><option value="ar">AR Only</option><option value="en">EN Only</option><option value="none">None</option></select></td>'
+ +'<td style="padding:3px 4px"><select class="bk-stat" style="'+sel+'">'
    +'<option value="Not Started">Not Started</option><option value="In Progress">In Progress</option>'
    +'<option value="On Review">On Review</option><option value="Pending Modification">Pending Modification</option>'
    +'<option value="Done">Done</option>'
@@ -3519,6 +3521,7 @@ function addBulkRow(artName,lobDef,memDef,jourDef,prioDef,statDef,startDef,dlDef
  var memSel=row.querySelector('.bk-mem');if(memSel)memSel.value=memDef;
  var priSel=row.querySelector('.bk-prio');if(priSel)priSel.value=prioDef;
  var stSel=row.querySelector('.bk-stat');if(stSel)stSel.value=statDef;
+ var langSel=row.querySelector('.bk-lang');if(langSel)langSel.value='both';
  var artInp=row.querySelector('.bk-art');
  if(artInp)artInp.addEventListener('paste',_bulkArtPaste);
  _renumberBulkRows();
@@ -3569,13 +3572,14 @@ function saveBulkArticles(){
   var status=tr.querySelector('.bk-stat').value;
   var startDate=tr.querySelector('.bk-start')?tr.querySelector('.bk-start').value:'';
   var deadline=tr.querySelector('.bk-dl').value;
+ var lang=(tr.querySelector('.bk-lang')||{}).value||'both';
   var id=(ts+saved).toString(36);
       if((lob||'').indexOf('sec-')===0){
         var _secTarget=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===lob.slice(4);});
-        if(_secTarget){ if(!_secTarget.items)_secTarget.items=[]; _secTarget.items.push({id:id,text:name,status:status||'Not Started',assignee:member,startDate:startDate,endDate:deadline,lang:'Both',lob:''}); if(member){try{_pushNotif({id:Date.now().toString(36)+'_'+id,key:'secitem::'+id+'::assign::'+ts,type:'assignment',article:name,member:member,lob:_secTarget.name||'',summary:'👤 Assigned to '+member,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}} saved++; }
+        if(_secTarget){ if(!_secTarget.items)_secTarget.items=[]; _secTarget.items.push({id:id,text:name,status:status||'Not Started',assignee:member,startDate:startDate,endDate:deadline,lang:(lang==='both'?'Both':lang==='ar'?'Arabic':lang==='en'?'English':'None'),lob:''}); if(member){try{_pushNotif({id:Date.now().toString(36)+'_'+id,key:'secitem::'+id+'::assign::'+ts,type:'assignment',article:name,member:member,lob:_secTarget.name||'',summary:'👤 Assigned to '+member,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}} saved++; }
         return;
       }
-      ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:0,en:0,startDate:startDate,deadline:deadline,priority:priority,status:status}); if(member){try{_pushNotif({id:Date.now().toString(36)+'_'+id,key:'extra::'+id+'::assign::'+ts,type:'assignment',article:name,member:member,lob:lob,summary:'👤 Assigned to '+member,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}} saved++;
+      ASSIGNMENTS.extra.push({id:id,article:name,lob:lob,member:member,journey:journey,ar:_langToAr(lang),en:_langToEn(lang),startDate:startDate,deadline:deadline,priority:priority,status:status}); if(member){try{_pushNotif({id:Date.now().toString(36)+'_'+id,key:'extra::'+id+'::assign::'+ts,type:'assignment',article:name,member:member,lob:lob,summary:'👤 Assigned to '+member,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}} saved++;
  });
  if(!saved){alert('Please fill in at least one article name.');return;}
  _assignPending=true;
@@ -4151,20 +4155,15 @@ function switchDrawerTab(tab){
     <option value="low">🔵 Low</option>
    </select>
   </div>
-  <div>
-   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">AR Status</div>
-   <select id="asgn-ar" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
-    <option value="0">✕ Not Done</option>
-    <option value="1">✓ Done</option>
-   </select>
-  </div>
-  <div>
-   <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">EN Status</div>
-   <select id="asgn-en" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
-    <option value="0">✕ Not Done</option>
-    <option value="1">✓ Done</option>
-   </select>
-  </div>
+  <div style="grid-column:1/-1">
+ <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Language Status</div>
+ <select id="asgn-lang" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+ <option value="none">✕ Not Done (Neither)</option>
+ <option value="ar">Arabic Only</option>
+ <option value="en">English Only</option>
+ <option value="both">✓ Both (AR + EN)</option>
+ </select>
+ </div>
  </div>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
   <div>
@@ -4264,6 +4263,15 @@ function switchDrawerTab(tab){
    </select>
   </div>
  </div>
+<div style="margin-bottom:12px">
+<div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Language Status</div>
+<select id="addart-lang" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
+<option value="none">✕ Not Done (Neither)</option>
+<option value="ar">Arabic Only</option>
+<option value="en">English Only</option>
+<option value="both" selected>✓ Both (AR + EN)</option>
+</select>
+</div>
  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
   <div>
    <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px">Start Date</div>
@@ -4324,7 +4332,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
      <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:100px">LOB</th>
      <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:100px">Assign To</th>
      <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:90px">Journey</th>
-     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:80px">Priority</th>
+     <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:80px">Priority</th><th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:90px">Language</th>
      <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:120px">Status</th>
      <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">Start Date</th>
      <th style="padding:6px 7px;font-size:10px;font-weight:800;color:#374151;text-transform:uppercase;text-align:left;min-width:110px">Deadline</th>
