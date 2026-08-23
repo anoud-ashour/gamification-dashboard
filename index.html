@@ -1171,12 +1171,12 @@ function renderProgress(){
   const tlBadge=e?(exceeded?'<span style="padding:2px 9px;border-radius:10px;background:#fee2e2;color:#dc2626;font-size:11px;font-weight:700">Exceeded</span>':'<span style="padding:2px 9px;border-radius:10px;background:#d1fae5;color:#065f46;font-size:11px;font-weight:700">On Time</span>'):'—';
   const arCells=[r.vip_ar,r.def_ar,r.tkt_ar].filter(isStatusValue);
   const enCells=[r.vip_en,r.def_en,r.tkt_en].filter(isStatusValue);
-  const arStatus=arCells.length?artStatusOverall(arCells):(r._extra?'N/A':'Not started');
- const enStatus=enCells.length?artStatusOverall(enCells):(r._extra?'N/A':'Not started');
-  tr.innerHTML='<td class="article"'+(exceeded?' style="color:#dc2626;font-weight:700"':'')+'>'+(exceeded?'⚠ ':al==='overdue'?'⚠ ':'')+r.article+'</td>'
-   +'<td class="l"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
-   +'<td>'+artBadge(arStatus)+'</td>'
-   +'<td>'+artBadge(enStatus)+'</td>'
+  const arStatus=arCells.length?artStatusOverall(arCells):(r._extra?'':'Not started');
+ const enStatus=enCells.length?artStatusOverall(enCells):(r._extra?'':'Not started');
+ tr.innerHTML='<td class="article"'+(exceeded?' style="color:#dc2626;font-weight:700"':'')+'>'+(exceeded?'⚠ ':al==='overdue'?'⚠ ':'')+r.article+'</td>'
+ +'<td class="l"><span class="mem clk" onclick="filterByMember(\''+mm+'\')" style="background:'+(MEMCOLS[r.member]||'#e7ddcf')+';color:'+(MEMCOLS[r.member]?'#fff':'#7c6f63')+'">'+r.member+'</span></td>'
+ +'<td>'+(arStatus?artBadge(arStatus):'')+'</td>'
+ +'<td>'+(enStatus?artBadge(enStatus):'')+'</td>'
    +'<td class="jrn"'+(exceeded?' style="color:#dc2626"':'')+'>'+upd+'</td>'
    +'<td>'+tlBadge+'</td>'
    +(memberMode?(function(){
@@ -1681,7 +1681,7 @@ function glCellForLob(gkey,lang,lob){
  }
  return '<td></td>';
 }
-var _glmKey='';var _glmLob='';
+var _glmKey='';var _glmLob='';var _glmSingle=false;
 function glCell(gkey,lang){
  var lob=activeTab;
  var url=GAME_LINKS[gkey+'::'+lob+'::'+lang]||'';
@@ -1715,8 +1715,34 @@ function copyArticleExport(){
  txt.select();document.execCommand('copy');
  var btn=event.target;btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy to Clipboard';},2000);
 }
+function glCellSingleForLob(gkey,lob){
+ var url=GAME_LINKS[gkey+'::'+lob+'::game']||'';
+ var ek=gkey.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+ if(url){
+  return '<td style="text-align:center"><a href="'+url+'" target="_blank" title="Open game" style="font-size:16px;text-decoration:none">🎮</a>'
+  +(editLinksMode?'<br><span onclick="editGameLinkSingle(\''+ek+'\',\''+lob+'\')" style="font-size:9px;color:var(--orange);cursor:pointer;font-weight:700">edit</span>':'')
+  +'</td>';
+ } else if(editLinksMode){
+  return '<td style="text-align:center"><span onclick="editGameLinkSingle(\''+ek+'\',\''+lob+'\')" title="Add game link" style="font-size:16px;cursor:pointer;opacity:.25;filter:grayscale(1)">🎮</span></td>';
+ }
+ return '<td></td>';
+}
+function editGameLinkSingle(artKey,lob){
+ _mgEditKey='';_glmKey=artKey;_glmLob=lob;_glmSingle=true;
+ var nameEl=$('glm-article-name');
+ if(nameEl)nameEl.textContent=artKey;
+ var arLbl=$('glm-ar-label');if(arLbl)arLbl.textContent='Game Link';
+ var enSec=$('glm-en-section');if(enSec)enSec.style.display='none';
+ var inpAr=$('glm-url-ar');
+ if(inpAr)inpAr.value=GAME_LINKS[artKey+'::'+lob+'::game']||'';
+ var inpEn=$('glm-url-en');
+ if(inpEn)inpEn.value='';
+ $('glm-overlay').style.display='block';
+ $('glm-modal').style.display='block';
+ setTimeout(function(){if(inpAr)inpAr.focus();},50);
+}
 function editGameLinkForLob(artKey,lob){
- _mgEditKey='';_glmKey=artKey;_glmLob=lob;
+ _mgEditKey='';_glmKey=artKey;_glmLob=lob;_glmSingle=false;
  var nameEl=$('glm-article-name');
  if(nameEl)nameEl.textContent=artKey;
  var inpAr=$('glm-url-ar');var inpEn=$('glm-url-en');
@@ -1739,6 +1765,16 @@ function editGameLink(artKey){
 }
 function saveGameLink(){
  if(_mgEditKey){saveMgLink();return;}
+ if(_glmSingle){
+  var g=($('glm-url-ar').value||'').trim();
+  if(g&&!/^https?:\/\//i.test(g))g='https://'+g;
+  if(g)GAME_LINKS[_glmKey+'::'+_glmLob+'::game']=g; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::game'];
+  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+  var _sLob=_glmLob;
+  closeGameLinkModal();
+  buildCustomTab(_sLob);
+  return;
+ }
  var ar=($('glm-url-ar').value||'').trim();
  var en=($('glm-url-en').value||'').trim();
  if(ar&&!/^https?:\/\//i.test(ar))ar='https://'+ar;
@@ -1752,6 +1788,14 @@ function saveGameLink(){
 }
 function clearGameLink(){
  if(_mgEditKey){delete GAME_LINKS[_mgEditKey];localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));var enSec=$('glm-en-section');if(enSec)enSec.style.display='';closeGameLinkModal();buildMiniGames();_mgEditKey='';return;}
+ if(_glmSingle){
+  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::game'];
+  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+  var _cLob=_glmLob;
+  closeGameLinkModal();
+  buildCustomTab(_cLob);
+  return;
+ }
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
@@ -1766,6 +1810,11 @@ function closeGameLinkModal(){
   var enSec=$('glm-en-section');if(enSec)enSec.style.display='';
   var arLbl=$('glm-ar-label');if(arLbl)arLbl.textContent='Arabic Game Link';
   _mgEditKey='';
+ }
+ if(_glmSingle){
+  var enSec2=$('glm-en-section');if(enSec2)enSec2.style.display='';
+  var arLbl2=$('glm-ar-label');if(arLbl2)arLbl2.textContent='Arabic Game Link';
+  _glmSingle=false;
  }
 }
 var MG_CATS=[
@@ -3405,7 +3454,7 @@ function buildCustomTab(tabId){
  h+='<div class="tbl-wrap"><table style="width:100%"><thead><tr>';
  h+='<th class="l" style="min-width:200px">ARTICLE</th><th class="l">MEMBER</th>';
  h+='<th style="text-align:center">AR</th><th style="text-align:center">EN</th>';
- h+='<th style="text-align:center;width:52px;font-size:11px">🎮 AR</th><th style="text-align:center;width:52px;font-size:11px">🎮 EN</th>';
+ h+='<th style="text-align:center;width:60px;font-size:11px">🎮 Game</th>';
  if(managerMode)h+='<th style="text-align:center;width:60px;font-size:11px">✏️ Edit</th>';
  else if(memberMode)h+='<th style="text-align:center;width:60px;font-size:11px">Edit</th>';
  h+='</tr></thead><tbody>';
@@ -3423,9 +3472,9 @@ function buildCustomTab(tabId){
   var tr=document.createElement('tr');
   tr.innerHTML='<td class="article" style="padding:10px 14px;font-weight:600">'+artLabel+'</td>'
    +'<td style="padding:10px 14px"><span class="mem" style="background:'+mc+';color:'+mtxt+'">'+(r.member||'—')+'</span></td>'
-   +'<td style="text-align:center;padding:10px 6px">'+(r.ar?cell(1):'<span style="color:#9ca3af;font-size:12px">N/A</span>')+'</td>'
-   +'<td style="text-align:center;padding:10px 6px">'+(r.en?cell(1):'<span style="color:#9ca3af;font-size:12px">N/A</span>')+'</td>'
-   +glCellForLob(gkey,'ar',tabId)+glCellForLob(gkey,'en',tabId)
+   +'<td style="text-align:center;padding:10px 6px">'+(r.ar?cell(1):'')+'</td>'
+   +'<td style="text-align:center;padding:10px 6px">'+(r.en?cell(1):'')+'</td>'
+   +glCellSingleForLob(gkey,tabId)
    +(managerMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openAssignEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #8318d8;background:none;color:#8318d8;font-size:11px;cursor:pointer">✏️</button>'+(r._extraId?' <input type="checkbox" class="lobextra-cb" data-extra-id="'+r._extraId+'" style="margin-right:3px"> <button onclick="deleteExtraArticle(\''+r._extraId+'\')" style="margin-left:3px;padding:3px 8px;border-radius:6px;border:1px solid #dc2626;background:none;color:#dc2626;font-size:11px;cursor:pointer">🗑</button>':'')+'</td>':memberMode?'<td style="text-align:center;padding:10px 6px"><button onclick="openMemberEdit(\''+ek6+'\',\''+tabId+'\')" style="padding:3px 8px;border-radius:6px;border:1px solid #0891b2;background:none;color:#0891b2;font-size:11px;cursor:pointer">📝</button></td>':'');
   ctTb.appendChild(tr);
  }
