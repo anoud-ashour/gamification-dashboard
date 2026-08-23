@@ -1703,6 +1703,10 @@ function toggleEditLinksMode(){
   renderTable();
  }
 }
+function toggleEditLinksModeCustom(tabId){
+ editLinksMode=!editLinksMode;
+ buildCustomTab(tabId);
+}
 function exportArticleLinks(){
  var artOnly={};
  Object.keys(GAME_LINKS).forEach(function(k){if(k.indexOf('mglink::')<0)artOnly[k]=GAME_LINKS[k];});
@@ -3448,6 +3452,7 @@ function buildCustomTab(tabId){
  if(managerMode){
   h+='<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">';
   h+='<button onclick="openAddArticleToTab(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #8318d8;background:none;color:#8318d8;font-size:12px;font-weight:700;cursor:pointer">+ Add Article</button>';
+  h+='<button onclick="toggleEditLinksModeCustom(\''+tabId+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--orange);background:'+(editLinksMode?'var(--orange)':'none')+';color:'+(editLinksMode?'#fff':'var(--orange)')+';font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">'+(editLinksMode?'✓ Done Editing':'🎮 Edit Links')+'</button>';
   if(ct)h+='<button onclick="deleteCustomTab(\''+ct.id+'\')" style="padding:6px 14px;border-radius:8px;border:1.5px dashed #dc2626;background:none;color:#dc2626;font-size:12px;font-weight:700;cursor:pointer">🗑 Delete Tab</button>';
   h+='</div>';
  }
