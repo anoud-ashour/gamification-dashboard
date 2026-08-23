@@ -551,6 +551,18 @@ function goToArticle(lobId,artName){
  var grid=$('ov-lob-grid');if(grid)grid.style.display='grid';
  setTab(lobId);
 }
+function goToNotifArticle(article,lobHint){
+ var panel=$('notif-panel');if(panel)panel.style.display='none';
+ article=article||'';
+ if(!article)return;
+ var match=(typeof ROWS!=='undefined'?ROWS:[]).find(function(r){return (r.article||'').toLowerCase()===article.toLowerCase();});
+ if(match){goToArticle(match.sopId||'',article);return;}
+ var secs=ASSIGNMENTS.customSections||[];
+ var inSection=secs.some(function(sec){return (sec.items||[]).some(function(it){return (it.text||'').toLowerCase()===article.toLowerCase();});});
+ if(inSection){setTab('updates');return;}
+ if(lobHint&&(lobHint==='default'||lobHint==='tpro'||lobHint==='tkt'||lobHint==='uni'||lobHint.indexOf('ctab-')===0)){goToArticle(lobHint,article);return;}
+ setTab('all');
+}
 function filterOverviewSearch(q){
  q=(q||'').toLowerCase().trim();
  var res=$('ov-search-results');var grid=$('ov-lob-grid');if(!res||!grid)return;
@@ -3105,10 +3117,12 @@ function openNotifPanel(){
    var isNew=!n.read,type=n.type||'',article=n.article||'',member=n.member||'',lob=n.lob||'';
    var sum=clean(n.summary||n.msg||''),at=n.assignedAt||n.ts||'',dateStr=fmtDate(at);
    var bc,bg,bBg,bCol,bLabel,icon,title,btn;
-   if(type==='timeline'){bc='#f59e0b';bg=isNew?'#fffdf5':'#fff';bBg='#fef3c7';bCol='#92400e';bLabel='🟡 Time Change';icon='⏰';title='Time Change Alert';btn='<button onclick="$(\'notif-panel\').style.display=\'none\'" style="font-size:11px;padding:5px 14px;border:1.5px solid #f59e0b;border-radius:8px;background:#fffbeb;color:#b45309;cursor:pointer;font-weight:700">⏰ View Updated Task</button>';}
-   else if(type==='assignment'){bc='#3b82f6';bg=isNew?'#f0f7ff':'#fff';bBg='#dbeafe';bCol='#1e3a8a';bLabel='🔵 New Article';icon='📄';title='New Article Assigned';btn='<button onclick="$(\'notif-panel\').style.display=\'none\'" style="font-size:11px;padding:5px 14px;border:1.5px solid #3b82f6;border-radius:8px;background:#eff6ff;color:#1d4ed8;cursor:pointer;font-weight:700">📄 Review Article</button>';}
-   else if(type==='status'){bc='#10b981';bg=isNew?'#f0fdf8':'#fff';bBg='#d1fae5';bCol='#064e3b';bLabel='✅ Status Update';icon='📊';title='Status Updated';btn='';}
-   else{bc='#e5e7eb';bg=isNew?'#fafafa':'#fff';bBg='#f3f4f6';bCol='#374151';bLabel='📬 Update';icon='🔔';title='Update';btn='';}
+   var artSafe=article.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+ var lobSafe=(lob||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+ if(type==='timeline'){bc='#f59e0b';bg=isNew?'#fffdf5':'#fff';bBg='#fef3c7';bCol='#92400e';bLabel='🟡 Time Change';icon='⏰';title='Time Change Alert';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #f59e0b;border-radius:8px;background:#fffbeb;color:#b45309;cursor:pointer;font-weight:700">⏰ View Updated Task</button>':'';}
+ else if(type==='assignment'||type==='assign'){bc='#3b82f6';bg=isNew?'#f0f7ff':'#fff';bBg='#dbeafe';bCol='#1e3a8a';bLabel='🔵 New Article';icon='📄';title='New Article Assigned';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #3b82f6;border-radius:8px;background:#eff6ff;color:#1d4ed8;cursor:pointer;font-weight:700">📄 Review Article</button>':'';}
+ else if(type==='status'){bc='#10b981';bg=isNew?'#f0fdf8':'#fff';bBg='#d1fae5';bCol='#064e3b';bLabel='✅ Status Update';icon='📊';title='Status Updated';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #10b981;border-radius:8px;background:#ecfdf5;color:#047857;cursor:pointer;font-weight:700">📊 View Article</button>':'';}
+ else{bc='#e5e7eb';bg=isNew?'#fafafa':'#fff';bBg='#f3f4f6';bCol='#374151';bLabel='📬 Update';icon='🔔';title='Update';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #9ca3af;border-radius:8px;background:#f9fafb;color:#374151;cursor:pointer;font-weight:700">🔔 View Article</button>':'';}
    html+='<div style="padding:14px 16px;border-bottom:1px solid #f3f4f6;background:'+bg+';border-left:4px solid '+bc+'">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
     +'<div style="display:flex;align-items:center;gap:6px">'
