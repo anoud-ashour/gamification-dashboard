@@ -654,9 +654,9 @@ function buildOverview(){
  (ASSIGNMENTS.customTabs||[]).filter(function(ct){return !ct.type||ct.type==='lob';}).forEach(function(ct,ctIdx){
   var tid='ctab-'+ct.id;
   var ctCol=ct.color||CTAB_PAL[ctIdx%CTAB_PAL.length];
-  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
-  var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
-  var tot=ctRows.length;
+  var ctExtras=(ASSIGNMENTS.extra||[]).filter(function(e){return e.lob===tid;});
+ var ctDone=ctExtras.filter(function(e){return (e.status||'')==='Done';}).length;
+ var tot=ctExtras.length;
   var covP=tot>0?Math.round((ctDone/tot)*100):0;
   var eid='ovkpi-ctab-'+ct.id;
   html+='<div onclick="setTab(\''+tid+'\')" style="'+cs+';border-left:5px solid '+ctCol+'" onmouseover="this.style.boxShadow=\'0 8px 28px rgba(0,0,0,.13)\';this.style.transform=\'translateY(-4px)\'" onmouseout="this.style.boxShadow=\'0 2px 8px rgba(0,0,0,.07)\';this.style.transform=\'\'">'
@@ -683,9 +683,9 @@ function buildOverview(){
  countUp($('ovkpi-uni'),uniP,'%');
  (ASSIGNMENTS.customTabs||[]).filter(function(ct){return !ct.type||ct.type==='lob';}).forEach(function(ct){
   var tid='ctab-'+ct.id;
-  var ctRows=ROWS.filter(function(r){return r.sopId===tid;});
-  var ctDone=ctRows.filter(function(r){return (r.ar||0)>0&&(r.en||0)>0;}).length;
-  var tot=ctRows.length;
+  var ctExtras=(ASSIGNMENTS.extra||[]).filter(function(e){return e.lob===tid;});
+ var ctDone=ctExtras.filter(function(e){return (e.status||'')==='Done';}).length;
+ var tot=ctExtras.length;
   var covP=tot>0?Math.round((ctDone/tot)*100):0;
   countUp($('ovkpi-ctab-'+ct.id),covP,'%');
  });
