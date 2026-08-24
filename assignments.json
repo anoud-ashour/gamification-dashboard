@@ -163,7 +163,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T09:26:16.720Z",
+  "lastUpdated": "2026-08-24T11:57:10.300Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -410,5 +410,6 @@
     "contact driver scenarios::ctab-msvm85fr::game": "https://app.genially.com/editor/6a81c76959b96648831cc7b8",
     "cancelation reasons::ctab-msvm85fr::game": "https://app.genially.com/editor/6a8455a629eed769af3cc75d",
     "refund scenarios::ctab-msvm85fr::game": "https://app.genially.com/editor/6a82ddfbc45804ea14905ad3"
-  }
+  },
+  "reportDrafts": {}
 }
