@@ -163,7 +163,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T12:06:46.454Z",
+  "lastUpdated": "2026-08-24T13:07:22.163Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -412,6 +412,7 @@
     "refund scenarios::ctab-msvm85fr::game": "https://app.genially.com/editor/6a82ddfbc45804ea14905ad3"
   },
   "reportDrafts": {
-    "week:2026-08-23": "This week (24 Aug - 24 Aug 2026): 0 articles completed. 1 article overdue: Refund Scenarios (Amal). Overall coverage: 91%."
+    "week:2026-08-23": "This week (24 Aug - 24 Aug 2026): 0 articles completed. 1 article overdue: Refund Scenarios (Amal). Overall coverage: 91%.",
+    "month:2026-08-01": "Month of August: 1 article completed across all LOBs. New LC is at 67% coverage (2/3 done). Refund Scenarios is overdue, assigned to Amal, due Aug 23. Amal completed the most articles this month (1). Overall team coverage: 91%. Nice progress!"
   }
 }
