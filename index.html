@@ -824,7 +824,7 @@ function openMemberStatus(m){
  $('ms-overlay').style.display='block';$('ms-modal').style.display='block';
 }
 function closeMemberStatus(){$('ms-overlay').style.display='none';$('ms-modal').style.display='none';}
-function saveMemberStatus(){
+function saveMemberStatusData(){
  if(!_mStatusTarget)return;
  if(!ASSIGNMENTS.memberStatus)ASSIGNMENTS.memberStatus={};
  var wl=$('ms-workload').value;
@@ -4474,7 +4474,7 @@ Article Three" style="flex:1;min-width:200px;min-height:76px;max-height:110px;pa
   <input id="ms-notes" type="text" placeholder="e.g. Back on Thursday…" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none">
  </div>
  <div style="display:flex;gap:8px">
-  <button onclick="saveMemberStatus()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
+  <button onclick="saveMemberStatusData()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#8318d8;color:#fff;font-size:13px;font-weight:800;cursor:pointer">Save</button>
   <button onclick="clearMemberStatus()" style="padding:10px 16px;border-radius:10px;border:none;background:#fee2e2;color:#dc2626;font-size:13px;font-weight:700;cursor:pointer">Reset to Auto</button>
   <button onclick="closeMemberStatus()" style="padding:10px 16px;border-radius:10px;border:none;background:#f3f4f6;color:#6b7280;font-size:13px;font-weight:700;cursor:pointer">Cancel</button>
  </div>
