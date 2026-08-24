@@ -45,6 +45,18 @@
       "notes": "",
       "updatedAt": "2026-08-21T21:00:43.531Z",
       "status": "Done"
+    },
+    "compensation reasons::ctab-msvm85fr": {
+      "member": "Anoud",
+      "ar": 1,
+      "en": 1,
+      "startDate": "2026-08-24",
+      "deadline": "2026-08-30",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-08-24T13:57:20.434Z",
+      "status": "Not Started"
     }
   },
   "extra": [
@@ -95,11 +107,12 @@
       "lob": "ctab-msvm85fr",
       "member": "Anoud",
       "journey": "General",
-      "ar": 0,
+      "ar": 1,
       "en": 1,
       "deadline": "2026-08-30",
-      "priority": "high",
-      "status": "Not Started"
+      "priority": "",
+      "status": "Not Started",
+      "notes": ""
     },
     {
       "id": "mt7arwv2",
@@ -203,6 +216,24 @@
       "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-08-24",
       "startDate": "2026-08-24",
       "assignedAt": "2026-08-24T13:55:01.611Z"
+    },
+    {
+      "id": "mt7avsfm",
+      "key": "compensation reasons::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "compensation reasons",
+      "member": "Anoud",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Anoud<br>📅 Deadline set: 2026-08-30<br>📅 Start date set: 2026-08-24",
+      "startDate": "2026-08-24",
+      "assignedAt": "2026-08-24T13:57:20.434Z"
+    },
+    {
+      "key": "::notif::1787579840441",
+      "msg": "Assignment updated for Anoud: compensation reasons | Deadline: 2026-08-30",
+      "ts": "2026-08-24T13:57:20.441Z",
+      "member": "Anoud",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -232,7 +263,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T13:55:05.217Z",
+  "lastUpdated": "2026-08-24T13:57:21.132Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -270,6 +301,13 @@
         "ts": "2026-08-21T21:00:43.532Z",
         "user": "Coordinator",
         "summary": "📅 Deadline set: 2026-08-23; 📅 Start date set: 2026-08-16"
+      }
+    ],
+    "compensation reasons::ctab-msvm85fr": [
+      {
+        "ts": "2026-08-24T13:57:20.436Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Anoud; 📅 Deadline set: 2026-08-30; 📅 Start date set: 2026-08-24"
       }
     ]
   },
