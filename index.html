@@ -130,6 +130,7 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <button class="tab" data-tab="members">Members</button>
 <button class="tab" data-tab="progress">📋 Progress</button>
 <button class="tab" data-tab="updates">Update Projects</button>
+<button class="tab" data-tab="report">🏆 Report</button>
 <button class="tab" data-tab="minigames">🎮 Mini Games</button>
 <div id="sheet-tab-nav" style="display:none"><button class="tab" data-tab="sheet-universal" style="display: none;">Universal</button></div>
 <div id="custom-tab-nav" style="display:none"></div>
@@ -202,6 +203,11 @@ tr.idle{background:#fef6e7;}[data-theme=dark] tr.idle{background:#3a2f14;}
 <!-- Update Projects tab -->
 <div id="sec-updates" class="tabsec hide">
 <div id="upt-dropoff"></div>
+</div>
+
+<!-- Report tab -->
+<div id="sec-report" class="tabsec hide">
+<div id="report-content"></div>
 </div>
 
 <!-- Mini Games tab -->
@@ -2274,6 +2280,7 @@ function setTab(t){
  $('sec-progress').classList.toggle('hide',t!=='progress');
  $('sec-updates').classList.toggle('hide',t!=='updates');
  $('sec-minigames').classList.toggle('hide',t!=='minigames');
+ $('sec-report').classList.toggle('hide',t!=='report');
  $('sec-table').classList.toggle('hide',!(t==='all'||t==='default'||t==='tpro'||t==='tkt'));
  document.querySelectorAll('.dynamic-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
  document.querySelectorAll('.custom-tab-section').forEach(function(s){s.classList.toggle('hide',s.id!=='sec-'+t);});
@@ -2282,9 +2289,113 @@ function setTab(t){
  if(t==='progress')buildProgress();
  if(t==='updates')buildUpdateProjects();
  if(t==='minigames')buildMiniGames();
+ if(t==='report')buildReport();
  if(t==='all'||t==='default'||t==='tpro'||t==='tkt')renderTable();
  if(t.indexOf('ctab-')===0)buildCustomTab(t);
 }
+function _reportRange(period){
+ var now=new Date();
+ var end=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59);
+ var start;
+ if(period==='month'){
+  start=new Date(now.getFullYear(),now.getMonth(),1);
+ } else {
+  var day=now.getDay();var diff=(day===0?6:day-1);
+  start=new Date(now.getFullYear(),now.getMonth(),now.getDate()-diff);
+ }
+ return {start:start,end:end};
+}
+function buildReport(){
+ var c=$('report-content');if(!c)return;
+ var period=window._reportPeriod||'week';
+ var range=_reportRange(period);
+ var notifs=_getNotifs().filter(function(n){var t=new Date(n.assignedAt||n.ts||0);return t>=range.start&&t<=range.end;});
+ var doneMap={};
+ notifs.forEach(function(n){
+  if(n.type==='status'&&/\u2192\s*Done/.test(n.summary||'')){doneMap[(n.article||'')+'::'+(n.member||'')]=n;}
+ });
+ var doneList=Object.keys(doneMap).map(function(k){return doneMap[k];});
+ var byMember={};
+ doneList.forEach(function(n){var m=n.member||'Unassigned';byMember[m]=(byMember[m]||0)+1;});
+ var topMember='',topCount=0;
+ Object.keys(byMember).forEach(function(m){if(byMember[m]>topCount){topCount=byMember[m];topMember=m;}});
+ var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+ var overdue=PROG.filter(function(r){
+  if(!r.article||r.article==='\u2014')return false;
+  var e=endDate(r);
+  var activeCells=PCELLS.filter(function(k){return isStatusValue(r[k]);});
+  var isDone=activeCells.length>0&&activeCells.every(function(k){return statusOf(r[k])==='Done';});
+  return e&&!isDone&&e<today;
+ });
+ var totCells=0,doneCells=0;
+ PROG.forEach(function(r){
+  PCELLS.forEach(function(k){if(isStatusValue(r[k])){totCells++;if(statusOf(r[k])==='Done')doneCells++;}});
+ });
+ var overallPct=totCells>0?Math.round(doneCells/totCells*100):0;
+ var periodLabel=period==='month'?'This month':'This week';
+ var dateLabel=range.start.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' - '+range.end.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+ var lines=[];
+ lines.push(periodLabel+' ('+dateLabel+'): '+doneList.length+' article'+(doneList.length===1?'':'s')+' completed.');
+ if(overdue.length){
+  lines.push(overdue.length+' article'+(overdue.length===1?'':'s')+' overdue: '+overdue.slice(0,5).map(function(r){return r.article+(r.member?' ('+r.member+')':'');}).join(', ')+'.');
+ } else {
+  lines.push('No overdue articles right now.');
+ }
+ if(topMember){
+  lines.push(topMember+' completed the most articles this period ('+topCount+').');
+ }
+ lines.push('Overall coverage: '+overallPct+'%.');
+ var autoText=lines.join(' ');
+ var draftKey=period+':'+range.start.toISOString().slice(0,10);
+ if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
+ var savedDraft=ASSIGNMENTS.reportDrafts[draftKey];
+ var textToShow=(savedDraft!==undefined)?savedDraft:autoText;
+ window._reportAutoText=autoText;
+ window._reportDraftKey=draftKey;
+ var h='';
+ h+='<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">';
+ ['week','month'].forEach(function(p){
+  var sel=period===p;
+  h+='<button onclick="setReportPeriod(\''+p+'\')" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(sel?'#8318d8':'var(--border)')+';background:'+(sel?'#8318d8':'none')+';color:'+(sel?'#fff':'var(--muted)')+'">'+(p==='week'?'This week':'This month')+'</button>';
+ });
+ h+='</div>';
+ h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">';
+ h+='<div class="card" style="border-left:4px solid #FF5900;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Completed</div><div style="font-size:26px;font-weight:900;color:#FF5900">'+doneList.length+'</div></div>';
+ h+='<div class="card" style="border-left:4px solid #dc2626;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Overdue</div><div style="font-size:26px;font-weight:900;color:#dc2626">'+overdue.length+'</div></div>';
+ h+='<div class="card" style="border-left:4px solid #8318d8;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Top performer</div><div style="font-size:20px;font-weight:900;color:#8318d8">'+(topMember||'\u2014')+'</div></div>';
+ h+='</div>';
+ h+='<div class="card" style="padding:16px 18px">';
+ h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">';
+ h+='<div style="font-weight:700;font-size:14px">Summary'+(savedDraft!==undefined?' <span style="font-weight:600;font-size:11px;color:var(--muted)">(edited)</span>':'')+'</div>';
+ h+='<div style="display:flex;gap:8px">';
+ h+='<button onclick="resetReportDraft()" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer;color:inherit">\u21ba Regenerate</button>';
+ h+='<button onclick="copyReportText()" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer;color:inherit">\ud83d\udccb Copy report</button>';
+ h+='</div></div>';
+ h+='<textarea id="report-text" oninput="saveReportDraft(this.value)" style="width:100%;box-sizing:border-box;min-height:120px;padding:12px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;line-height:1.7;font-family:inherit;resize:vertical;background:var(--card);color:inherit">'+textToShow.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</textarea>';
+ h+='</div>';
+ c.innerHTML=h;
+}
+function setReportPeriod(p){window._reportPeriod=p;buildReport();}
+function saveReportDraft(v){
+ if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
+ ASSIGNMENTS.reportDrafts[window._reportDraftKey]=v;
+ clearTimeout(window._reportSaveTimer);
+ window._reportSaveTimer=setTimeout(function(){saveAssignments();},1200);
+}
+function resetReportDraft(){
+ if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
+ delete ASSIGNMENTS.reportDrafts[window._reportDraftKey];
+ saveAssignments();
+ buildReport();
+}
+function copyReportText(){
+ var t=$('report-text');if(!t)return;
+ t.select();
+ try{
+  navigator.clipboard.writeText(t.value).then(function(){showToast('Report copied',2000);}).catch(function(){document.execCommand('copy');showToast('Report copied',2000);});
+ }catch(e){document.execCommand('copy');showToast('Report copied',2000);}
+}
+
 
 // ===== visual + interaction upgrades =====
 function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('kbtheme',t);}catch(e){}var b=$('themeBtn');if(b)b.textContent=t==='dark'?'☀️ Light':'🌙 Dark';}
@@ -2609,6 +2720,7 @@ async function loadAssignments(){
    if(!ASSIGNMENTS.mgGroups)ASSIGNMENTS.mgGroups=[];
    if(!ASSIGNMENTS.memberAccounts)ASSIGNMENTS.memberAccounts=[];
    if(!ASSIGNMENTS.gameLinks)ASSIGNMENTS.gameLinks={};
+ if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
  GAME_LINKS=Object.assign({},GAME_LINKS,ASSIGNMENTS.gameLinks);
  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
  var _glNeedsPush=false;
