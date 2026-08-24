@@ -2702,26 +2702,33 @@ async function load(){
  if(_errs.length){console.warn('load errors:',_errs);}
  try{build();}catch(e){console.error('build:',e);}
  try{renderCustomTabNav();}catch(e){console.error('renderNav:',e);}
- try{await Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,4000);})]);}catch(e){}
+ var _assignReady=Promise.race([loadAssignments(),new Promise(function(r){setTimeout(r,4000);})]).catch(function(){});
+ try{_refreshLiveData(_assignReady);}catch(e){}
+ try{await _assignReady;}catch(e){}
  try{build();renderCustomTabNav();}catch(e){}
- _refreshLiveData();
 }
-async function _refreshLiveData(){
+async function _refreshLiveData(assignReady){
  var liveData=null,liveProg=null,liveTabs=null;
- try{
-  var resp=await _fetchWithTimeout(COVERAGE_URL+'&t='+Date.now(),8000);
-  if(resp.ok){var text=await resp.text();var d=parseCoverageCsv(text);if(d.length)liveData=d;}
- }catch(e){}
- try{
-  var respJ=await _fetchWithTimeout(DATA_JSON_URL+'?t='+Date.now(),8000);
-  if(respJ.ok){var json=await respJ.json();var parsed=_parseTabs(json);liveTabs=parsed.tabs;liveProg=parsed.prog;}
- }catch(e){}
+ var p1=(async function(){
+  try{
+   var resp=await _fetchWithTimeout(COVERAGE_URL+'&t='+Date.now(),8000);
+   if(resp.ok){var text=await resp.text();var d=parseCoverageCsv(text);if(d.length)liveData=d;}
+  }catch(e){}
+ })();
+ var p2=(async function(){
+  try{
+   var respJ=await _fetchWithTimeout(DATA_JSON_URL+'?t='+Date.now(),8000);
+   if(respJ.ok){var json=await respJ.json();var parsed=_parseTabs(json);liveTabs=parsed.tabs;liveProg=parsed.prog;}
+  }catch(e){}
+ })();
+ await Promise.all([p1,p2]);
  if(!liveProg&&PROGRESS_URL){
   try{
    var resp2=await _fetchWithTimeout(PROGRESS_URL+'?t='+Date.now(),8000);
    if(resp2.ok){var t2=await resp2.text();if(!t2.trim().startsWith('<')){liveProg=parseProgressCsv(t2);}}
   }catch(e){}
  }
+ if(assignReady){try{await assignReady;}catch(e){}}
  var updated=false;
  if(liveData&&liveData.length){DATA=liveData;updated=true;}
  if(liveProg&&liveProg.length){PROG=liveProg;updated=true;}
@@ -2729,7 +2736,8 @@ async function _refreshLiveData(){
  if(updated){
   buildOwners();
   parseFallback(FALLBACK_CSV).forEach(function(r){var k=nrm(r.article);if(k&&r.member&&!OWNER[k])OWNER[k]=r.member;});
-  buildRows();applyAssignments();
+  buildRows();
+  applyAssignments();
   build();
  }
 }
