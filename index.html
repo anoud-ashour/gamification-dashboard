@@ -480,6 +480,11 @@ var GAME_LINKS={};try{GAME_LINKS=JSON.parse(localStorage.getItem('gameDashLinks'
 Object.keys(MG_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=MG_LINKS_DEFAULT[k];});
 Object.keys(ART_LINKS_DEFAULT).forEach(function(k){if(!GAME_LINKS[k])GAME_LINKS[k]=ART_LINKS_DEFAULT[k];});
 var editLinksMode=false;
+function _syncGameLinks(){
+ localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ ASSIGNMENTS.gameLinks=GAME_LINKS;
+ saveAssignments();
+}
 // ---- Sheet 2: production status tracker ----
 const SHEET2="1tkqrqxrcpFjvnub4AGoEiCSJuBptTzutluK0Yk450kk";
 let PROG=[],progressBuilt=false;
@@ -1785,7 +1790,7 @@ function saveGameLink(){
   var g=($('glm-url-ar').value||'').trim();
   if(g&&!/^https?:\/\//i.test(g))g='https://'+g;
   if(g)GAME_LINKS[_glmKey+'::'+_glmLob+'::game']=g; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::game'];
-  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+  _syncGameLinks();
   var _sLob=_glmLob;
   closeGameLinkModal();
   buildCustomTab(_sLob);
@@ -1797,16 +1802,16 @@ function saveGameLink(){
  if(en&&!/^https?:\/\//i.test(en))en='https://'+en;
  if(ar)GAME_LINKS[_glmKey+'::'+_glmLob+'::ar']=ar; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
  if(en)GAME_LINKS[_glmKey+'::'+_glmLob+'::en']=en; else delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
- localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ _syncGameLinks();
  closeGameLinkModal();
  if(_glmLob==='uni'&&window._uniSec&&window._uniRows)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,window._uniRows);
  else renderTable();
 }
 function clearGameLink(){
- if(_mgEditKey){delete GAME_LINKS[_mgEditKey];localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));var enSec=$('glm-en-section');if(enSec)enSec.style.display='';closeGameLinkModal();buildMiniGames();_mgEditKey='';return;}
+ if(_mgEditKey){delete GAME_LINKS[_mgEditKey];_syncGameLinks();var enSec=$('glm-en-section');if(enSec)enSec.style.display='';closeGameLinkModal();buildMiniGames();_mgEditKey='';return;}
  if(_glmSingle){
   delete GAME_LINKS[_glmKey+'::'+_glmLob+'::game'];
-  localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+  _syncGameLinks();
   var _cLob=_glmLob;
   closeGameLinkModal();
   buildCustomTab(_cLob);
@@ -1814,7 +1819,7 @@ function clearGameLink(){
  }
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::ar'];
  delete GAME_LINKS[_glmKey+'::'+_glmLob+'::en'];
- localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ _syncGameLinks();
  closeGameLinkModal();
  if(_glmLob==='uni'&&window._uniSec&&window._uniRows)window._uniSec.innerHTML=window._uniBackBtn+buildUniHtml(window._uniTabName,window._uniSafeId,window._uniRows);
  else renderTable();
@@ -2237,7 +2242,7 @@ function saveMgLink(){
  var url=($('glm-url-ar').value||'').trim();
  if(url&&!/^https?:\/\//i.test(url))url='https://'+url;
  if(url)GAME_LINKS[_mgEditKey]=url; else delete GAME_LINKS[_mgEditKey];
- localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ _syncGameLinks();
  var enSec=$('glm-en-section');if(enSec)enSec.style.display='';
  _mgEditKey='';
  closeGameLinkModal();
@@ -2603,7 +2608,13 @@ async function loadAssignments(){
    if(!ASSIGNMENTS.notifications)ASSIGNMENTS.notifications=[];
    if(!ASSIGNMENTS.mgGroups)ASSIGNMENTS.mgGroups=[];
    if(!ASSIGNMENTS.memberAccounts)ASSIGNMENTS.memberAccounts=[];
-   // Merge server notifications into localStorage so all browsers stay in sync
+   if(!ASSIGNMENTS.gameLinks)ASSIGNMENTS.gameLinks={};
+ GAME_LINKS=Object.assign({},GAME_LINKS,ASSIGNMENTS.gameLinks);
+ localStorage.setItem('gameDashLinks',JSON.stringify(GAME_LINKS));
+ var _glNeedsPush=false;
+ Object.keys(GAME_LINKS).forEach(function(k){if(ASSIGNMENTS.gameLinks[k]!==GAME_LINKS[k])_glNeedsPush=true;});
+ if(_glNeedsPush){ASSIGNMENTS.gameLinks=GAME_LINKS;saveAssignments();}
+ // Merge server notifications into localStorage so all browsers stay in sync
    _mergeNotifs(ASSIGNMENTS.notifications);
    buildNotifBadge();
    var _mb=document.getElementById('mgr-mode-btn');if(_mb)_mb.style.display='inline-block';
