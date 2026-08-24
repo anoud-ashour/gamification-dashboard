@@ -2346,7 +2346,7 @@ function buildReport(){
  }
  lines.push('Overall coverage: '+overallPct+'%.');
  var autoText=lines.join(' ');
- var draftKey=period+':'+range.start.toISOString().slice(0,10);
+ var draftKey=period+':'+range.start.getFullYear()+'-'+String(range.start.getMonth()+1).padStart(2,'0')+'-'+String(range.start.getDate()).padStart(2,'0');
  if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
  var savedDraft=ASSIGNMENTS.reportDrafts[draftKey];
  var textToShow=(savedDraft!==undefined)?savedDraft:autoText;
