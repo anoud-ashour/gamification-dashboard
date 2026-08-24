@@ -157,9 +157,13 @@
     {
       "email": "sandbox.test@talabat.com",
       "hash": "234c0bd8d0230d9f610e7a1b6240fad417c5bb7af505f5b1cb73d77f856c4d06"
+    },
+    {
+      "email": "amal.eldakroury@talabat.com",
+      "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-23T15:42:13.478Z",
+  "lastUpdated": "2026-08-24T09:02:17.313Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
