@@ -112,6 +112,18 @@
       "deadline": "2026-08-26",
       "priority": "high",
       "status": "Not Started"
+    },
+    {
+      "id": "mt7astbd",
+      "article": "Fraud and sheild",
+      "lob": "ctab-msvm85fr",
+      "member": "Dalia",
+      "journey": "General",
+      "ar": 1,
+      "en": 1,
+      "deadline": "2026-08-30",
+      "priority": "high",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -180,6 +192,17 @@
       "summary": "👤 Assigned to Amal Â· 📅 Start: 2026-08-24",
       "startDate": "2026-08-24",
       "assignedAt": "2026-08-24T13:54:19.555Z"
+    },
+    {
+      "id": "mt7astbf",
+      "key": "fraud and sheild::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "Fraud and sheild",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-08-24",
+      "startDate": "2026-08-24",
+      "assignedAt": "2026-08-24T13:55:01.611Z"
     }
   ],
   "mgGroups": [],
@@ -209,7 +232,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T13:54:23.177Z",
+  "lastUpdated": "2026-08-24T13:55:02.135Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
