@@ -2317,63 +2317,117 @@ function buildReport(){
  var doneList=Object.keys(doneMap).map(function(k){return doneMap[k];});
  var byMember={};
  doneList.forEach(function(n){var m=n.member||'Unassigned';byMember[m]=(byMember[m]||0)+1;});
- var topMember='',topCount=0;
- Object.keys(byMember).forEach(function(m){if(byMember[m]>topCount){topCount=byMember[m];topMember=m;}});
- var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
- var overdue=PROG.filter(function(r){
-  if(!r.article||r.article==='\u2014')return false;
-  var e=endDate(r);
-  var activeCells=PCELLS.filter(function(k){return isStatusValue(r[k]);});
-  var isDone=activeCells.length>0&&activeCells.every(function(k){return statusOf(r[k])==='Done';});
-  return e&&!isDone&&e<today;
- });
- var totCells=0,doneCells=0;
- PROG.forEach(function(r){
-  PCELLS.forEach(function(k){if(isStatusValue(r[k])){totCells++;if(statusOf(r[k])==='Done')doneCells++;}});
- });
- var overallPct=totCells>0?Math.round(doneCells/totCells*100):0;
- var periodLabel=period==='month'?'This month':'This week';
- var dateLabel=range.start.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' - '+range.end.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
- var lines=[];
- lines.push(periodLabel+' ('+dateLabel+'): '+doneList.length+' article'+(doneList.length===1?'':'s')+' completed.');
- if(overdue.length){
-  lines.push(overdue.length+' article'+(overdue.length===1?'':'s')+' overdue: '+overdue.slice(0,5).map(function(r){return r.article+(r.member?' ('+r.member+')':'');}).join(', ')+'.');
- } else {
-  lines.push('No overdue articles right now.');
+ var ranked=Object.keys(byMember).sort(function(a,b){return byMember[b]-byMember[a];});
+var topMember=ranked[0]||'',topCount=ranked[0]?byMember[ranked[0]]:0;
+var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+var overdue=PROG.filter(function(r){
+ if(!r.article||r.article==='—')return false;
+ var e=endDate(r);
+ var activeCells=PCELLS.filter(function(k){return isStatusValue(r[k]);});
+ var isDone=activeCells.length>0&&activeCells.every(function(k){return statusOf(r[k])==='Done';});
+ return e&&!isDone&&e<today;
+});
+var totCells=0,doneCells=0;
+PROG.forEach(function(r){
+ PCELLS.forEach(function(k){if(isStatusValue(r[k])){totCells++;if(statusOf(r[k])==='Done')doneCells++;}});
+});
+var overallPct=totCells>0?Math.round(doneCells/totCells*100):0;
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function fmtShort(d){if(!d)return '';try{return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'});}catch(e){return '';}}
+var rangeWord=period==='month'?'Month':'Week';
+var headingText=period==='month'?'Monthly summary':'Weekly summary';
+var dateShort=period==='month'?range.start.toLocaleDateString('en-US',{month:'long'}):fmtShort(range.start);
+var lines=[],htmlParts=[];
+var openTxt=rangeWord+' of '+dateShort+': '+doneList.length+' article'+(doneList.length===1?'':'s')+' completed across all LOBs.';
+lines.push(openTxt);
+htmlParts.push(rangeWord+' of '+esc(dateShort)+': <b>'+doneList.length+' article'+(doneList.length===1?'':'s')+' completed</b> across all LOBs.');
+var CTABS=(ASSIGNMENTS.customTabs||[]).filter(function(ct){return !ct.type||ct.type==='lob';});
+CTABS.forEach(function(ct){
+ var tid='ctab-'+ct.id;
+ var extras=(ASSIGNMENTS.extra||[]).filter(function(e){return e.lob===tid;});
+ var tot=extras.length;
+ if(!tot)return;
+ var done=extras.filter(function(e){return (e.status||'')==='Done';}).length;
+ var covP=Math.round(done/tot*100);
+ var covColor=covP>=60?'var(--green)':(covP>=30?'var(--amber)':'var(--red)');
+ lines.push(ct.name+' is at '+covP+'% coverage ('+done+'/'+tot+' done).');
+ htmlParts.push(esc(ct.name)+' is at <b style="color:'+covColor+'">'+covP+'% coverage</b> ('+done+'/'+tot+' done).');
+});
+if(!overdue.length){
+ lines.push('No articles are overdue right now.');
+ htmlParts.push('No articles are overdue right now.');
+}else if(overdue.length===1){
+ var o=overdue[0],odue=fmtShort(endDate(o));
+ lines.push(o.article+' is overdue, assigned to '+(o.member||'Unassigned')+', due '+odue+'.');
+ htmlParts.push('<b style="color:var(--red)">'+esc(o.article)+' is overdue</b>, assigned to '+esc(o.member||'Unassigned')+', due '+odue+'.');
+}else{
+ var o=overdue[0],odue=fmtShort(endDate(o));
+ lines.push(overdue.length+' articles are overdue, including '+o.article+' (assigned to '+(o.member||'Unassigned')+', due '+odue+').');
+ htmlParts.push('<b style="color:var(--red)">'+overdue.length+' articles are overdue</b>, including '+esc(o.article)+' (assigned to '+esc(o.member||'Unassigned')+', due '+odue+').');
+}
+if(!ranked.length){
+ lines.push('No completions logged yet this period.');
+ htmlParts.push('No completions logged yet this period.');
+}else{
+ var periodWord=period==='month'?'month':'week';
+ var followers=ranked.slice(1,3);
+ var base=topMember+' completed the most articles this '+periodWord+' ('+topCount+')';
+ var baseHtml='<b>'+esc(topMember)+' completed the most articles</b> this '+periodWord+' ('+topCount+')';
+ if(!followers.length){
+  lines.push(base+'.');
+  htmlParts.push(baseHtml+'.');
+ }else if(followers.length===1){
+  var f1=followers[0];
+  lines.push(base+', followed by '+f1+' ('+byMember[f1]+').');
+  htmlParts.push(baseHtml+', followed by '+esc(f1)+' ('+byMember[f1]+').');
+ }else{
+  var fcounts=followers.map(function(m){return byMember[m];});
+  var sameCount=fcounts[0]===fcounts[1];
+  if(sameCount){
+   lines.push(base+', followed by '+followers.join(' and ')+' ('+fcounts[0]+' each).');
+   htmlParts.push(baseHtml+', followed by '+followers.map(esc).join(' and ')+' ('+fcounts[0]+' each).');
+  }else{
+   var withCounts=followers.map(function(m){return m+' ('+byMember[m]+')';});
+   lines.push(base+', followed by '+withCounts.join(' and ')+'.');
+   htmlParts.push(baseHtml+', followed by '+followers.map(function(m){return esc(m)+' ('+byMember[m]+')';}).join(' and ')+'.');
+  }
  }
- if(topMember){
-  lines.push(topMember+' completed the most articles this period ('+topCount+').');
- }
- lines.push('Overall coverage: '+overallPct+'%.');
- var autoText=lines.join(' ');
- var draftKey=period+':'+range.start.getFullYear()+'-'+String(range.start.getMonth()+1).padStart(2,'0')+'-'+String(range.start.getDate()).padStart(2,'0');
- if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
- var savedDraft=ASSIGNMENTS.reportDrafts[draftKey];
- var textToShow=(savedDraft!==undefined)?savedDraft:autoText;
- window._reportAutoText=autoText;
- window._reportDraftKey=draftKey;
- var h='';
- h+='<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">';
- ['week','month'].forEach(function(p){
-  var sel=period===p;
-  h+='<button onclick="setReportPeriod(\''+p+'\')" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(sel?'#8318d8':'var(--border)')+';background:'+(sel?'#8318d8':'none')+';color:'+(sel?'#fff':'var(--muted)')+'">'+(p==='week'?'This week':'This month')+'</button>';
- });
- h+='</div>';
- h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">';
- h+='<div class="card" style="border-left:4px solid #FF5900;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Completed</div><div style="font-size:26px;font-weight:900;color:#FF5900">'+doneList.length+'</div></div>';
- h+='<div class="card" style="border-left:4px solid #dc2626;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Overdue</div><div style="font-size:26px;font-weight:900;color:#dc2626">'+overdue.length+'</div></div>';
- h+='<div class="card" style="border-left:4px solid #8318d8;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Top performer</div><div style="font-size:20px;font-weight:900;color:#8318d8">'+(topMember||'\u2014')+'</div></div>';
- h+='</div>';
- h+='<div class="card" style="padding:16px 18px">';
- h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">';
- h+='<div style="font-weight:700;font-size:14px">Summary'+(savedDraft!==undefined?' <span style="font-weight:600;font-size:11px;color:var(--muted)">(edited)</span>':'')+'</div>';
- h+='<div style="display:flex;gap:8px">';
- h+='<button onclick="resetReportDraft()" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer;color:inherit">\u21ba Regenerate</button>';
- h+='<button onclick="copyReportText()" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer;color:inherit">\ud83d\udccb Copy report</button>';
- h+='</div></div>';
- h+='<textarea id="report-text" oninput="saveReportDraft(this.value)" style="width:100%;box-sizing:border-box;min-height:120px;padding:12px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;line-height:1.7;font-family:inherit;resize:vertical;background:var(--card);color:inherit">'+textToShow.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</textarea>';
- h+='</div>';
- c.innerHTML=h;
+}
+lines.push('Overall team coverage: '+overallPct+'%.');
+htmlParts.push('Overall team coverage: <b>'+overallPct+'%</b>.');
+var autoText=lines.join(' ');
+var autoHtml=htmlParts.join(' ');
+var draftKey=period+':'+range.start.getFullYear()+'-'+String(range.start.getMonth()+1).padStart(2,'0')+'-'+String(range.start.getDate()).padStart(2,'0');
+if(!ASSIGNMENTS.reportDrafts)ASSIGNMENTS.reportDrafts={};
+var savedDraft=ASSIGNMENTS.reportDrafts[draftKey];
+var isEdited=savedDraft!==undefined;
+window._reportAutoText=autoText;
+window._reportDraftKey=draftKey;
+var h='';
+h+='<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">';
+['week','month'].forEach(function(p){
+ var sel=period===p;
+ h+='<button onclick="setReportPeriod(\''+p+'\')" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid '+(sel?'#8318d8':'var(--border)')+';background:'+(sel?'#8318d8':'none')+';color:'+(sel?'#fff':'var(--muted)')+'">'+(p==='week'?'This week':'This month')+'</button>';
+});
+h+='</div>';
+h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">';
+h+='<div class="card" style="border-left:4px solid #FF5900;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Completed</div><div style="font-size:26px;font-weight:900;color:#FF5900">'+doneList.length+'</div></div>';
+h+='<div class="card" style="border-left:4px solid #dc2626;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Overdue</div><div style="font-size:26px;font-weight:900;color:#dc2626">'+overdue.length+'</div></div>';
+h+='<div class="card" style="border-left:4px solid #8318d8;padding:14px 16px"><div style="font-size:12px;color:var(--muted);font-weight:600">Top performer</div><div style="font-size:20px;font-weight:900;color:#8318d8">'+(topMember||'—')+'</div></div>';
+h+='</div>';
+h+='<div class="card" style="padding:16px 18px">';
+h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">';
+h+='<div style="font-weight:800;font-size:15px">'+headingText+(isEdited?' <span style="font-weight:600;font-size:11px;color:var(--muted)">(edited)</span>':'')+'</div>';
+h+='<div style="display:flex;gap:8px">';
+if(isEdited){
+ h+='<button onclick="resetReportDraft()" style="padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer;color:inherit">↺ Regenerate</button>';
+}
+h+='<button onclick="copyReportText()" style="padding:6px 12px;border-radius:20px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;cursor:pointer;color:inherit">📋 Copy report</button>';
+h+='</div>';
+h+='</div>';
+h+='<div id="report-text" contenteditable="true" oninput="saveReportDraft(this.innerText)" onpaste="event.preventDefault();document.execCommand(\'insertText\',false,(event.clipboardData||window.clipboardData).getData(\'text\'))" style="width:100%;box-sizing:border-box;min-height:100px;padding:16px 18px;border-radius:12px;background:var(--bg);font-size:14px;line-height:1.75;color:var(--dark);outline:none;white-space:pre-wrap">'+(isEdited?esc(savedDraft):autoHtml)+'</div>';
+h+='</div>';
+c.innerHTML=h;
 }
 function setReportPeriod(p){window._reportPeriod=p;buildReport();}
 function saveReportDraft(v){
@@ -2388,13 +2442,7 @@ function resetReportDraft(){
  saveAssignments();
  buildReport();
 }
-function copyReportText(){
- var t=$('report-text');if(!t)return;
- t.select();
- try{
-  navigator.clipboard.writeText(t.value).then(function(){showToast('Report copied',2000);}).catch(function(){document.execCommand('copy');showToast('Report copied',2000);});
- }catch(e){document.execCommand('copy');showToast('Report copied',2000);}
-}
+function copyReportText(){ var t=$('report-text');if(!t)return; var text=t.innerText||t.textContent||''; function fallback(){ var ta=document.createElement('textarea'); ta.value=text;ta.style.position='fixed';ta.style.opacity='0'; document.body.appendChild(ta);ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); showToast('Report copied',2000); } try{ navigator.clipboard.writeText(text).then(function(){showToast('Report copied',2000);}).catch(fallback); }catch(e){fallback();} }
 
 
 // ===== visual + interaction upgrades =====
