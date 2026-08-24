@@ -32,7 +32,7 @@
       "priority": "",
       "notes": "",
       "updatedAt": "2026-08-21T21:00:05.130Z",
-      "status": "In Progress"
+      "status": "Done"
     },
     "cancelation reasons::ctab-msvm85fr": {
       "member": "Dalia",
@@ -85,7 +85,7 @@
       "startDate": "2026-08-17",
       "deadline": "2026-08-23",
       "priority": "",
-      "status": "In Progress",
+      "status": "Done",
       "notes": ""
     },
     {
@@ -263,7 +263,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T14:32:39.236Z",
+  "lastUpdated": "2026-08-24T14:35:26.624Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
