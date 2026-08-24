@@ -88,6 +88,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mt7aps97",
+      "article": "compensation reasons",
+      "lob": "ctab-msvm85fr",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 0,
+      "en": 1,
+      "deadline": "2026-08-30",
+      "priority": "high",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -134,6 +146,17 @@
       "summary": "📅 Deadline set: 2026-08-23<br>📅 Start date set: 2026-08-16",
       "startDate": "2026-08-16",
       "assignedAt": "2026-08-21T21:00:43.531Z"
+    },
+    {
+      "id": "mt7aps99",
+      "key": "compensation reasons::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "compensation reasons",
+      "member": "Anoud",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Anoud Â· 📅 Start: 2026-08-24",
+      "startDate": "2026-08-24",
+      "assignedAt": "2026-08-24T13:52:40.269Z"
     }
   ],
   "mgGroups": [],
@@ -163,7 +186,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T13:09:14.397Z",
+  "lastUpdated": "2026-08-24T13:52:40.958Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
