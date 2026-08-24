@@ -163,7 +163,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T11:57:10.300Z",
+  "lastUpdated": "2026-08-24T11:57:38.818Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -411,5 +411,7 @@
     "cancelation reasons::ctab-msvm85fr::game": "https://app.genially.com/editor/6a8455a629eed769af3cc75d",
     "refund scenarios::ctab-msvm85fr::game": "https://app.genially.com/editor/6a82ddfbc45804ea14905ad3"
   },
-  "reportDrafts": {}
+  "reportDrafts": {
+    "week:2026-08-23": "This week (24 Aug - 24 Aug 2026): 0 articles completed. 1 article overdue:\n Refund Scenarios (Amal). Overall coverage: 91%."
+  }
 }
