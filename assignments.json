@@ -61,7 +61,7 @@
     "refining wimo::ctab-msvm85fr": {
       "ar": 0,
       "en": 0,
-      "status": "Not Started"
+      "status": "Done"
     }
   },
   "extra": [
@@ -129,7 +129,7 @@
       "en": 1,
       "deadline": "2026-08-26",
       "priority": "high",
-      "status": "Not Started"
+      "status": "Done"
     },
     {
       "id": "mt7astbd",
@@ -268,7 +268,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-24T14:36:10.209Z",
+  "lastUpdated": "2026-08-25T13:18:19.636Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
