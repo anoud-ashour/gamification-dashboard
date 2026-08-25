@@ -59,8 +59,15 @@
       "status": "In Progress"
     },
     "refining wimo::ctab-msvm85fr": {
+      "member": "Amal",
       "ar": 0,
       "en": 0,
+      "startDate": "2026-08-24",
+      "deadline": "2026-08-25",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-08-25T14:17:08.158Z",
       "status": "Done"
     },
     "fraud and sheild::ctab-msvm85fr": {
@@ -137,11 +144,12 @@
       "lob": "ctab-msvm85fr",
       "member": "Amal",
       "journey": "General",
-      "ar": 1,
-      "en": 1,
-      "deadline": "2026-08-26",
-      "priority": "high",
-      "status": "Done"
+      "ar": 0,
+      "en": 0,
+      "deadline": "2026-08-25",
+      "priority": "",
+      "status": "Done",
+      "notes": ""
     },
     {
       "id": "mt7astbd",
@@ -284,6 +292,24 @@
       "ts": "2026-08-25T14:15:32.709Z",
       "member": "Dalia",
       "read": false
+    },
+    {
+      "id": "mt8r13jy",
+      "key": "refining wimo::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "refining WIMO",
+      "member": "Amal",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Amal<br>📅 Deadline set: 2026-08-25<br>📅 Start date set: 2026-08-24",
+      "startDate": "2026-08-24",
+      "assignedAt": "2026-08-25T14:17:08.158Z"
+    },
+    {
+      "key": "::notif::1787667428160",
+      "msg": "Assignment updated for Amal: refining WIMO | Deadline: 2026-08-25",
+      "ts": "2026-08-25T14:17:08.160Z",
+      "member": "Amal",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -313,7 +339,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-25T14:15:36.351Z",
+  "lastUpdated": "2026-08-25T14:17:08.833Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -375,6 +401,13 @@
         "ts": "2026-08-25T14:15:32.707Z",
         "user": "Coordinator",
         "summary": "📅 Start date set: 2026-08-24; 🇦🇪 AR: ✓ Done; 🇬🇧 EN: ✓ Done"
+      }
+    ],
+    "refining wimo::ctab-msvm85fr": [
+      {
+        "ts": "2026-08-25T14:17:08.159Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Amal; 📅 Deadline set: 2026-08-25; 📅 Start date set: 2026-08-24"
       }
     ]
   },
