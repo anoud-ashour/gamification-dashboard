@@ -62,6 +62,11 @@
       "ar": 0,
       "en": 0,
       "status": "Done"
+    },
+    "fraud and sheild::ctab-msvm85fr": {
+      "ar": 0,
+      "en": 0,
+      "status": "In Progress"
     }
   },
   "extra": [
@@ -141,7 +146,7 @@
       "en": 1,
       "deadline": "2026-08-30",
       "priority": "high",
-      "status": "Not Started"
+      "status": "In Progress"
     }
   ],
   "customTabs": [
@@ -268,7 +273,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-25T13:18:19.636Z",
+  "lastUpdated": "2026-08-25T13:19:27.384Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
