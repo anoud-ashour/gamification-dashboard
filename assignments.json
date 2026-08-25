@@ -64,8 +64,15 @@
       "status": "Done"
     },
     "fraud and sheild::ctab-msvm85fr": {
+      "member": "Dalia",
       "ar": 0,
       "en": 0,
+      "startDate": "",
+      "deadline": "2026-08-31",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-08-25T14:15:12.616Z",
       "status": "In Progress"
     }
   },
@@ -142,11 +149,12 @@
       "lob": "ctab-msvm85fr",
       "member": "Dalia",
       "journey": "General",
-      "ar": 1,
-      "en": 1,
-      "deadline": "2026-08-30",
-      "priority": "high",
-      "status": "In Progress"
+      "ar": 0,
+      "en": 0,
+      "deadline": "2026-08-31",
+      "priority": "",
+      "status": "In Progress",
+      "notes": ""
     }
   ],
   "customTabs": [
@@ -251,6 +259,24 @@
       "ts": "2026-08-25T14:14:08.334Z",
       "member": "Anoud",
       "read": false
+    },
+    {
+      "id": "mt8qymeg",
+      "key": "fraud and sheild::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "Fraud and sheild",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia<br>📅 Deadline set: 2026-08-31",
+      "startDate": "",
+      "assignedAt": "2026-08-25T14:15:12.616Z"
+    },
+    {
+      "key": "::notif::1787667312619",
+      "msg": "Assignment updated for Dalia: Fraud and sheild | Deadline: 2026-08-31",
+      "ts": "2026-08-25T14:15:12.619Z",
+      "member": "Dalia",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -280,7 +306,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-25T14:14:12.018Z",
+  "lastUpdated": "2026-08-25T14:15:13.290Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -330,6 +356,13 @@
         "ts": "2026-08-25T14:14:08.332Z",
         "user": "Coordinator",
         "summary": "📅 Deadline: 2026-08-30 → 2026-08-31"
+      }
+    ],
+    "fraud and sheild::ctab-msvm85fr": [
+      {
+        "ts": "2026-08-25T14:15:12.617Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Dalia; 📅 Deadline set: 2026-08-31"
       }
     ]
   },
