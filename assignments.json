@@ -80,7 +80,7 @@
       "priority": "",
       "notes": "",
       "updatedAt": "2026-08-25T14:15:32.707Z",
-      "status": "In Progress"
+      "status": "Done"
     }
   },
   "extra": [
@@ -161,7 +161,7 @@
       "en": 1,
       "deadline": "2026-08-31",
       "priority": "",
-      "status": "In Progress",
+      "status": "Done",
       "notes": ""
     }
   ],
@@ -339,7 +339,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-30T12:43:32.759Z",
+  "lastUpdated": "2026-08-31T10:27:10.041Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
