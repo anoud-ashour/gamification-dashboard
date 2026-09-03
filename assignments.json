@@ -60,7 +60,7 @@
     },
     "refining wimo::ctab-msvm85fr": {
       "member": "Amal",
-      "ar": 0,
+      "ar": 1,
       "en": 0,
       "startDate": "2026-08-24",
       "deadline": "2026-08-25",
@@ -339,7 +339,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-08-31T10:27:10.041Z",
+  "lastUpdated": "2026-09-03T08:23:30.875Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
