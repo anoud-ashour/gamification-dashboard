@@ -183,7 +183,13 @@
       "hash": "63cecce565f6adef200977dbe716f2673075040513d0f6ad450bc832231b1a44"
     }
   ],
-  "memberStatus": {},
+  "memberStatus": {
+    "Anoud": {
+      "workload": "Inactive",
+      "availability": "Annual Leave",
+      "notes": "Back on Sunday"
+    }
+  },
   "subCategories": {},
   "articleSubCat": {},
   "customSections": [],
@@ -339,7 +345,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-09-06T13:29:08.140Z",
+  "lastUpdated": "2026-09-06T15:42:35.647Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
