@@ -1106,7 +1106,7 @@ function renderAllLops(){
  // Process ROWS from coverage sheet
  ROWS.forEach(function(r){
   var k=r.article.toLowerCase().trim();
-  if(!artMap[k])artMap[k]={article:r.article,journey:r.journey,member:r.member};
+  if(!artMap[k])artMap[k]={article:r.article,journey:r.journey,member:r.member,isMainOnly:true};
   if(r.sopId==='default')artMap[k].def={ar:r.ar,en:r.en};
   else if(r.sopId==='tpro')artMap[k].tpro={ar:r.ar,en:r.en};
   else if(r.sopId==='tkt')artMap[k].tkt={ar:r.ar,en:r.en};
@@ -1125,10 +1125,12 @@ function renderAllLops(){
     article:extra.article,
     journey:extra.journey||'Custom LOB',
     member:extra.member||'—',
-    isCustom:true
+    isCustomOnly:true
    };
+  }else{
+   artMap[k].isCustomOnly=false;
   }
-  // Store custom LOB info in a customLobs array for display
+  // Store custom LOB info
   if(!artMap[k].customLobs)artMap[k].customLobs=[];
   artMap[k].customLobs.push({lob:extra.lob,status:extra.status});
  });
@@ -1145,8 +1147,18 @@ function renderAllLops(){
   if(fj&&a.journey!==fj&&!(a.uni&&fj==='Universal'))return;
   
   var def=a.def||{ar:0,en:0},tpro=a.tpro||{ar:0,en:0},tkt=a.tkt||{ar:0,en:0},uni=a.uni||null;
-  var lopCnt=((def.ar>0||def.en>0)?1:0)+((tpro.ar>0||tpro.en>0)?1:0)+((tkt.ar>0||tkt.en>0)?1:0)+((uni&&(uni.ar>0||uni.en>0))?1:0)+((a.customLobs||[]).length>0?1:0);
-  var ovPct=lopCnt>0?Math.round(lopCnt/5*100):0;
+  
+  // Calculate coverage: for custom-only articles, show 100% if any custom LOB exists; otherwise calculate across LOBs
+  var ovPct=0;
+  if(a.isCustomOnly&&a.customLobs&&a.customLobs.length>0){
+   // Custom-only article: show 100% (it's complete within its own LOB)
+   ovPct=100;
+  }else if(!a.isCustomOnly||!a.isMainOnly){
+   // Article in main LOBs: calculate based on main LOB coverage
+   var lopCnt=((def.ar>0||def.en>0)?1:0)+((tpro.ar>0||tpro.en>0)?1:0)+((tkt.ar>0||tkt.en>0)?1:0)+((uni&&(uni.ar>0||uni.en>0))?1:0)+((a.customLobs||[]).length>0?1:0);
+   ovPct=lopCnt>0?Math.round(lopCnt/5*100):0;
+  }
+  
   var pctCol=ovPct>=60?'#10b981':(ovPct>=30?'#f59e0b':'#dc2626');
   var mm=a.member.replace(/'/g,'');
   var gkey=a.article.toLowerCase().trim();
