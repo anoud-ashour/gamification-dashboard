@@ -1149,7 +1149,20 @@ function renderAllLops(){
   var def=a.def||{ar:0,en:0},tpro=a.tpro||{ar:0,en:0},tkt=a.tkt||{ar:0,en:0},uni=a.uni||null;
   
   // Calculate coverage: for custom-only articles, show 100% if any custom LOB exists; otherwise calculate across LOBs
+  var hasCustomDone=false;
+  if(a.customLobs&&a.customLobs.length>0){
+   for(var i=0;i<a.customLobs.length;i++){
+    if(a.customLobs[i].status==='Done'){
+     hasCustomDone=true;
+     break;
+    }
+   }
+  }
+
   var ovPct=0;
+  if(hasCustomDone){
+   ovPct=100;
+  }else{
   if(a.isCustomOnly&&a.customLobs&&a.customLobs.length>0){
    // Custom-only article: show 100% (it's complete within its own LOB)
    ovPct=100;
