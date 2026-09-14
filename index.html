@@ -1174,9 +1174,12 @@ function renderAllLops(){
   if(hasCustomDone){
    ovPct=100;
  }else{
-  // Calculate from main LOBs only
-  var lopCnt=((def.ar>0||def.en>0)?1:0)+((tpro.ar>0||tpro.en>0)?1:0)+((tkt.ar>0||tkt.en>0)?1:0)+((uni&&(uni.ar>0||uni.en>0))?1:0);
-  ovPct=lopCnt>0?Math.round(lopCnt/4*100):0;
+  // Calculate from main LOBs only, scoped to the LOBs actually relevant to this article's journey
+  // (Universal-journey articles are only ever scored against Universal; all other journeys are only ever scored against Default/TPRO/Ticketing)
+  var isUniJourney=a.journey==='Universal';
+  var lopTotal=isUniJourney?1:3;
+  var lopCnt=isUniJourney?((uni&&(uni.ar>0||uni.en>0))?1:0):(((def.ar>0||def.en>0)?1:0)+((tpro.ar>0||tpro.en>0)?1:0)+((tkt.ar>0||tkt.en>0)?1:0));
+  ovPct=lopCnt>0?Math.round(lopCnt/lopTotal*100):0;
   }
   
   var pctCol=ovPct>=60?'#10b981':(ovPct>=30?'#f59e0b':'#dc2626');
