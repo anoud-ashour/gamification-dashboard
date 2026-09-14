@@ -1140,6 +1140,11 @@ function renderAllLops(){
    a.uni=a.tkt;
    a.tkt=null;
   }
+  var _noMainLop=(!a.def||(!a.def.ar&&!a.def.en))&&(!a.tpro||(!a.tpro.ar&&!a.tpro.en))&&(!a.tkt||(!a.tkt.ar&&!a.tkt.en))&&(!a.uni||(!a.uni.ar&&!a.uni.en));
+  if(_noMainLop&&a.customLobs&&a.customLobs.length>0){
+   var ctName=(ASSIGNMENTS.customTabs||[]).filter(function(ct){return 'ctab-'+ct.id===a.customLobs[0].lob;}).map(function(ct){return ct.name;})[0];
+   if(ctName)a.journey=ctName;
+  }
  });
  var lopBadge=function(l){
   if(!l||(!l.ar&&!l.en))return '<span style="color:#cbd5e1;font-size:14px">—</span>';
