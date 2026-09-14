@@ -1189,7 +1189,7 @@ function renderAllLops(){
   var tr=document.createElement('tr');
   var customBadge='';
   if(a.customLobs&&a.customLobs.length>0){
-   var customStatus=a.customLobs.map(function(c){return (c.status||'Pending')+' ('+c.lob.replace('ctab-','')+')';}).join(', ');
+   var customStatus=a.customLobs.map(function(c){var _cn=(ASSIGNMENTS.customTabs||[]).filter(function(ct){return 'ctab-'+ct.id===c.lob;}).map(function(ct){return ct.name;})[0]||c.lob.replace('ctab-','');return (c.status||'Pending')+' ('+_cn+')';}).join(', ');
    customBadge='<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:8px;background:#e0e7ff;color:#3730a3;font-size:12px">'+customStatus+'</span>';
   }
   
