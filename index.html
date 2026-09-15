@@ -1161,7 +1161,8 @@ function renderAllLops(){
   
   // Calculate coverage: for custom-only articles, show 100% if any custom LOB exists; otherwise calculate across LOBs
   var hasCustomDone=false;
-  if(a.customLobs&&a.customLobs.length>0){
+  var _hasMainLop=(def.ar>0||def.en>0)||(tpro.ar>0||tpro.en>0)||(tkt.ar>0||tkt.en>0)||(uni&&(uni.ar>0||uni.en>0));
+  if(!_hasMainLop&&a.customLobs&&a.customLobs.length>0){
    for(var i=0;i<a.customLobs.length;i++){
     if(a.customLobs[i].status==='Done'){
      hasCustomDone=true;
