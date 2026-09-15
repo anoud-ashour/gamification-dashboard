@@ -1030,7 +1030,7 @@ function renderTable(){
  const showSop=activeTab==='all';
  const th=$('thead-row');
  if(showSop){
-  th.innerHTML='<th style="width:28px"><input type="checkbox" id="sel-all-cb" onclick="document.querySelectorAll(\'.exp-cb\').forEach(function(c){c.checked=this.checked;(window._exportSel=window._exportSel||new Set())[this.checked?\'add\':\'delete\'](c.dataset.key)}.bind(this))"></th><th class="l">Article</th><th class="l">Member</th>'
+  th.innerHTML='<th class="l">Article</th><th class="l">Member</th>'
    +'<th style="text-align:center;min-width:120px;background:#f8f6f2"><span style="color:#FF5900">&#11044;</span> Default</th>'
    +'<th style="text-align:center;min-width:120px;background:#f8f6f2"><span style="color:#8318d8">&#11044;</span> TPRO</th>'
    +'<th style="text-align:center;min-width:120px;background:#f8f6f2"><span style="color:var(--tkt-accent)">&#11044;</span> Ticketing</th>'
