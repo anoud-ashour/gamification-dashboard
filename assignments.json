@@ -231,7 +231,7 @@
         {
           "id": "mv522en7",
           "text": "LC | Bad Quality (Order/Item)",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Dalia",
           "startDate": "",
           "endDate": "",
@@ -688,6 +688,15 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-12T11:35:04.331Z"
+    },
+    {
+      "key": "secitem::mv522en7::status::1791804916101",
+      "type": "status",
+      "article": "LC | Bad Quality (Order/Item)",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-12T11:35:16.101Z"
     }
   ],
   "mgGroups": [],
@@ -717,7 +726,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T11:35:04.910Z",
+  "lastUpdated": "2026-10-12T11:35:16.903Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
