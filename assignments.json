@@ -168,30 +168,6 @@
       "priority": "",
       "status": "Done",
       "notes": ""
-    },
-    {
-      "id": "mv55pk0x",
-      "article": "TEST ARTICLE DEBUG",
-      "lob": "default",
-      "member": "Amal",
-      "journey": "General",
-      "ar": 1,
-      "en": 1,
-      "deadline": "2026-11-01",
-      "priority": "",
-      "status": "Not Started"
-    },
-    {
-      "id": "mv55q734",
-      "article": "TEST ARTICLE DEBUG 2",
-      "lob": "default",
-      "member": "Amal",
-      "journey": "General",
-      "ar": 1,
-      "en": 1,
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -694,26 +670,6 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-12T10:44:59.337Z"
-    },
-    {
-      "id": "mv55pk0x",
-      "key": "test article debug::default::latest",
-      "type": "assignment",
-      "article": "TEST ARTICLE DEBUG",
-      "member": "Amal",
-      "lob": "Default",
-      "summary": "👤 Assigned to Amal",
-      "assignedAt": "2026-10-12T11:16:23.841Z"
-    },
-    {
-      "id": "mv55q734",
-      "key": "test article debug 2::default::latest",
-      "type": "assignment",
-      "article": "TEST ARTICLE DEBUG 2",
-      "member": "Amal",
-      "lob": "Default",
-      "summary": "👤 Assigned to Amal",
-      "assignedAt": "2026-10-12T11:16:53.728Z"
     }
   ],
   "mgGroups": [],
@@ -743,7 +699,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T11:16:54.147Z",
+  "lastUpdated": "2026-10-12T11:19:20.424Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
