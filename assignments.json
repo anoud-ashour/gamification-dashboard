@@ -241,7 +241,7 @@
         {
           "id": "mv522en8",
           "text": "LC | Expired & Nearly Expired tMart & NFV (Order/Item)",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Dalia",
           "startDate": "",
           "endDate": "",
@@ -643,6 +643,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-12T09:53:27.933Z"
+    },
+    {
+      "key": "secitem::mv522en8::status::1791801757912",
+      "type": "status",
+      "article": "LC | Expired & Nearly Expired tMart & NFV (Order/Item)",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-12T10:42:37.912Z"
     }
   ],
   "mgGroups": [],
@@ -672,7 +681,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T10:41:13.290Z",
+  "lastUpdated": "2026-10-12T10:42:38.614Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
