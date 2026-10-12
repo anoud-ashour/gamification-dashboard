@@ -221,7 +221,7 @@
         {
           "id": "mv522en6",
           "text": "Wrong Order Complaints",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Anoud",
           "startDate": "2026-10-12",
           "endDate": "",
@@ -634,6 +634,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Dalia",
       "assignedAt": "2026-10-12T09:34:24.928Z"
+    },
+    {
+      "key": "secitem::mv522en6::status::1791798807933",
+      "type": "status",
+      "article": "Wrong Order Complaints",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-12T09:53:27.933Z"
     }
   ],
   "mgGroups": [],
@@ -663,7 +672,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T09:53:05.744Z",
+  "lastUpdated": "2026-10-12T09:53:28.729Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
