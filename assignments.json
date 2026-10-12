@@ -374,16 +374,6 @@
           "lob": ""
         },
         {
-          "id": "mv522enm",
-          "text": "LC | tGo Re-Delivery Complaints",
-          "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
           "id": "mv522enn",
           "text": "LC | Wrong Weight",
           "status": "Not Started",
@@ -668,7 +658,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T09:37:54.702Z",
+  "lastUpdated": "2026-10-12T09:38:11.495Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
