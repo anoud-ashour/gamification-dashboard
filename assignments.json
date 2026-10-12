@@ -414,16 +414,6 @@
           "lob": ""
         },
         {
-          "id": "mv522enq",
-          "text": "LC | Delivery Instructions",
-          "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
           "id": "mv522enr",
           "text": "LC | Special Instructions",
           "status": "Not Started",
@@ -698,7 +688,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T09:34:25.669Z",
+  "lastUpdated": "2026-10-12T09:35:52.094Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
