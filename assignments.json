@@ -201,7 +201,7 @@
         {
           "id": "mv522en4",
           "text": "Missing Item(s) Complaints",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Dalia",
           "startDate": "2026-10-12",
           "endDate": "",
@@ -652,6 +652,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-12T10:42:37.912Z"
+    },
+    {
+      "key": "secitem::mv522en4::status::1791801890544",
+      "type": "status",
+      "article": "Missing Item(s) Complaints",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-12T10:44:50.544Z"
     }
   ],
   "mgGroups": [],
@@ -681,7 +690,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T10:42:38.614Z",
+  "lastUpdated": "2026-10-12T10:44:51.384Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
