@@ -186,7 +186,356 @@
   "memberStatus": {},
   "subCategories": {},
   "articleSubCat": {},
-  "customSections": [],
+  "customSections": [
+    {
+      "id": "mv5207j2",
+      "name": "Revamp",
+      "color": "#7cd8e4",
+      "description": "Update the articles (Comment, contact driver and end chat",
+      "items": [
+        {
+          "id": "mv522en4",
+          "text": "Missing Item(s) Complaints",
+          "status": "Not Started",
+          "assignee": "Dalia",
+          "startDate": "2026-10-12",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522en5",
+          "text": "Wrong Item(s) Complaints",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522en6",
+          "text": "Wrong Order Complaints",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522en7",
+          "text": "LC | Bad Quality (Order/Item)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522en8",
+          "text": "LC | Expired & Nearly Expired tMart & NFV (Order/Item)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522en9",
+          "text": "LC | Bad Smell – Bad Taste (Item/Order)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522ena",
+          "text": "LC | Temperature Issues (Items-Full Order)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enb",
+          "text": "LC | Food Portion & Packaging Issues (Order/Item)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enc",
+          "text": "LC | Dented or Bruised (Order/Item)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522end",
+          "text": "LC | Spilled, Damaged, or Broken (Item/Order)",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522ene",
+          "text": "LC | tMart Fresh & Ultra Fresh in UAE & KW",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enf",
+          "text": "LC | FOBI Full Order/ Item (s) & Food Poisoning",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522eng",
+          "text": "Combo Meal Process tMP & tGO",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enh",
+          "text": "Special Instructions Not Followed",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522eni",
+          "text": "Flowers",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enj",
+          "text": "Pharmacies & Cosmetics",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enk",
+          "text": "Electronics",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enl",
+          "text": "LC | Menu Discrepancy All Verticals",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enm",
+          "text": "LC | tGo Re-Delivery Complaints",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enn",
+          "text": "LC | Wrong Weight",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522eno",
+          "text": "LC | \"Order status successful -",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enp",
+          "text": "LC |  Number Modification",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enq",
+          "text": "LC | Delivery Instructions",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enr",
+          "text": "LC | Special Instructions",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522ens",
+          "text": "LC | Modify Order",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522ent",
+          "text": "LC | Modify Delivery Time",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enu",
+          "text": "LC | Address Modification",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522env",
+          "text": "LC | Unavailable Menu Item",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enw",
+          "text": "LC | Money Issue",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enx",
+          "text": "LC | Incomplete Orders",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522eny",
+          "text": "LC | Refund Query/Follow-UP",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522enz",
+          "text": "LC | Double Deduction",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522eo0",
+          "text": "LC | Missing/Incorrect Invoice",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv522eo1",
+          "text": "LC | Incomplete Orders",
+          "status": "Not Started",
+          "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        }
+      ]
+    }
+  ],
   "notifications": [
     {
       "id": "mt3fnvyi",
@@ -310,6 +659,16 @@
       "ts": "2026-08-25T14:17:08.160Z",
       "member": "Amal",
       "read": false
+    },
+    {
+      "id": "mv522en4_mv522en4",
+      "key": "secitem::mv522en4::assign::1791797664928",
+      "type": "assignment",
+      "article": "Missing Item(s) Complaints",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-10-12T09:34:24.928Z"
     }
   ],
   "mgGroups": [],
@@ -339,7 +698,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-09-13T07:54:40.520Z",
+  "lastUpdated": "2026-10-12T09:34:25.669Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
