@@ -319,7 +319,7 @@
           "id": "mv522ene",
           "text": "LC | tMart Fresh & Ultra Fresh in UAE & KW",
           "status": "Not Started",
-          "assignee": "Dalia",
+          "assignee": "Amal",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -827,6 +827,15 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-13T14:25:00.502Z"
+    },
+    {
+      "key": "secitem::mv522ene::assign::1791902013478",
+      "type": "assignment",
+      "article": "LC | tMart Fresh & Ultra Fresh in UAE & KW",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-13T14:33:33.478Z"
     }
   ],
   "mgGroups": [],
@@ -856,7 +865,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T14:25:01.182Z",
+  "lastUpdated": "2026-10-13T14:33:34.030Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
