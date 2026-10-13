@@ -288,7 +288,7 @@
         {
           "id": "mv522enb",
           "text": "LC | Food Portion & Packaging Issues (Order/Item)",
-          "status": "In Progress",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
@@ -800,6 +800,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Anoud",
       "assignedAt": "2026-10-13T09:07:13.466Z"
+    },
+    {
+      "key": "secitem::mv522enb::status::1791897485378",
+      "type": "status",
+      "article": "LC | Food Portion & Packaging Issues (Order/Item)",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "Status: In Progress → Done",
+      "assignedAt": "2026-10-13T13:18:05.378Z"
     }
   ],
   "mgGroups": [],
@@ -829,7 +838,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T12:51:43.047Z",
+  "lastUpdated": "2026-10-13T13:18:05.867Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
