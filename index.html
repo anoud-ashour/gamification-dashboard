@@ -4085,11 +4085,18 @@ function saveNewSecItem(){
  var lang=$('secitem-lang-sel').value||'Both';var lob=($('secitem-lob-inp').value||'').trim();
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===_addSecItemTarget;});if(!sec)return;
  if(!sec.items)sec.items=[];
+ var oldAssignee='';
  if(_editSecItemId){
   var item=sec.items.find(function(it){return it.id===_editSecItemId;});
-  if(item){item.text=text;item.assignee=assignee;item.status=status;item.startDate=startDate;item.endDate=endDate;item.lang=lang;item.lob=lob;}
+  if(item){oldAssignee=item.assignee||'';item.text=text;item.assignee=assignee;item.status=status;item.startDate=startDate;item.endDate=endDate;item.lang=lang;item.lob=lob;}
  }else{
   sec.items.push({id:Date.now().toString(36),text:text,status:status,assignee:assignee,startDate:startDate,endDate:endDate,lang:lang,lob:lob});
+ }
+ if(assignee&&assignee!==oldAssignee){
+  _pushNotif({key:'secitem::'+(_editSecItemId||text)+'::assign::'+Date.now(),type:'assignment',article:text,member:assignee,lob:sec.name,summary:'👤 Assigned to '+assignee,assignedAt:new Date().toISOString()});
+  buildNotifBadge();
+  _notifyAssignment(assignee,text,sec.name,endDate,'','');
+  try{saveAssignments().catch(function(){});}catch(e){}
  }
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAddSecItem();buildUpdateProjects();if(activeTab==='overview')buildOverview();
@@ -4201,6 +4208,7 @@ function setSecItemStatus(secId,itemId,newStatus){
   var oldStatus=item.status||'Not Started';
   item.status=newStatus;
   try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+newStatus,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
+  try{_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+newStatus,item.assignee);});}catch(e){}
   _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
   try{saveAssignments().catch(function(){});}catch(e){}
   try{buildUpdateProjectsProgressSummary();}catch(e){}
@@ -4212,6 +4220,7 @@ function cycleSecItemStatus(secId,itemId){
   var oldStatus=item.status||'Not Started';
   item.status=_secNextStatus(item.status);
   try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+item.status,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
+  try{_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+item.status,item.assignee);});}catch(e){}
   _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
   try{saveAssignments().catch(function(){});}catch(e){}
   try{buildUpdateProjectsProgressSummary();}catch(e){}
