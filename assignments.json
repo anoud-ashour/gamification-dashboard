@@ -328,7 +328,7 @@
         {
           "id": "mv522enf",
           "text": "LC | FOBI Full Order/ Item (s) & Food Poisoning",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Amal",
           "startDate": "",
           "endDate": "",
@@ -880,6 +880,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-13T16:30:17.449Z"
+    },
+    {
+      "key": "secitem::mv522enf::status::1791909026029",
+      "type": "status",
+      "article": "LC | FOBI Full Order/ Item (s) & Food Poisoning",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-13T16:30:26.029Z"
     }
   ],
   "mgGroups": [],
@@ -909,7 +918,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T16:30:18.314Z",
+  "lastUpdated": "2026-10-13T16:30:26.607Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
