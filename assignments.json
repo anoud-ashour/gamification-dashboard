@@ -514,16 +514,6 @@
           "endDate": "",
           "lang": "Both",
           "lob": ""
-        },
-        {
-          "id": "mv6gjagq",
-          "text": "test article 2",
-          "status": "Not Started",
-          "assignee": "Anoud",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
         }
       ]
     }
@@ -829,7 +819,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T12:50:23.079Z",
+  "lastUpdated": "2026-10-13T12:50:33.632Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
