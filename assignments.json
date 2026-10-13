@@ -298,7 +298,7 @@
         {
           "id": "mv522enc",
           "text": "LC | Dented or Bruised (Order/Item)",
-          "status": "In Progress",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
@@ -862,6 +862,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-13T14:34:27.997Z"
+    },
+    {
+      "key": "secitem::mv522enc::status::1791902160643",
+      "type": "status",
+      "article": "LC | Dented or Bruised (Order/Item)",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "Status: In Progress → Done",
+      "assignedAt": "2026-10-13T14:36:00.643Z"
     }
   ],
   "mgGroups": [],
@@ -891,7 +900,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T14:34:37.067Z",
+  "lastUpdated": "2026-10-13T14:36:01.243Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
