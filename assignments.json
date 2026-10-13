@@ -292,7 +292,7 @@
           "id": "mv522end",
           "text": "LC | Spilled, Damaged, or Broken (Item/Order)",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -762,7 +762,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T08:49:29.799Z",
+  "lastUpdated": "2026-10-13T08:54:04.218Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
