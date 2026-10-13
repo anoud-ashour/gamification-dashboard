@@ -173,6 +173,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mv6gi1va",
+      "article": "test article",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 1,
+      "en": 1,
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -317,7 +329,7 @@
           "id": "mv522enf",
           "text": "LC | FOBI Full Order/ Item (s) & Food Poisoning",
           "status": "Not Started",
-          "assignee": "Amal",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -327,7 +339,7 @@
           "id": "mv522eng",
           "text": "Combo Meal Process tMP & tGO",
           "status": "Not Started",
-          "assignee": "Amal",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -337,7 +349,7 @@
           "id": "mv522enh",
           "text": "Special Instructions Not Followed",
           "status": "Not Started",
-          "assignee": "Amal",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -347,7 +359,7 @@
           "id": "mv522eni",
           "text": "Flowers",
           "status": "Not Started",
-          "assignee": "Amal",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -498,6 +510,16 @@
           "text": "LC | Incomplete Orders",
           "status": "Not Started",
           "assignee": "",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
+        },
+        {
+          "id": "mv6gjagq",
+          "text": "test article 2",
+          "status": "Not Started",
+          "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -807,7 +829,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T12:50:42.993Z",
+  "lastUpdated": "2026-10-13T12:51:43.047Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
