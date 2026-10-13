@@ -268,7 +268,7 @@
         {
           "id": "mv522en9",
           "text": "LC | Bad Smell – Bad Taste (Item/Order)",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Amal",
           "startDate": "2026-10-13",
           "endDate": "",
@@ -800,6 +800,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Anoud",
       "assignedAt": "2026-10-13T09:07:13.466Z"
+    },
+    {
+      "key": "secitem::mv522en9::status::1791883694010",
+      "type": "status",
+      "article": "LC | Bad Smell – Bad Taste (Item/Order)",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-13T09:28:14.010Z"
     }
   ],
   "mgGroups": [],
@@ -829,7 +838,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T09:07:14.014Z",
+  "lastUpdated": "2026-10-13T09:28:14.702Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
