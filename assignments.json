@@ -339,7 +339,7 @@
           "id": "mv522eng",
           "text": "Combo Meal Process tMP & tGO",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Dalia",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -854,6 +854,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-13T10:24:35.896Z"
+    },
+    {
+      "key": "secitem::mv522eng::assign::1791887095538",
+      "type": "assignment",
+      "article": "Combo Meal Process tMP & tGO",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-10-13T10:24:55.538Z"
     }
   ],
   "mgGroups": [],
@@ -883,7 +892,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T10:24:36.619Z",
+  "lastUpdated": "2026-10-13T10:24:56.146Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
