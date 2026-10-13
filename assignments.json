@@ -278,7 +278,7 @@
         {
           "id": "mv522ena",
           "text": "LC | Temperature Issues (Items-Full Order)",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Amal",
           "startDate": "2026-10-13",
           "endDate": "",
@@ -916,6 +916,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-13T16:30:53.189Z"
+    },
+    {
+      "key": "secitem::mv522ena::status::1791909069531",
+      "type": "status",
+      "article": "LC | Temperature Issues (Items-Full Order)",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-13T16:31:09.531Z"
     }
   ],
   "mgGroups": [],
@@ -945,7 +954,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T16:30:53.809Z",
+  "lastUpdated": "2026-10-13T16:31:10.077Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
