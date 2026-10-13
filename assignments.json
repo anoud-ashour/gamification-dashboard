@@ -272,7 +272,7 @@
           "id": "mv522enb",
           "text": "LC | Food Portion & Packaging Issues (Order/Item)",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -282,7 +282,7 @@
           "id": "mv522enc",
           "text": "LC | Dented or Bruised (Order/Item)",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -762,7 +762,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T08:48:12.105Z",
+  "lastUpdated": "2026-10-13T08:49:29.799Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
