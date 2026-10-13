@@ -348,7 +348,7 @@
         {
           "id": "mv522enh",
           "text": "Special Instructions Not Followed",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Amal",
           "startDate": "",
           "endDate": "",
@@ -898,6 +898,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-13T16:30:34.030Z"
+    },
+    {
+      "key": "secitem::mv522enh::status::1791909042469",
+      "type": "status",
+      "article": "Special Instructions Not Followed",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-13T16:30:42.469Z"
     }
   ],
   "mgGroups": [],
@@ -927,7 +936,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T16:30:34.591Z",
+  "lastUpdated": "2026-10-13T16:30:43.156Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
