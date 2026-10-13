@@ -2720,11 +2720,11 @@ function parseFallback(text){
  return Object.values(merged);
 }
 
-function _fetchWithTimeout(url,ms){
+function _fetchWithTimeout(url,ms,opts){
  return new Promise(function(res,rej){
   var done=false;
   var t=setTimeout(function(){if(!done){done=true;rej(new Error('timeout'));}},ms);
-  fetch(url,{cache:'no-store'}).then(function(r){if(!done){done=true;clearTimeout(t);res(r);}}).catch(function(e){if(!done){done=true;clearTimeout(t);rej(e);}});
+  fetch(url,opts||{cache:'no-store'}).then(function(r){if(!done){done=true;clearTimeout(t);res(r);}}).catch(function(e){if(!done){done=true;clearTimeout(t);rej(e);}});
  });
 }
 function _parseTabs(json){
@@ -2816,7 +2816,7 @@ async function loadAssignments(){
  try{
   var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE+'?t='+Date.now();
   var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json'};
-  var r=await fetch(apiUrl,{headers:hdrs,cache:'no-store'});
+  var r=await _fetchWithTimeout(apiUrl,15000,{headers:hdrs,cache:'no-store'});
   if(r.ok){
    var sj=await r.json();
    var j=JSON.parse(decodeURIComponent(escape(atob(sj.content.replace(/\n/g,'')))));ASSIGNMENTS=j;
@@ -3552,7 +3552,7 @@ function _sendDashboardEmail(emailAddr,subj,bodyText,member){
 }
 
 var _savingNow=false;
-async function saveAssignments(){ if(_savingNow){setTimeout(saveAssignments,1500);return;} _savingNow=true; var saveBtn=$('mgr-save-btn'); if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving\u2026';} var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE; var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}; var ok=false; for(var attempt=0;attempt<3&&!ok;attempt++){ try{ if(attempt>0)await new Promise(function(res){setTimeout(res,700*attempt);}); var shaResp=await fetch(apiUrl,{headers:hdrs,cache:'no-store'}); var sha=null;if(shaResp.ok){var sj=await shaResp.json();sha=sj.sha;} ASSIGNMENTS.lastUpdated=new Date().toISOString(); var content=btoa(unescape(encodeURIComponent(JSON.stringify(ASSIGNMENTS,null,2)))); var body={message:'Manager update: assignments',content:content};if(sha)body.sha=sha; var putResp=await fetch(apiUrl,{method:'PUT',headers:hdrs,body:JSON.stringify(body)}); if(putResp.ok){ok=true;} }catch(e){} } if(ok){ _assignPending=false; var ind=$('mgr-pending');if(ind)ind.style.display='none'; if(saveBtn){saveBtn.textContent='\u2713 Saved!';setTimeout(function(){saveBtn.textContent='\uD83D\uDCBE Save Changes';saveBtn.disabled=false;},2500);} }else{if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='\u26A0\uFE0F Retry Save';}} _savingNow=false; }
+async function saveAssignments(){ if(_savingNow){setTimeout(saveAssignments,1500);return;} _savingNow=true; var _savingWatchdog=setTimeout(function(){_savingNow=false;},30000); var saveBtn=$('mgr-save-btn'); if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving\u2026';} var apiUrl='https://api.github.com/repos/'+ASSIGN_REPO+'/contents/'+ASSIGN_FILE; var hdrs={'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}; var ok=false; for(var attempt=0;attempt<3&&!ok;attempt++){ try{ if(attempt>0)await new Promise(function(res){setTimeout(res,700*attempt);}); var shaResp=await _fetchWithTimeout(apiUrl,15000,{headers:hdrs,cache:'no-store'}); var sha=null;if(shaResp.ok){var sj=await shaResp.json();sha=sj.sha;} ASSIGNMENTS.lastUpdated=new Date().toISOString(); var content=btoa(unescape(encodeURIComponent(JSON.stringify(ASSIGNMENTS,null,2)))); var body={message:'Manager update: assignments',content:content};if(sha)body.sha=sha; var putResp=await _fetchWithTimeout(apiUrl,15000,{method:'PUT',headers:hdrs,body:JSON.stringify(body)}); if(putResp.ok){ok=true;} }catch(e){} } clearTimeout(_savingWatchdog); if(ok){ _assignPending=false; var ind=$('mgr-pending');if(ind)ind.style.display='none'; if(saveBtn){saveBtn.textContent='\u2713 Saved!';setTimeout(function(){saveBtn.textContent='\uD83D\uDCBE Save Changes';saveBtn.disabled=false;},2500);} }else{if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='\u26A0\uFE0F Retry Save';}} _savingNow=false; }
 function openAddArticle(){
  $('addart-name').value='';$('addart-member').value='';$('addart-journey').value='';
  if($('addart-startdate'))$('addart-startdate').value='';
