@@ -268,7 +268,7 @@
         {
           "id": "mv522en9",
           "text": "LC | Bad Smell – Bad Taste (Item/Order)",
-          "status": "Done",
+          "status": "Not Started",
           "assignee": "Amal",
           "startDate": "2026-10-13",
           "endDate": "",
@@ -278,7 +278,7 @@
         {
           "id": "mv522ena",
           "text": "LC | Temperature Issues (Items-Full Order)",
-          "status": "Done",
+          "status": "Not Started",
           "assignee": "Amal",
           "startDate": "2026-10-13",
           "endDate": "",
@@ -319,7 +319,7 @@
           "id": "mv522ene",
           "text": "LC | tMart Fresh & Ultra Fresh in UAE & KW",
           "status": "Not Started",
-          "assignee": "Dalia",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -329,7 +329,7 @@
           "id": "mv522enf",
           "text": "LC | FOBI Full Order/ Item (s) & Food Poisoning",
           "status": "Not Started",
-          "assignee": "Amal",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -339,7 +339,7 @@
           "id": "mv522eng",
           "text": "Combo Meal Process tMP & tGO",
           "status": "Not Started",
-          "assignee": "Dalia",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -349,7 +349,7 @@
           "id": "mv522enh",
           "text": "Special Instructions Not Followed",
           "status": "Not Started",
-          "assignee": "Anoud",
+          "assignee": "",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -800,78 +800,6 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Anoud",
       "assignedAt": "2026-10-13T09:07:13.466Z"
-    },
-    {
-      "key": "secitem::mv522en9::status::1791883694010",
-      "type": "status",
-      "article": "LC | Bad Smell – Bad Taste (Item/Order)",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "Status: Not Started → In Progress",
-      "assignedAt": "2026-10-13T09:28:14.010Z"
-    },
-    {
-      "key": "secitem::mv522ene::assign::1791885659432",
-      "type": "assignment",
-      "article": "LC | tMart Fresh & Ultra Fresh in UAE & KW",
-      "member": "Dalia",
-      "lob": "Revamp",
-      "summary": "👤 Assigned to Dalia",
-      "assignedAt": "2026-10-13T10:00:59.432Z"
-    },
-    {
-      "key": "secitem::mv522en9::status::1791886538438",
-      "type": "status",
-      "article": "LC | Bad Smell – Bad Taste (Item/Order)",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "Status: In Progress → Done",
-      "assignedAt": "2026-10-13T10:15:38.438Z"
-    },
-    {
-      "key": "secitem::mv522ena::status::1791886544834",
-      "type": "status",
-      "article": "LC | Temperature Issues (Items-Full Order)",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "Status: Not Started → In Progress",
-      "assignedAt": "2026-10-13T10:15:44.834Z"
-    },
-    {
-      "key": "secitem::mv522ena::status::1791886858710",
-      "type": "status",
-      "article": "LC | Temperature Issues (Items-Full Order)",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "Status: In Progress → Done",
-      "assignedAt": "2026-10-13T10:20:58.710Z"
-    },
-    {
-      "key": "secitem::mv522enf::assign::1791887075896",
-      "type": "assignment",
-      "article": "LC | FOBI Full Order/ Item (s) & Food Poisoning",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "👤 Assigned to Amal",
-      "assignedAt": "2026-10-13T10:24:35.896Z"
-    },
-    {
-      "key": "secitem::mv522eng::assign::1791887095538",
-      "type": "assignment",
-      "article": "Combo Meal Process tMP & tGO",
-      "member": "Dalia",
-      "lob": "Revamp",
-      "summary": "👤 Assigned to Dalia",
-      "assignedAt": "2026-10-13T10:24:55.538Z"
-    },
-    {
-      "key": "secitem::mv522enh::assign::1791887102668",
-      "type": "assignment",
-      "article": "Special Instructions Not Followed",
-      "member": "Anoud",
-      "lob": "Revamp",
-      "summary": "👤 Assigned to Anoud",
-      "assignedAt": "2026-10-13T10:25:02.668Z"
     }
   ],
   "mgGroups": [],
@@ -901,7 +829,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T10:25:03.271Z",
+  "lastUpdated": "2026-10-13T10:29:50.772Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
