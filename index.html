@@ -3429,19 +3429,26 @@ function _emailForMember(nm){
 function _allManagerEmails(){
  return (ASSIGNMENTS.managers||[]).map(function(m){return m&&m.email;}).filter(Boolean);
 }
+function _actingManagerName(){
+ if(!managerMode||!_managerEmail)return '';
+ var pfx=_managerEmail.split('@')[0].split('.')[0];
+ return pfx?pfx.charAt(0).toUpperCase()+pfx.slice(1):'';
+}
 function _notifyAssignment(nm,artTitle,lobLabel,deadline,priority,notes){
  if(!nm)return;
  var _dl=deadline?('\nDeadline: '+deadline):'';
  var _pr=(priority&&priority!=='None')?('\nPriority: '+priority):'';
  var _nt=notes?('\nNotes: '+notes):'';
+ var _mgrName=_actingManagerName();
+ var _byLine=_mgrName?(' by '+_mgrName):'';
  var _memberEmailAddr=_emailForMember(nm);
  if(_memberEmailAddr){
-  _sendDashboardEmail(_memberEmailAddr,'New article assigned: '+artTitle,'Hi '+nm+',\n\nYou have been assigned to "'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+'.'+_dl+_pr+_nt+'\n\nPlease check the dashboard for details.',nm);
+  _sendDashboardEmail(_memberEmailAddr,'New article assigned: '+artTitle,'Hi '+nm+',\n\nYou have been assigned to "'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+_byLine+'.'+_dl+_pr+_nt+'\n\nPlease check the dashboard for details.',nm);
  }else{
   showToast('⚠️ '+nm+' has no registered email yet — add them via Manage Members to enable email alerts',4500);
  }
  _allManagerEmails().forEach(function(mgrEmail){
-  _sendDashboardEmail(mgrEmail,'Article assigned: '+artTitle,'"'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+' has been assigned to '+nm+'.'+_dl+_pr+_nt,nm);
+  _sendDashboardEmail(mgrEmail,'Article assigned: '+artTitle,'"'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+' has been assigned to '+nm+_byLine+'.'+_dl+_pr+_nt,nm);
  });
 }
 function saveAssign(){membersBuilt=false;
@@ -4208,7 +4215,7 @@ function setSecItemStatus(secId,itemId,newStatus){
   var oldStatus=item.status||'Not Started';
   item.status=newStatus;
   try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+newStatus,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
-  try{_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+newStatus,item.assignee);});}catch(e){}
+  try{var _secMgr=_actingManagerName();_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(_secMgr||item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+newStatus,item.assignee);});}catch(e){}
   _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
   try{saveAssignments().catch(function(){});}catch(e){}
   try{buildUpdateProjectsProgressSummary();}catch(e){}
@@ -4220,7 +4227,7 @@ function cycleSecItemStatus(secId,itemId){
   var oldStatus=item.status||'Not Started';
   item.status=_secNextStatus(item.status);
   try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+item.status,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
-  try{_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+item.status,item.assignee);});}catch(e){}
+  try{var _secMgr2=_actingManagerName();_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(_secMgr2||item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+item.status,item.assignee);});}catch(e){}
   _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
   try{saveAssignments().catch(function(){});}catch(e){}
   try{buildUpdateProjectsProgressSummary();}catch(e){}
