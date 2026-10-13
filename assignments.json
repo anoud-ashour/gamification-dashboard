@@ -514,6 +514,16 @@
           "endDate": "",
           "lang": "Both",
           "lob": ""
+        },
+        {
+          "id": "mv6gjagq",
+          "text": "test article 2",
+          "status": "Not Started",
+          "assignee": "Anoud",
+          "startDate": "",
+          "endDate": "",
+          "lang": "Both",
+          "lob": ""
         }
       ]
     }
@@ -780,6 +790,16 @@
       "summary": "👤 Assigned to Anoud",
       "startDate": "",
       "assignedAt": "2026-10-13T09:06:15.675Z"
+    },
+    {
+      "id": "mv6gjagq_mv6gjagq",
+      "key": "secitem::mv6gjagq::assign::1791882433466",
+      "type": "assignment",
+      "article": "test article 2",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-10-13T09:07:13.466Z"
     }
   ],
   "mgGroups": [],
@@ -809,7 +829,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T09:06:21.513Z",
+  "lastUpdated": "2026-10-13T09:07:14.014Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
