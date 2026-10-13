@@ -3426,8 +3426,23 @@ function _emailForMember(nm){
  });
  return acct?acct.email:'';
 }
+var _FIXED_MANAGER_EMAILS=['rawan.kamaleldin@talabat.com','anoud.shehata@talabat.com'];
 function _allManagerEmails(){
- return (ASSIGNMENTS.managers||[]).map(function(m){return m&&m.email;}).filter(Boolean);
+ var seen={},out=[];
+ _FIXED_MANAGER_EMAILS.concat((ASSIGNMENTS.managers||[]).map(function(m){return m&&m.email;})).forEach(function(e){
+  if(!e)return;var k=String(e).toLowerCase().trim();if(!k||seen[k])return;seen[k]=1;out.push(k);
+ });
+ return out;
+}
+function _notifyChange(nm,artTitle,lobLabel,changes){
+ var _mgrName=_actingManagerName();
+ var _byLine=_mgrName?(' by '+_mgrName):'';
+ var txt=changes.map(function(c){return String(c).replace(/<br>/g,'\n');}).join('\n');
+ var body='"'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+' was updated'+_byLine+(nm?' (member: '+nm+')':'')+':\n'+txt;
+ var sent={};
+ var mem=nm?_emailForMember(nm):'';
+ if(mem){sent[mem.toLowerCase()]=1;_sendDashboardEmail(mem,'Article updated: '+artTitle,'Hi '+nm+',\n\n'+body,nm);}
+ _allManagerEmails().forEach(function(e){if(sent[e])return;sent[e]=1;_sendDashboardEmail(e,'Article updated: '+artTitle,body,nm||'manager');});
 }
 function _actingManagerName(){
  if(!managerMode||!_managerEmail)return '';
@@ -3491,6 +3506,8 @@ if(!ASSIGNMENTS.history[_mgrEditKey])ASSIGNMENTS.history[_mgrEditKey]=[];
 ASSIGNMENTS.history[_mgrEditKey].push({ts:new Date().toISOString(),user:_myTasksMember()||'Coordinator',summary:changes.join('; ')});}
 if(notifType==='assignment'&&nm){
  _notifyAssignment(nm,artTitle,lobLabel,ov.deadline,ov.priority,ov.notes);
+}else if(changes.length>0){
+ _notifyChange(nm,artTitle,lobLabel,changes);
 }
 })(); saveAssignments();
  // Save sub-category assignment
@@ -3519,11 +3536,25 @@ if(notifType==='assignment'&&nm){
 
 
 
+var _emailQueue=[],_emailBusy=false;
 function _sendDashboardEmail(emailAddr,subj,bodyText,member){
- showToast('Sending email to '+member+'...',2000);
- fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',body:JSON.stringify({to:emailAddr,subject:subj,body:bodyText}),mode:'no-cors'})
-  .then(function(){showToast('Email sent to '+member+' ✓',3000);})
-  .catch(function(){showToast('Could not reach email service.',4000);});
+ _emailQueue.push({to:emailAddr,subject:subj,body:bodyText,member:member||emailAddr});
+ _drainEmailQueue();
+}
+function _drainEmailQueue(){
+ if(_emailBusy)return;
+ var job=_emailQueue.shift();
+ if(!job)return;
+ _emailBusy=true;
+ showToast('Sending email to '+job.member+'...',2000);
+ var done=function(ok){
+  showToast(ok?'Email sent to '+job.member+' ✓':'Could not reach email service ('+job.to+').',ok?2500:4000);
+  setTimeout(function(){_emailBusy=false;_drainEmailQueue();},600);
+ };
+ // Sequential sends (parallel POSTs to Apps Script get dropped); credentials lets the Google session through the domain-restricted script
+ fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body}),mode:'no-cors',credentials:'include',keepalive:false})
+  .then(function(){done(true);})
+  .catch(function(){done(false);});
 }function saveAssignAndNotify(){
  if(!_mgrEditKey)return;
  var member=$("asgn-member").value;
