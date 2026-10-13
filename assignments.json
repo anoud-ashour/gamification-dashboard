@@ -221,7 +221,7 @@
         {
           "id": "mv522en6",
           "text": "Wrong Order Complaints",
-          "status": "In Progress",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "2026-10-12",
           "endDate": "",
@@ -724,6 +724,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-13T08:44:28.700Z"
+    },
+    {
+      "key": "secitem::mv522en6::status::1791881291585",
+      "type": "status",
+      "article": "Wrong Order Complaints",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "Status: In Progress → Done",
+      "assignedAt": "2026-10-13T08:48:11.585Z"
     }
   ],
   "mgGroups": [],
@@ -753,7 +762,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T08:48:05.264Z",
+  "lastUpdated": "2026-10-13T08:48:12.105Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
