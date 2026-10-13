@@ -349,7 +349,7 @@
           "id": "mv522enh",
           "text": "Special Instructions Not Followed",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -854,6 +854,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-13T14:33:52.671Z"
+    },
+    {
+      "key": "secitem::mv522enh::assign::1791902040956",
+      "type": "assignment",
+      "article": "Special Instructions Not Followed",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-10-13T14:34:00.956Z"
     }
   ],
   "mgGroups": [],
@@ -883,7 +892,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T14:33:53.353Z",
+  "lastUpdated": "2026-10-13T14:34:01.540Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
