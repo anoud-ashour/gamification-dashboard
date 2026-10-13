@@ -359,7 +359,7 @@
           "id": "mv522eni",
           "text": "Flowers",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Amal",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -510,16 +510,6 @@
           "text": "LC | Incomplete Orders",
           "status": "Not Started",
           "assignee": "",
-          "startDate": "",
-          "endDate": "",
-          "lang": "Both",
-          "lob": ""
-        },
-        {
-          "id": "mv6gjagq",
-          "text": "test article 2",
-          "status": "Not Started",
-          "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -863,6 +853,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-13T14:34:12.737Z"
+    },
+    {
+      "key": "secitem::mv522eni::assign::1791902067997",
+      "type": "assignment",
+      "article": "Flowers",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-13T14:34:27.997Z"
     }
   ],
   "mgGroups": [],
@@ -892,7 +891,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T14:34:13.449Z",
+  "lastUpdated": "2026-10-13T14:34:28.658Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
