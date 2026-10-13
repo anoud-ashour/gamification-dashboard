@@ -252,8 +252,8 @@
           "id": "mv522en9",
           "text": "LC | Bad Smell – Bad Taste (Item/Order)",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Amal",
+          "startDate": "2026-10-13",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -262,8 +262,8 @@
           "id": "mv522ena",
           "text": "LC | Temperature Issues (Items-Full Order)",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Amal",
+          "startDate": "2026-10-13",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -744,7 +744,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-12T14:31:05.801Z",
+  "lastUpdated": "2026-10-13T08:38:47.482Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
