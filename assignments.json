@@ -173,6 +173,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mv6gi1va",
+      "article": "test article",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 1,
+      "en": 1,
+      "deadline": "",
+      "priority": "",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -747,6 +759,27 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-13T08:54:44.097Z"
+    },
+    {
+      "id": "mv6gi1va",
+      "key": "test article::default::latest",
+      "type": "assignment",
+      "article": "test article",
+      "member": "Anoud",
+      "lob": "Default",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-10-13T09:06:15.670Z"
+    },
+    {
+      "id": "mv6gi1vf",
+      "key": "test article::default::assign",
+      "type": "assign",
+      "article": "test article",
+      "member": "Anoud",
+      "lob": "Default (LC)",
+      "summary": "👤 Assigned to Anoud",
+      "startDate": "",
+      "assignedAt": "2026-10-13T09:06:15.675Z"
     }
   ],
   "mgGroups": [],
@@ -776,7 +809,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T08:54:52.826Z",
+  "lastUpdated": "2026-10-13T09:06:16.208Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
