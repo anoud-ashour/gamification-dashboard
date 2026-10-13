@@ -173,18 +173,6 @@
       "priority": "",
       "status": "Done",
       "notes": ""
-    },
-    {
-      "id": "mv6gi1va",
-      "article": "test article",
-      "lob": "default",
-      "member": "Anoud",
-      "journey": "General",
-      "ar": 1,
-      "en": 1,
-      "deadline": "",
-      "priority": "",
-      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -819,7 +807,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T12:50:33.632Z",
+  "lastUpdated": "2026-10-13T12:50:42.993Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
