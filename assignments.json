@@ -358,7 +358,7 @@
         {
           "id": "mv522eni",
           "text": "Flowers",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Amal",
           "startDate": "",
           "endDate": "",
@@ -907,6 +907,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-13T16:30:42.469Z"
+    },
+    {
+      "key": "secitem::mv522eni::status::1791909053189",
+      "type": "status",
+      "article": "Flowers",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-13T16:30:53.189Z"
     }
   ],
   "mgGroups": [],
@@ -936,7 +945,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T16:30:43.156Z",
+  "lastUpdated": "2026-10-13T16:30:53.809Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
