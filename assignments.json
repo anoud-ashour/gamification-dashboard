@@ -421,8 +421,8 @@
           "id": "mv522eno",
           "text": "LC | \"Order status successful -",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Anoud",
+          "startDate": "2026-10-14",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1045,6 +1045,15 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-14T09:31:26.123Z"
+    },
+    {
+      "key": "secitem::mv522eno::assign::1791970683130",
+      "type": "assignment",
+      "article": "LC | \"Order status successful -",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-10-14T09:38:03.130Z"
     }
   ],
   "mgGroups": [],
@@ -1074,7 +1083,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T09:31:26.801Z",
+  "lastUpdated": "2026-10-14T09:38:03.579Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
