@@ -3552,7 +3552,7 @@ function _drainEmailQueue(){
   setTimeout(function(){_emailBusy=false;_drainEmailQueue();},600);
  };
  // Sequential sends (parallel POSTs to Apps Script get dropped); credentials lets the Google session through the domain-restricted script
- fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body}),mode:'no-cors',credentials:'include',keepalive:false})
+ fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body+'\n\n— Gamification Team',senderName:'Gamification Team',name:'Gamification Team',fromName:'Gamification Team'}),mode:'no-cors',credentials:'include',keepalive:false})
   .then(function(){done(true);})
   .catch(function(){done(false);});
 }function saveAssignAndNotify(){
