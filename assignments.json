@@ -381,8 +381,8 @@
           "id": "mv522enj",
           "text": "Pharmacies & Cosmetics",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Amal",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -946,6 +946,15 @@
       "summary": "👤 Assigned to Anoud Â· 📅 Start: 2026-10-14",
       "startDate": "2026-10-14",
       "assignedAt": "2026-10-14T08:02:13.681Z"
+    },
+    {
+      "key": "secitem::mv522enj::assign::1791965368981",
+      "type": "assignment",
+      "article": "Pharmacies & Cosmetics",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-14T08:09:28.981Z"
     }
   ],
   "mgGroups": [],
@@ -975,7 +984,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T08:02:17.295Z",
+  "lastUpdated": "2026-10-14T08:09:29.508Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
