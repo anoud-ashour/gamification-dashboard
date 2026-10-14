@@ -391,8 +391,8 @@
           "id": "mv522enk",
           "text": "Electronics",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Amal",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -955,6 +955,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-14T08:09:28.981Z"
+    },
+    {
+      "key": "secitem::mv522enk::assign::1791965382875",
+      "type": "assignment",
+      "article": "Electronics",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-14T08:09:42.875Z"
     }
   ],
   "mgGroups": [],
@@ -984,7 +993,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T08:09:29.508Z",
+  "lastUpdated": "2026-10-14T08:09:43.272Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
