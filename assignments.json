@@ -380,7 +380,7 @@
         {
           "id": "mv522enj",
           "text": "Pharmacies & Cosmetics",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Amal",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -973,6 +973,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Dalia",
       "assignedAt": "2026-10-14T08:09:57.166Z"
+    },
+    {
+      "key": "secitem::mv522enj::status::1791965604545",
+      "type": "status",
+      "article": "Pharmacies & Cosmetics",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-14T08:13:24.545Z"
     }
   ],
   "mgGroups": [],
@@ -1002,7 +1011,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T08:11:30.112Z",
+  "lastUpdated": "2026-10-14T08:13:25.118Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
