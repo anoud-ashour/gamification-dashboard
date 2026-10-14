@@ -370,7 +370,7 @@
         {
           "id": "mv522eni",
           "text": "Flowers",
-          "status": "Done",
+          "status": "In Progress",
           "assignee": "Amal",
           "startDate": "",
           "endDate": "",
@@ -380,7 +380,7 @@
         {
           "id": "mv522enj",
           "text": "Pharmacies & Cosmetics",
-          "status": "Done",
+          "status": "Not Started",
           "assignee": "Amal",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -390,7 +390,7 @@
         {
           "id": "mv522enk",
           "text": "Electronics",
-          "status": "In Progress",
+          "status": "Not Started",
           "assignee": "Amal",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -401,8 +401,8 @@
           "id": "mv522enl",
           "text": "LC | Menu Discrepancy All Verticals",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Dalia",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -966,31 +966,13 @@
       "assignedAt": "2026-10-14T08:09:42.875Z"
     },
     {
-      "key": "secitem::mv522eni::status::1791965397962",
-      "type": "status",
-      "article": "Flowers",
-      "member": "Amal",
+      "key": "secitem::mv522enl::assign::1791965397166",
+      "type": "assignment",
+      "article": "LC | Menu Discrepancy All Verticals",
+      "member": "Dalia",
       "lob": "Revamp",
-      "summary": "Status: In Progress → Done",
-      "assignedAt": "2026-10-14T08:09:57.962Z"
-    },
-    {
-      "key": "secitem::mv522enj::status::1791965407189",
-      "type": "status",
-      "article": "Pharmacies & Cosmetics",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "Status: Not Started → Done",
-      "assignedAt": "2026-10-14T08:10:07.189Z"
-    },
-    {
-      "key": "secitem::mv522enk::status::1791965413963",
-      "type": "status",
-      "article": "Electronics",
-      "member": "Amal",
-      "lob": "Revamp",
-      "summary": "Status: Not Started → In Progress",
-      "assignedAt": "2026-10-14T08:10:13.963Z"
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-10-14T08:09:57.166Z"
     }
   ],
   "mgGroups": [],
@@ -1020,7 +1002,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T08:10:14.752Z",
+  "lastUpdated": "2026-10-14T08:11:30.112Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
