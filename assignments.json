@@ -185,6 +185,18 @@
       "deadline": "",
       "priority": "",
       "status": "Not Started"
+    },
+    {
+      "id": "mv7tnk12",
+      "article": "test article",
+      "lob": "default",
+      "member": "Anoud",
+      "journey": "General",
+      "ar": 1,
+      "en": 1,
+      "deadline": "",
+      "priority": "low",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -761,27 +773,6 @@
       "assignedAt": "2026-10-13T08:54:44.097Z"
     },
     {
-      "id": "mv6gi1va",
-      "key": "test article::default::latest",
-      "type": "assignment",
-      "article": "test article",
-      "member": "Anoud",
-      "lob": "Default",
-      "summary": "👤 Assigned to Anoud",
-      "assignedAt": "2026-10-13T09:06:15.670Z"
-    },
-    {
-      "id": "mv6gi1vf",
-      "key": "test article::default::assign",
-      "type": "assign",
-      "article": "test article",
-      "member": "Anoud",
-      "lob": "Default (LC)",
-      "summary": "👤 Assigned to Anoud",
-      "startDate": "",
-      "assignedAt": "2026-10-13T09:06:15.675Z"
-    },
-    {
       "id": "mv6gjagq_mv6gjagq",
       "key": "secitem::mv6gjagq::assign::1791882433466",
       "type": "assignment",
@@ -934,6 +925,27 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-13T16:31:19.041Z"
+    },
+    {
+      "id": "mv7tnk12",
+      "key": "test article::default::latest",
+      "type": "assignment",
+      "article": "test article",
+      "member": "Anoud",
+      "lob": "Default",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-10-14T08:02:13.670Z"
+    },
+    {
+      "id": "mv7tnk1d",
+      "key": "test article::default::assign",
+      "type": "assign",
+      "article": "test article",
+      "member": "Anoud",
+      "lob": "Default (LC)",
+      "summary": "👤 Assigned to Anoud Â· 📅 Start: 2026-10-14",
+      "startDate": "2026-10-14",
+      "assignedAt": "2026-10-14T08:02:13.681Z"
     }
   ],
   "mgGroups": [],
@@ -963,7 +975,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-13T16:31:19.687Z",
+  "lastUpdated": "2026-10-14T08:02:14.179Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
