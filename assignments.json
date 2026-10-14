@@ -400,7 +400,7 @@
         {
           "id": "mv522enl",
           "text": "LC | Menu Discrepancy All Verticals",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Dalia",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -1009,6 +1009,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-14T08:39:15.844Z"
+    },
+    {
+      "key": "secitem::mv522enl::status::1791968746225",
+      "type": "status",
+      "article": "LC | Menu Discrepancy All Verticals",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-14T09:05:46.225Z"
     }
   ],
   "mgGroups": [],
@@ -1038,7 +1047,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T08:39:16.181Z",
+  "lastUpdated": "2026-10-14T09:06:39.609Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
