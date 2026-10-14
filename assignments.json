@@ -390,7 +390,7 @@
         {
           "id": "mv522enk",
           "text": "Electronics",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Amal",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -991,6 +991,15 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-14T08:13:41.338Z"
+    },
+    {
+      "key": "secitem::mv522enk::status::1791965629364",
+      "type": "status",
+      "article": "Electronics",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-14T08:13:49.364Z"
     }
   ],
   "mgGroups": [],
@@ -1020,7 +1029,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T08:13:41.992Z",
+  "lastUpdated": "2026-10-14T08:13:49.963Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
