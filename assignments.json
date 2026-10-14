@@ -320,7 +320,7 @@
         {
           "id": "mv522end",
           "text": "LC | Spilled, Damaged, or Broken (Item/Order)",
-          "status": "In Progress",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "",
           "endDate": "",
@@ -1036,6 +1036,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-14T09:20:44.834Z"
+    },
+    {
+      "key": "secitem::mv522end::status::1791970286123",
+      "type": "status",
+      "article": "LC | Spilled, Damaged, or Broken (Item/Order)",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "Status: In Progress → Done",
+      "assignedAt": "2026-10-14T09:31:26.123Z"
     }
   ],
   "mgGroups": [],
@@ -1065,7 +1074,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T09:20:45.596Z",
+  "lastUpdated": "2026-10-14T09:31:26.801Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
