@@ -411,8 +411,8 @@
           "id": "mv522enn",
           "text": "LC | Wrong Weight",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Dalia",
+          "startDate": "2026-10-14",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1018,6 +1018,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-14T09:05:46.225Z"
+    },
+    {
+      "key": "secitem::mv522enn::assign::1791969263626",
+      "type": "assignment",
+      "article": "LC | Wrong Weight",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-10-14T09:14:23.626Z"
     }
   ],
   "mgGroups": [],
@@ -1047,7 +1056,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T09:06:39.609Z",
+  "lastUpdated": "2026-10-14T09:14:24.148Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
