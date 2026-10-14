@@ -410,7 +410,7 @@
         {
           "id": "mv522enn",
           "text": "LC | Wrong Weight",
-          "status": "In Progress",
+          "status": "Done",
           "assignee": "Dalia",
           "startDate": "2026-10-14",
           "endDate": "",
@@ -1063,6 +1063,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → In Progress",
       "assignedAt": "2026-10-14T09:38:25.580Z"
+    },
+    {
+      "key": "secitem::mv522enn::status::1791971341993",
+      "type": "status",
+      "article": "LC | Wrong Weight",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: In Progress → Done",
+      "assignedAt": "2026-10-14T09:49:01.993Z"
     }
   ],
   "mgGroups": [],
@@ -1092,7 +1101,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T09:38:26.045Z",
+  "lastUpdated": "2026-10-14T09:49:02.467Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
