@@ -3538,7 +3538,11 @@ if(notifType==='assignment'&&nm){
 
 var _emailQueue=[],_emailBusy=false;
 function _sendDashboardEmail(emailAddr,subj,bodyText,member){
- _emailQueue.push({to:emailAddr,subject:subj,body:bodyText,member:member||emailAddr});
+ var art=String(subj||'').replace(/^[^:]+:\s*/,'');
+ var actor=_actingManagerName()||(typeof _myTasksMember==='function'?_myTasksMember():'')||'A team member';
+ var when=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+ var full='By: '+actor+'\nWhen: '+when+'\n\nWhat happened:\n'+bodyText;
+ _emailQueue.push({to:emailAddr,subject:'Dashboard update: '+art,body:full,member:member||emailAddr});
  _drainEmailQueue();
 }
 function _drainEmailQueue(){
@@ -3552,7 +3556,7 @@ function _drainEmailQueue(){
   setTimeout(function(){_emailBusy=false;_drainEmailQueue();},600);
  };
  // Sequential sends (parallel POSTs to Apps Script get dropped); credentials lets the Google session through the domain-restricted script
- fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body+'\n\n— Gamification Team',senderName:'Gamification Team',name:'Gamification Team',fromName:'Gamification Team'}),mode:'no-cors',credentials:'include',keepalive:false})
+ fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body+'\n\n— Gamification Team',senderName:'Gamification Team',name:'Gamification Team',fromName:'Gamification Team',from:'gamification.team@talabat.com',replyTo:'gamification.team@talabat.com'}),mode:'no-cors',credentials:'include',keepalive:false})
   .then(function(){done(true);})
   .catch(function(){done(false);});
 }function saveAssignAndNotify(){
