@@ -481,8 +481,8 @@
           "id": "mv522env",
           "text": "LC | Unavailable Menu Item",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Dalia",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1144,6 +1144,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-15T08:59:39.668Z"
+    },
+    {
+      "key": "secitem::mv522env::assign::1792054792831",
+      "type": "assignment",
+      "article": "LC | Unavailable Menu Item",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-10-15T08:59:52.831Z"
     }
   ],
   "mgGroups": [],
@@ -1173,7 +1182,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T08:59:40.340Z",
+  "lastUpdated": "2026-10-15T08:59:53.502Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
