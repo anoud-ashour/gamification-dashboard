@@ -501,8 +501,8 @@
           "id": "mv522eny",
           "text": "LC | Refund Query/Follow-UP",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Anoud",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1162,6 +1162,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Amal",
       "assignedAt": "2026-10-15T09:00:03.221Z"
+    },
+    {
+      "key": "secitem::mv522eny::assign::1792054814686",
+      "type": "assignment",
+      "article": "LC | Refund Query/Follow-UP",
+      "member": "Anoud",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-10-15T09:00:14.686Z"
     }
   ],
   "mgGroups": [],
@@ -1191,7 +1200,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T09:00:03.887Z",
+  "lastUpdated": "2026-10-15T09:00:15.332Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
