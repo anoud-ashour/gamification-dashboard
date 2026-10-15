@@ -431,8 +431,8 @@
           "id": "mv522enp",
           "text": "LC |  Number Modification",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Dalia",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1081,6 +1081,15 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-14T14:28:54.429Z"
+    },
+    {
+      "key": "secitem::mv522enp::assign::1792051633178",
+      "type": "assignment",
+      "article": "LC |  Number Modification",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-10-15T08:07:13.178Z"
     }
   ],
   "mgGroups": [],
@@ -1110,7 +1119,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-14T14:28:54.968Z",
+  "lastUpdated": "2026-10-15T08:07:13.908Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
