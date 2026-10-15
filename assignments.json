@@ -470,7 +470,7 @@
         {
           "id": "mv522enu",
           "text": "LC | Address Modification",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Amal",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -1180,6 +1180,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-15T09:03:47.279Z"
+    },
+    {
+      "key": "secitem::mv522enu::status::1792055040210",
+      "type": "status",
+      "article": "LC | Address Modification",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-15T09:04:00.210Z"
     }
   ],
   "mgGroups": [],
@@ -1209,7 +1218,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T09:03:47.825Z",
+  "lastUpdated": "2026-10-15T09:04:00.724Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
