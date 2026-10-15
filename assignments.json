@@ -440,7 +440,7 @@
         {
           "id": "mv522enr",
           "text": "LC | Special Instructions",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Dalia",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -1117,6 +1117,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-15T08:45:12.290Z"
+    },
+    {
+      "key": "secitem::mv522enr::status::1792053920272",
+      "type": "status",
+      "article": "LC | Special Instructions",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-15T08:45:20.273Z"
     }
   ],
   "mgGroups": [],
@@ -1146,7 +1155,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T08:45:12.766Z",
+  "lastUpdated": "2026-10-15T08:45:20.860Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
