@@ -420,7 +420,7 @@
         {
           "id": "mv522eno",
           "text": "LC | \"Order status successful -",
-          "status": "In Progress",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "2026-10-14",
           "endDate": "",
@@ -450,7 +450,7 @@
         {
           "id": "mv522ens",
           "text": "LC | Modify Order",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -500,7 +500,7 @@
         {
           "id": "mv522eny",
           "text": "LC | Refund Query/Follow-UP",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Anoud",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -1263,7 +1263,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T13:47:20.357Z",
+  "lastUpdated": "2026-10-15T13:47:48.192Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
