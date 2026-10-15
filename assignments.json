@@ -490,7 +490,7 @@
         {
           "id": "mv522enw",
           "text": "LC | Money Issue",
-          "status": "Not Started",
+          "status": "In Progress",
           "assignee": "Amal",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -1189,6 +1189,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-15T09:04:00.210Z"
+    },
+    {
+      "key": "secitem::mv522enw::status::1792055049508",
+      "type": "status",
+      "article": "LC | Money Issue",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → In Progress",
+      "assignedAt": "2026-10-15T09:04:09.508Z"
     }
   ],
   "mgGroups": [],
@@ -1218,7 +1227,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T09:04:00.724Z",
+  "lastUpdated": "2026-10-15T09:04:10.066Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
