@@ -511,7 +511,7 @@
           "id": "mv522eo0",
           "text": "LC | Missing/Incorrect Invoice",
           "status": "Not Started",
-          "assignee": "",
+          "assignee": "Amal",
           "startDate": "",
           "endDate": "",
           "lang": "Both",
@@ -1216,6 +1216,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-15T09:54:11.156Z"
+    },
+    {
+      "key": "secitem::mv522eo0::assign::1792072031559",
+      "type": "assignment",
+      "article": "LC | Missing/Incorrect Invoice",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-15T13:47:11.559Z"
     }
   ],
   "mgGroups": [],
@@ -1245,7 +1254,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T09:54:11.668Z",
+  "lastUpdated": "2026-10-15T13:47:12.243Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
