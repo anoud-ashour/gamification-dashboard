@@ -461,8 +461,8 @@
           "id": "mv522ent",
           "text": "LC | Modify Delivery Time",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Amal",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1126,6 +1126,15 @@
       "lob": "Revamp",
       "summary": "Status: Not Started → Done",
       "assignedAt": "2026-10-15T08:45:20.273Z"
+    },
+    {
+      "key": "secitem::mv522ent::assign::1792054770925",
+      "type": "assignment",
+      "article": "LC | Modify Delivery Time",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-15T08:59:30.925Z"
     }
   ],
   "mgGroups": [],
@@ -1155,7 +1164,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T08:45:20.860Z",
+  "lastUpdated": "2026-10-15T08:59:31.484Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
