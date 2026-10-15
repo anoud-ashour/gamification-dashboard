@@ -480,7 +480,7 @@
         {
           "id": "mv522env",
           "text": "LC | Unavailable Menu Item",
-          "status": "Not Started",
+          "status": "Done",
           "assignee": "Dalia",
           "startDate": "2026-10-15",
           "endDate": "",
@@ -1207,6 +1207,15 @@
       "lob": "Revamp",
       "summary": "Status: In Progress → Done",
       "assignedAt": "2026-10-15T09:17:18.004Z"
+    },
+    {
+      "key": "secitem::mv522env::status::1792058051156",
+      "type": "status",
+      "article": "LC | Unavailable Menu Item",
+      "member": "Dalia",
+      "lob": "Revamp",
+      "summary": "Status: Not Started → Done",
+      "assignedAt": "2026-10-15T09:54:11.156Z"
     }
   ],
   "mgGroups": [],
@@ -1236,7 +1245,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T09:17:18.541Z",
+  "lastUpdated": "2026-10-15T09:54:11.668Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
