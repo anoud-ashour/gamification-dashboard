@@ -491,8 +491,8 @@
           "id": "mv522enw",
           "text": "LC | Money Issue",
           "status": "Not Started",
-          "assignee": "",
-          "startDate": "",
+          "assignee": "Amal",
+          "startDate": "2026-10-15",
           "endDate": "",
           "lang": "Both",
           "lob": ""
@@ -1153,6 +1153,15 @@
       "lob": "Revamp",
       "summary": "👤 Assigned to Dalia",
       "assignedAt": "2026-10-15T08:59:52.831Z"
+    },
+    {
+      "key": "secitem::mv522enw::assign::1792054803221",
+      "type": "assignment",
+      "article": "LC | Money Issue",
+      "member": "Amal",
+      "lob": "Revamp",
+      "summary": "👤 Assigned to Amal",
+      "assignedAt": "2026-10-15T09:00:03.221Z"
     }
   ],
   "mgGroups": [],
@@ -1182,7 +1191,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-10-15T08:59:53.502Z",
+  "lastUpdated": "2026-10-15T09:00:03.887Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
