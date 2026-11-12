@@ -185,6 +185,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mwdparl8",
+      "article": "test test 3",
+      "lob": "ctab-msvm85fr",
+      "member": "Dalia",
+      "journey": "test",
+      "ar": 1,
+      "en": 1,
+      "deadline": "2026-11-14",
+      "priority": "low",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -1299,6 +1311,27 @@
       "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
       "startDate": "2026-11-12",
       "assignedAt": "2026-11-12T15:16:22.091Z"
+    },
+    {
+      "id": "mwdparl8",
+      "key": "test test 3::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "test test 3",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-11-12T15:26:37.868Z"
+    },
+    {
+      "id": "mwdparle",
+      "key": "test test 3::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "test test 3",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-13",
+      "startDate": "2026-11-13",
+      "assignedAt": "2026-11-12T15:26:37.874Z"
     }
   ],
   "mgGroups": [],
@@ -1328,7 +1361,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T15:26:12.341Z",
+  "lastUpdated": "2026-11-12T15:26:38.560Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -1630,6 +1663,12 @@
       "assignEmailSentTo": "dalia",
       "doneEmailSent": true,
       "assignedAt": "2026-11-12T14:23:22.155Z"
+    },
+    "test test 3::ctab-msvm85fr": {
+      "assignedByEmail": "anoud.shehata@talabat.com",
+      "assignEmailSentTo": "dalia",
+      "doneEmailSent": false,
+      "assignedAt": "2026-11-12T15:26:37.869Z"
     }
   }
 }
