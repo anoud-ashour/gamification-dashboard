@@ -93,8 +93,15 @@
       "status": "In Progress"
     },
     "test::ctab-msvm85fr": {
+      "member": "Dalia",
       "ar": 1,
       "en": 1,
+      "startDate": "",
+      "deadline": "",
+      "reviewer": "",
+      "priority": "",
+      "notes": "",
+      "updatedAt": "2026-11-12T15:15:17.682Z",
       "status": "Done"
     }
   },
@@ -1256,16 +1263,6 @@
       "assignedAt": "2026-11-12T10:00:30.527Z"
     },
     {
-      "id": "mwdn1esq",
-      "key": "test::ctab-msvm85fr::latest",
-      "type": "assignment",
-      "article": "test",
-      "member": "Dalia",
-      "lob": "New LC",
-      "summary": "👤 Assigned to Dalia",
-      "assignedAt": "2026-11-12T14:23:22.154Z"
-    },
-    {
       "id": "mwdn1esx",
       "key": "test::ctab-msvm85fr::assign",
       "type": "assign",
@@ -1285,6 +1282,24 @@
       "lob": "ctab-msvm85fr",
       "summary": "📋 Status: Not Started → Done",
       "assignedAt": "2026-11-12T14:29:04.082Z"
+    },
+    {
+      "id": "mwdow6r6",
+      "key": "test::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "test",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia",
+      "startDate": "",
+      "assignedAt": "2026-11-12T15:15:17.682Z"
+    },
+    {
+      "key": "::notif::1794496517686",
+      "msg": "Assignment updated for Dalia: test",
+      "ts": "2026-11-12T15:15:17.687Z",
+      "member": "Dalia",
+      "read": false
     }
   ],
   "mgGroups": [],
@@ -1314,7 +1329,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T15:15:05.217Z",
+  "lastUpdated": "2026-11-12T15:15:18.293Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -1390,6 +1405,11 @@
         "ts": "2026-11-12T14:29:04.083Z",
         "user": "Dalia",
         "summary": "Status: Not Started → Done"
+      },
+      {
+        "ts": "2026-11-12T15:15:17.683Z",
+        "user": "Coordinator",
+        "summary": "👤 Assigned to Dalia"
       }
     ]
   },
