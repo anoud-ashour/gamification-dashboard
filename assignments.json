@@ -178,18 +178,6 @@
       "priority": "",
       "status": "Done",
       "notes": ""
-    },
-    {
-      "id": "mwdovuaz",
-      "article": "test",
-      "lob": "ctab-msvm85fr",
-      "member": "Dalia",
-      "journey": "test",
-      "ar": 1,
-      "en": 1,
-      "deadline": "2026-11-13",
-      "priority": "medium",
-      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -1268,6 +1256,27 @@
       "assignedAt": "2026-11-12T10:00:30.527Z"
     },
     {
+      "id": "mwdn1esq",
+      "key": "test::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "test",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-11-12T14:23:22.154Z"
+    },
+    {
+      "id": "mwdn1esx",
+      "key": "test::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "test",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
+      "startDate": "2026-11-12",
+      "assignedAt": "2026-11-12T14:23:22.161Z"
+    },
+    {
       "id": "mwdn8qmq",
       "key": "test::ctab-msvm85fr::status::1794493744082",
       "type": "status",
@@ -1276,27 +1285,6 @@
       "lob": "ctab-msvm85fr",
       "summary": "📋 Status: Not Started → Done",
       "assignedAt": "2026-11-12T14:29:04.082Z"
-    },
-    {
-      "id": "mwdovuaz",
-      "key": "test::ctab-msvm85fr::latest",
-      "type": "assignment",
-      "article": "test",
-      "member": "Dalia",
-      "lob": "New LC",
-      "summary": "👤 Assigned to Dalia",
-      "assignedAt": "2026-11-12T15:15:01.547Z"
-    },
-    {
-      "id": "mwdovub1",
-      "key": "test::ctab-msvm85fr::assign",
-      "type": "assign",
-      "article": "test",
-      "member": "Dalia",
-      "lob": "New LC",
-      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
-      "startDate": "2026-11-12",
-      "assignedAt": "2026-11-12T15:15:01.549Z"
     }
   ],
   "mgGroups": [],
@@ -1326,7 +1314,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T15:15:02.062Z",
+  "lastUpdated": "2026-11-12T15:15:05.217Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
