@@ -173,18 +173,6 @@
       "priority": "",
       "status": "Done",
       "notes": ""
-    },
-    {
-      "id": "mwddndbu",
-      "article": "test test",
-      "lob": "ctab-msvm85fr",
-      "member": "Anoud",
-      "journey": "test",
-      "ar": 1,
-      "en": 1,
-      "deadline": "2026-11-13",
-      "priority": "high",
-      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -1311,7 +1299,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T10:00:34.112Z",
+  "lastUpdated": "2026-11-12T13:20:09.983Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
