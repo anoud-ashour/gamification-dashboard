@@ -185,6 +185,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mwdoxkg7",
+      "article": "test",
+      "lob": "ctab-msvm85fr",
+      "member": "Dalia",
+      "journey": "test",
+      "ar": 1,
+      "en": 1,
+      "deadline": "2026-11-13",
+      "priority": "high",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -1263,17 +1275,6 @@
       "assignedAt": "2026-11-12T10:00:30.527Z"
     },
     {
-      "id": "mwdn1esx",
-      "key": "test::ctab-msvm85fr::assign",
-      "type": "assign",
-      "article": "test",
-      "member": "Dalia",
-      "lob": "New LC",
-      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
-      "startDate": "2026-11-12",
-      "assignedAt": "2026-11-12T14:23:22.161Z"
-    },
-    {
       "id": "mwdn8qmq",
       "key": "test::ctab-msvm85fr::status::1794493744082",
       "type": "status",
@@ -1284,22 +1285,32 @@
       "assignedAt": "2026-11-12T14:29:04.082Z"
     },
     {
-      "id": "mwdow6r6",
+      "key": "::notif::1794496517686",
+      "msg": "Assignment updated for Dalia: test",
+      "ts": "2026-11-12T15:15:17.687Z",
+      "member": "Dalia",
+      "read": false
+    },
+    {
+      "id": "mwdoxkg7",
       "key": "test::ctab-msvm85fr::latest",
       "type": "assignment",
       "article": "test",
       "member": "Dalia",
       "lob": "New LC",
       "summary": "👤 Assigned to Dalia",
-      "startDate": "",
-      "assignedAt": "2026-11-12T15:15:17.682Z"
+      "assignedAt": "2026-11-12T15:16:22.087Z"
     },
     {
-      "key": "::notif::1794496517686",
-      "msg": "Assignment updated for Dalia: test",
-      "ts": "2026-11-12T15:15:17.687Z",
+      "id": "mwdoxkgb",
+      "key": "test::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "test",
       "member": "Dalia",
-      "read": false
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
+      "startDate": "2026-11-12",
+      "assignedAt": "2026-11-12T15:16:22.091Z"
     }
   ],
   "mgGroups": [],
@@ -1329,7 +1340,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T15:15:21.700Z",
+  "lastUpdated": "2026-11-12T15:16:22.636Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
