@@ -10,6 +10,9 @@ var TEAM_FROM = 'gamification.team@talabat.com';
 var TEAM_NAME = 'Gamification Dashboard';
 var ALLOWED_DOMAIN = '@talabat.com'; // only send to company addresses
 var MANAGERS = ['anoud.shehata@talabat.com', 'rawan.kamaleldin@talabat.com']; // allowed Reply-To addresses
+// true = refuse to send unless From is TEAM_FROM. While the team mailbox does not exist yet, keep false:
+// mail is then sent from the deploying account but shows the name TEAM_NAME (set true once TEAM_FROM is set up).
+var REQUIRE_TEAM_SENDER = false;
 
 function doPost(e) {
   try {
@@ -34,7 +37,7 @@ function doPost(e) {
     var me = String(Session.getEffectiveUser().getEmail() || '').toLowerCase();
     if (me !== TEAM_FROM) {
       if (GmailApp.getAliases().indexOf(TEAM_FROM) > -1) opts.from = TEAM_FROM;
-      else return ContentService.createTextOutput('error: sender ' + TEAM_FROM + ' is not set up (see header of this script)');
+      else if (REQUIRE_TEAM_SENDER) return ContentService.createTextOutput('error: sender ' + TEAM_FROM + ' is not set up (see header of this script)');
     }
 
     GmailApp.sendEmail(to, subject, body, opts);
@@ -60,4 +63,9 @@ function testEmails() {
 
 function doGet() {
   return ContentService.createTextOutput('Gamification mailer is running');
+}
+
+// Run once: removes every time trigger in this project (old weekly / notification email jobs).
+function removeOldTriggers() {
+  ScriptApp.getProjectTriggers().forEach(function (t) { ScriptApp.deleteTrigger(t); });
 }
