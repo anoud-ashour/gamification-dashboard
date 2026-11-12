@@ -562,6 +562,10 @@ function goToArticle(lobId,artName){
  var grid=$('ov-lob-grid');if(grid)grid.style.display='grid';
  setTab(lobId);
 }
+function _openDeepLink(){
+ var a=new URLSearchParams(location.search).get('article');
+ if(a&&!window._deepLinkDone){window._deepLinkDone=1;goToNotifArticle(a);}
+}
 function goToNotifArticle(article,lobHint){
  var panel=$('notif-panel');if(panel)panel.style.display='none';
  article=article||'';
@@ -2762,6 +2766,7 @@ async function load(){
  try{_refreshLiveData(_assignReady);}catch(e){}
  try{await _assignReady;}catch(e){}
  try{build();renderCustomTabNav();}catch(e){}
+ try{_openDeepLink();}catch(e){}
 }
 async function _refreshLiveData(assignReady){
  var liveData=null,liveProg=null,liveTabs=null;
@@ -3467,6 +3472,12 @@ function _fmtEmailDate(d){
  return isNaN(t.getTime())?String(d):t.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 }
 function _dashboardUrl(){return location.href.split('#')[0].split('?')[0];}
+function _articleUrl(a){return _dashboardUrl()+'?article='+encodeURIComponent(a||'');}
+// The other manager(s) from EMAIL_CONFIG.managers, put on CC (never the main recipient).
+function _ccOtherManagers(mainTo,exceptEmail){
+ var skip={};[mainTo,exceptEmail].forEach(function(e){if(e)skip[String(e).toLowerCase().trim()]=1;});
+ return _FIXED_MANAGER_EMAILS.filter(function(e){return !skip[e];});
+}
 function _emailHtml(preheader,title,intro,rows,url){
  var trs=rows.map(function(r,i){
   return '<tr><td style="padding:10px 0;'+(i?'border-top:1px solid #F0E6DC;':'')+'font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#8A8A8A;width:38%;vertical-align:top;">'+_escHtml(r[0])+'</td>'
@@ -3501,9 +3512,9 @@ function _notifyAssignment(nm,artTitle,startDate,deadline,flagKey){
  f.assignedAt=new Date().toISOString();
  var mgr=_nameFromEmail(f.assignedByEmail)||'A manager';
  var ad=_fmtEmailDate(f.assignedAt);
- var text='Hi '+nm+',\n\nA new article was assigned to you.\n\nArticle: '+artTitle+'\nAssigned date: '+ad+'\nAssigned by: '+mgr+'\n\nOpen Dashboard: '+_dashboardUrl()+'\n\n— '+EMAIL_CONFIG.senderName;
- var html=_emailHtml('Assigned by '+mgr+': '+artTitle,'New article assigned','Hi '+_escHtml(nm)+',<br>A new article was assigned to you.',[['Article',artTitle],['Assigned date',ad],['Assigned by',mgr]],_dashboardUrl());
- _sendDashboardEmail({to:to,toName:nm,replyTo:f.assignedByEmail,subject:'New article assigned: '+artTitle,text:text,html:html,eventKey:'assign::'+flagKey+'::'+who});
+ var text='Hi '+nm+',\n\nA new article was assigned to you.\n\nArticle: '+artTitle+'\nAssigned date: '+ad+'\nAssigned by: '+mgr+'\n\nOpen Dashboard: '+_articleUrl(artTitle)+'\n\n— '+EMAIL_CONFIG.senderName;
+ var html=_emailHtml('Assigned by '+mgr+': '+artTitle,'New article assigned','Hi '+_escHtml(nm)+',<br>A new article was assigned to you.',[['Article',artTitle],['Assigned date',ad],['Assigned by',mgr]],_articleUrl(artTitle));
+ _sendDashboardEmail({to:to,toName:nm,replyTo:f.assignedByEmail,cc:_ccOtherManagers(to,f.assignedByEmail),subject:'New article assigned: '+artTitle,text:text,html:html,eventKey:'assign::'+flagKey+'::'+who});
 }
 // Email 2: article completed -> the manager who assigned it. Sent once, first time it becomes Done.
 function _notifyDone(flagKey,memberName,artTitle){
@@ -3511,18 +3522,18 @@ function _notifyDone(flagKey,memberName,artTitle){
  var f=_emailFlags(flagKey);
  if(f.doneEmailSent)return;
  // Assigning manager if recorded; older articles without a record fall back to all managers.
- var recipients=f.assignedByEmail?[f.assignedByEmail]:_allManagerEmails();
- if(!recipients.length)return;
+ var mgrEmail=f.assignedByEmail||_FIXED_MANAGER_EMAILS[0];
+ if(!mgrEmail)return;
  f.doneEmailSent=true;
  var member=memberName||'A team member';
- recipients.forEach(function(mgrEmail){
+ {
  var mgr=_nameFromEmail(mgrEmail)||'there';
  var when=_fmtEmailDate(new Date().toISOString());
  var assigned=f.assignedAt?_fmtEmailDate(f.assignedAt):'Not recorded';
- var text='Hi '+mgr+',\n\n'+member+' marked an article as Done.\n\nTeam member: '+member+'\nArticle: '+artTitle+'\nDone date: '+when+'\nAssigned date: '+assigned+'\n\nOpen Dashboard: '+_dashboardUrl()+'\n\n— '+EMAIL_CONFIG.senderName;
- var html=_emailHtml(member+' finished: '+artTitle,'Article done','Hi '+_escHtml(mgr)+',<br><strong>'+_escHtml(member)+'</strong> marked an article as Done.',[['Team member',member],['Article',artTitle],['Done date',when],['Assigned date',assigned]],_dashboardUrl());
- _sendDashboardEmail({to:mgrEmail,toName:mgr,subject:'Article completed: '+artTitle+' by '+member,text:text,html:html,eventKey:'done::'+flagKey+'::'+mgrEmail});
- });
+ var text='Hi '+mgr+',\n\n'+member+' marked an article as Done.\n\nTeam member: '+member+'\nArticle: '+artTitle+'\nDone date: '+when+'\nAssigned date: '+assigned+'\n\nOpen Dashboard: '+_articleUrl(artTitle)+'\n\n— '+EMAIL_CONFIG.senderName;
+ var html=_emailHtml(member+' finished: '+artTitle,'Article done','Hi '+_escHtml(mgr)+',<br><strong>'+_escHtml(member)+'</strong> marked an article as Done.',[['Team member',member],['Article',artTitle],['Done date',when],['Assigned date',assigned]],_articleUrl(artTitle));
+ _sendDashboardEmail({to:mgrEmail,toName:mgr,cc:_ccOtherManagers(mgrEmail,''),subject:'Article completed: '+artTitle+' by '+member,text:text,html:html,eventKey:'done::'+flagKey+'::'+mgrEmail});
+ }
 }
 function saveAssign(){membersBuilt=false;
  if(!_mgrEditKey)return;
@@ -3597,7 +3608,7 @@ function _sendDashboardEmail(job){
  // Only entry point for sending mail. Same eventKey is never queued twice in one page session.
  if(!job||!job.to||!job.eventKey||_emailSeen[job.eventKey])return;
  _emailSeen[job.eventKey]=1;
- _emailQueue.push({to:job.to,subject:job.subject,body:job.text,html:job.html,eventKey:job.eventKey,replyTo:job.replyTo||'',member:job.toName||job.to});
+ _emailQueue.push({to:job.to,subject:job.subject,body:job.text,html:job.html,eventKey:job.eventKey,replyTo:job.replyTo||'',cc:(job.cc||[]).join(','),member:job.toName||job.to});
  _drainEmailQueue();
 }
 function _drainEmailQueue(){
@@ -3611,7 +3622,7 @@ function _drainEmailQueue(){
   setTimeout(function(){_emailBusy=false;_drainEmailQueue();},600);
  };
  // Sequential sends (parallel POSTs to Apps Script get dropped); credentials lets the Google session through the domain-restricted script
- fetch(EMAIL_CONFIG.mailerUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body,htmlBody:job.html,eventKey:job.eventKey,replyTo:job.replyTo||''}),mode:'no-cors',credentials:'include',keepalive:false})
+ fetch(EMAIL_CONFIG.mailerUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body,htmlBody:job.html,eventKey:job.eventKey,replyTo:job.replyTo||'',cc:job.cc||''}),mode:'no-cors',credentials:'include',keepalive:false})
   .then(function(){done(true);})
   .catch(function(){done(false);});
 }function saveAssignAndNotify(){

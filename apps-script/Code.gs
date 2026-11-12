@@ -27,6 +27,10 @@ function doPost(e) {
     var replyTo = String(d.replyTo || '').trim().toLowerCase();
     opts.replyTo = MANAGERS.indexOf(replyTo) > -1 ? replyTo : TEAM_FROM;
     if (d.htmlBody) opts.htmlBody = String(d.htmlBody);
+    // CC: only managers from MANAGERS, never the main recipient.
+    var cc = String(d.cc || '').split(',').map(function (x) { return x.trim().toLowerCase(); })
+      .filter(function (x) { return MANAGERS.indexOf(x) > -1 && x !== to; });
+    if (cc.length) opts.cc = cc.join(',');
 
     // Server-side duplicate guard: the same eventKey is only sent once per 6 hours.
     var cache = CacheService.getScriptCache();
@@ -37,7 +41,7 @@ function doPost(e) {
     var me = String(Session.getEffectiveUser().getEmail() || '').toLowerCase();
     if (me !== TEAM_FROM && REQUIRE_TEAM_SENDER) return ContentService.createTextOutput('error: script must run as ' + TEAM_FROM);
 
-    MailApp.sendEmail({ to: to, subject: subject, body: body, htmlBody: opts.htmlBody, name: opts.name, replyTo: opts.replyTo });
+    MailApp.sendEmail({ to: to, subject: subject, body: body, htmlBody: opts.htmlBody, name: opts.name, replyTo: opts.replyTo, cc: opts.cc });
     if (cacheKey) cache.put(cacheKey, '1', 21600);
     return ContentService.createTextOutput('ok');
   } catch (err) {
