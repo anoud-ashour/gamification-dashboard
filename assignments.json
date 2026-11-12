@@ -173,6 +173,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mwddndbu",
+      "article": "test test",
+      "lob": "ctab-msvm85fr",
+      "member": "Anoud",
+      "journey": "test",
+      "ar": 1,
+      "en": 1,
+      "deadline": "2026-11-13",
+      "priority": "high",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -1249,6 +1261,27 @@
       "summary": "👤 Assigned to Anoud Â· 📅 Start: 2026-11-12",
       "startDate": "2026-11-12",
       "assignedAt": "2026-11-12T09:49:02.682Z"
+    },
+    {
+      "id": "mwddndbu",
+      "key": "test test::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "test test",
+      "member": "Anoud",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Anoud",
+      "assignedAt": "2026-11-12T10:00:30.522Z"
+    },
+    {
+      "id": "mwddndbz",
+      "key": "test test::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "test test",
+      "member": "Anoud",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Anoud Â· 📅 Start: 2026-11-12",
+      "startDate": "2026-11-12",
+      "assignedAt": "2026-11-12T10:00:30.527Z"
     }
   ],
   "mgGroups": [],
@@ -1278,7 +1311,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T09:59:49.874Z",
+  "lastUpdated": "2026-11-12T10:00:30.996Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
