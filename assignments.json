@@ -185,6 +185,18 @@
       "priority": "",
       "status": "Done",
       "notes": ""
+    },
+    {
+      "id": "mwdpgtz2",
+      "article": "TEST YA DALIA",
+      "lob": "ctab-msvm85fr",
+      "member": "Dalia",
+      "journey": "General",
+      "ar": 1,
+      "en": 1,
+      "deadline": "2026-11-15",
+      "priority": "",
+      "status": "Not Started"
     }
   ],
   "customTabs": [
@@ -1320,6 +1332,27 @@
       "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-13",
       "startDate": "2026-11-13",
       "assignedAt": "2026-11-12T15:26:37.874Z"
+    },
+    {
+      "id": "mwdpgtz2",
+      "key": "test ya dalia::ctab-msvm85fr::latest",
+      "type": "assignment",
+      "article": "TEST YA DALIA",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia",
+      "assignedAt": "2026-11-12T15:31:20.894Z"
+    },
+    {
+      "id": "mwdpgtzd",
+      "key": "test ya dalia::ctab-msvm85fr::assign",
+      "type": "assign",
+      "article": "TEST YA DALIA",
+      "member": "Dalia",
+      "lob": "New LC",
+      "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
+      "startDate": "2026-11-12",
+      "assignedAt": "2026-11-12T15:31:20.905Z"
     }
   ],
   "mgGroups": [],
@@ -1349,7 +1382,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T15:28:47.774Z",
+  "lastUpdated": "2026-11-12T15:31:21.472Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -1657,6 +1690,12 @@
       "assignEmailSentTo": "dalia",
       "doneEmailSent": false,
       "assignedAt": "2026-11-12T15:26:37.869Z"
+    },
+    "test ya dalia::ctab-msvm85fr": {
+      "assignedByEmail": "rawan.kamaleldin@talabat.com",
+      "assignEmailSentTo": "dalia",
+      "doneEmailSent": false,
+      "assignedAt": "2026-11-12T15:31:20.896Z"
     }
   }
 }
