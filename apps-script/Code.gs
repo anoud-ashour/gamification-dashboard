@@ -33,14 +33,11 @@ function doPost(e) {
     var cacheKey = d.eventKey ? 'sent:' + Utilities.base64EncodeWebSafe(String(d.eventKey + '|' + to)).slice(0, 240) : '';
     if (cacheKey && cache.get(cacheKey)) return ContentService.createTextOutput('duplicate-skipped');
 
-    // Must go out as TEAM_FROM: either the script runs as that account, or it is a "Send mail as" alias.
+    // Only when REQUIRE_TEAM_SENDER is true: refuse unless the script runs as TEAM_FROM.
     var me = String(Session.getEffectiveUser().getEmail() || '').toLowerCase();
-    if (me !== TEAM_FROM) {
-      if (GmailApp.getAliases().indexOf(TEAM_FROM) > -1) opts.from = TEAM_FROM;
-      else if (REQUIRE_TEAM_SENDER) return ContentService.createTextOutput('error: sender ' + TEAM_FROM + ' is not set up (see header of this script)');
-    }
+    if (me !== TEAM_FROM && REQUIRE_TEAM_SENDER) return ContentService.createTextOutput('error: script must run as ' + TEAM_FROM);
 
-    GmailApp.sendEmail(to, subject, body, opts);
+    MailApp.sendEmail({ to: to, subject: subject, body: body, htmlBody: opts.htmlBody, name: opts.name, replyTo: opts.replyTo });
     if (cacheKey) cache.put(cacheKey, '1', 21600);
     return ContentService.createTextOutput('ok');
   } catch (err) {
@@ -68,4 +65,9 @@ function doGet() {
 // Run once: removes every time trigger in this project (old weekly / notification email jobs).
 function removeOldTriggers() {
   ScriptApp.getProjectTriggers().forEach(function (t) { ScriptApp.deleteTrigger(t); });
+}
+
+// Run once to grant mail permission (no error handling on purpose, so Google shows the consent screen).
+function authorizeMail() {
+  Logger.log('Mail quota left today: ' + MailApp.getRemainingDailyQuota());
 }
