@@ -12,3 +12,5 @@ One-time setup:
 Never commit these values.
 
 The emails are sent as the account used in `clasp login`; the sender address is set by `TEAM_FROM` in `Code.gs`.
+
+Deploys run automatically from GitHub Actions.
