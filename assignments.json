@@ -103,6 +103,11 @@
       "notes": "",
       "updatedAt": "2026-11-12T15:15:17.682Z",
       "status": "Done"
+    },
+    "test ya dalia::ctab-msvm85fr": {
+      "ar": 1,
+      "en": 1,
+      "status": "Done"
     }
   },
   "extra": [
@@ -196,7 +201,7 @@
       "en": 1,
       "deadline": "2026-11-15",
       "priority": "",
-      "status": "Not Started"
+      "status": "Done"
     }
   ],
   "customTabs": [
@@ -1353,6 +1358,16 @@
       "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
       "startDate": "2026-11-12",
       "assignedAt": "2026-11-12T15:31:20.905Z"
+    },
+    {
+      "id": "mwdpkdz1",
+      "key": "test ya dalia::ctab-msvm85fr::status::1794497646781",
+      "type": "status",
+      "article": "TEST YA DALIA",
+      "member": "Dalia",
+      "lob": "ctab-msvm85fr",
+      "summary": "📋 Status: Not Started → Done",
+      "assignedAt": "2026-11-12T15:34:06.781Z"
     }
   ],
   "mgGroups": [],
@@ -1382,7 +1397,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T15:31:24.500Z",
+  "lastUpdated": "2026-11-12T15:34:08.015Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -1463,6 +1478,13 @@
         "ts": "2026-11-12T15:15:17.683Z",
         "user": "Coordinator",
         "summary": "👤 Assigned to Dalia"
+      }
+    ],
+    "test ya dalia::ctab-msvm85fr": [
+      {
+        "ts": "2026-11-12T15:34:06.783Z",
+        "user": "Dalia",
+        "summary": "Status: Not Started → Done"
       }
     ]
   },
@@ -1694,7 +1716,7 @@
     "test ya dalia::ctab-msvm85fr": {
       "assignedByEmail": "rawan.kamaleldin@talabat.com",
       "assignEmailSentTo": "dalia",
-      "doneEmailSent": false,
+      "doneEmailSent": true,
       "assignedAt": "2026-11-12T15:31:20.896Z"
     }
   }
