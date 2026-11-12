@@ -178,18 +178,6 @@
       "priority": "",
       "status": "Done",
       "notes": ""
-    },
-    {
-      "id": "mwdn1esq",
-      "article": "test",
-      "lob": "ctab-msvm85fr",
-      "member": "Dalia",
-      "journey": "test",
-      "ar": 1,
-      "en": 1,
-      "deadline": "2026-11-13",
-      "priority": "high",
-      "status": "Done"
     }
   ],
   "customTabs": [
@@ -1326,7 +1314,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T14:29:04.614Z",
+  "lastUpdated": "2026-11-12T15:14:43.401Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
