@@ -91,6 +91,11 @@
       "ar": 0,
       "en": 0,
       "status": "In Progress"
+    },
+    "test::ctab-msvm85fr": {
+      "ar": 1,
+      "en": 1,
+      "status": "Done"
     }
   },
   "extra": [
@@ -184,7 +189,7 @@
       "en": 1,
       "deadline": "2026-11-13",
       "priority": "high",
-      "status": "Not Started"
+      "status": "Done"
     }
   ],
   "customTabs": [
@@ -1282,6 +1287,16 @@
       "summary": "👤 Assigned to Dalia Â· 📅 Start: 2026-11-12",
       "startDate": "2026-11-12",
       "assignedAt": "2026-11-12T14:23:22.161Z"
+    },
+    {
+      "id": "mwdn8qmq",
+      "key": "test::ctab-msvm85fr::status::1794493744082",
+      "type": "status",
+      "article": "test",
+      "member": "Dalia",
+      "lob": "ctab-msvm85fr",
+      "summary": "📋 Status: Not Started → Done",
+      "assignedAt": "2026-11-12T14:29:04.082Z"
     }
   ],
   "mgGroups": [],
@@ -1311,7 +1326,7 @@
       "hash": "26ba4610cc3f78fbae6164be5035c7a1abf7da915cbde26f6cff8a261b5dd2fa"
     }
   ],
-  "lastUpdated": "2026-11-12T14:23:25.938Z",
+  "lastUpdated": "2026-11-12T14:29:04.614Z",
   "customMGSections": [],
   "shareToken": "85tmj1wf",
   "history": {
@@ -1380,6 +1395,13 @@
         "ts": "2026-08-25T14:17:08.159Z",
         "user": "Coordinator",
         "summary": "👤 Assigned to Amal; 📅 Deadline set: 2026-08-25; 📅 Start date set: 2026-08-24"
+      }
+    ],
+    "test::ctab-msvm85fr": [
+      {
+        "ts": "2026-11-12T14:29:04.083Z",
+        "user": "Dalia",
+        "summary": "Status: Not Started → Done"
       }
     ]
   },
@@ -1599,7 +1621,7 @@
     "test::ctab-msvm85fr": {
       "assignedByEmail": "anoud.shehata@talabat.com",
       "assignEmailSentTo": "dalia",
-      "doneEmailSent": false,
+      "doneEmailSent": true,
       "assignedAt": "2026-11-12T14:23:22.155Z"
     }
   }
