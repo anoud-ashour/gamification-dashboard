@@ -2965,7 +2965,7 @@ async function attemptManagerLogin(){
  var found=mgrs.find(function(m){return m.email.toLowerCase()===email;});
  if(!found&&mgrs.length===0){ASSIGNMENTS.managers=[{email:email,hash:hash}];try{await saveAssignments();}catch(e){}found={email:email,hash:hash};}
  if(found){
-  _managerEmail=email;
+  _managerEmail=email;buildNotifBadge();
   closeManagerLogin();
   _enterManagerMode();
  }else{
@@ -3019,7 +3019,7 @@ function toggleManagerMode(){
 }
 
 function logoutManager(){
- _managerEmail='';managerMode=false;
+ _managerEmail='';managerMode=false;buildNotifBadge();
  var btn=$('mgr-mode-btn');
  if(btn){btn.textContent='👩‍💼 Manager';btn.style.background='none';btn.style.color='#8318d8';btn.style.borderColor='#8318d8';}
  var bar=$('mgr-save-bar');if(bar)bar.style.display='none';document.body.style.paddingBottom='20px';
@@ -3048,7 +3048,7 @@ async function attemptMemberLogin(){
  var match=accounts.find(function(m){return m.email.toLowerCase()===email&&(!m.hash||m.hash===hash);});
  if(!match){var _isManager=(ASSIGNMENTS.managers||[]).some(function(m){return m.email.toLowerCase()===email;});var _emailTaken=accounts.some(function(m){return m.email.toLowerCase()===email;});if(!_isManager&&!_emailTaken){var _na={email:email,hash:hash};ASSIGNMENTS.memberAccounts=(ASSIGNMENTS.memberAccounts||[]);ASSIGNMENTS.memberAccounts.push(_na);match=_na;try{saveAssignments().catch(function(){});}catch(e){}}}
  if(match){
-  _memberEmail=email;memberMode=true;
+  _memberEmail=email;memberMode=true;buildNotifBadge();
   closeMemberLogin();
   if($('exportBtn'))$('exportBtn').style.display='none';
   if($('shareBtn'))$('shareBtn').style.display='none';
@@ -3068,7 +3068,7 @@ async function attemptMemberLogin(){
  }
 }
 function logoutMember(){
- _memberEmail='';memberMode=false;
+ _memberEmail='';memberMode=false;buildNotifBadge();
 
  var bar=$('mem-save-bar');if(bar)bar.style.display='none';
  var hdrBtn=$('mem-login-btn');if(hdrBtn){hdrBtn.textContent='👥 Member';hdrBtn.style.background='var(--card)';hdrBtn.style.color='#0891b2';}
@@ -3114,9 +3114,7 @@ async function saveMemberStatus(){
   if(!ASSIGNMENTS.history)ASSIGNMENTS.history={};
   if(!ASSIGNMENTS.history[_memEditKey])ASSIGNMENTS.history[_memEditKey]=[];
   ASSIGNMENTS.history[_memEditKey].push({ts:new Date().toISOString(),user:_smsMember||'Member',summary:'Status: '+_oldStatus+' → '+_newStatus});
-  _allManagerEmails().forEach(function(mgrEmail){
-   _sendDashboardEmail(mgrEmail,'Status updated: '+_smsArtTitle,(_smsMember||'A member')+' updated "'+_smsArtTitle+'"'+(_smsLobLabel?' ('+_smsLobLabel+')':'')+':\n'+_oldStatus+' → '+_newStatus,_smsMember);
-  });
+  if(_newStatus==='Done'&&_oldStatus!=='Done')_notifyDone(_memEditKey,_smsMember,_smsArtTitle);
  }
  // Sync to ASSIGNMENTS.extra if this is an extra/custom article
  var _mkLast=_memEditKey.lastIndexOf('::');
@@ -3342,18 +3340,23 @@ function _pushNotif(entry){
  ASSIGNMENTS.notifications.push(entry);
 }
 function buildNotifBadge(){
- var notifs=_getNotifs();
- var lastSeen=0;try{lastSeen=parseInt(localStorage.getItem('notif_last_seen')||'0');}catch(e){}
- var unread=notifs.filter(function(n){return new Date(n.assignedAt).getTime()>lastSeen;}).length;
+ var unread=_unreadCount();
  var badge=$('notif-badge');
- if(badge){if(unread>0){badge.style.display='inline-block';badge.textContent=unread;}else{badge.style.display='none';}}
+ if(badge){if(unread>0){badge.style.display='inline-block';badge.textContent=unread>99?'99+':unread;}else{badge.style.display='none';}}
  var btn=$('notifBtn');if(btn)btn.style.borderColor=unread>0?'#FF5900':'var(--border)';
 }
+// Read status is saved per user: gd_notif_read = {userId:{notifId:true}}
+var _READ_KEY='gd_notif_read';
+function _notifUser(){return (_managerEmail||_memberEmail||'guest').toLowerCase();}
+function _notifId(n){return n.key||n.id||'';}
+function _readMap(){try{return JSON.parse(localStorage.getItem(_READ_KEY)||'{}')[_notifUser()]||{};}catch(e){return {};}}
+function _saveReadMap(m){try{var all=JSON.parse(localStorage.getItem(_READ_KEY)||'{}');all[_notifUser()]=m;localStorage.setItem(_READ_KEY,JSON.stringify(all));}catch(e){}}
+function _isRead(n,m){return !!(m||_readMap())[_notifId(n)];}
+function _unreadCount(){var m=_readMap();return _getNotifs().filter(function(n){return !_isRead(n,m);}).length;}
+function markNotifRead(id){var m=_readMap();m[id]=true;_saveReadMap(m);buildNotifBadge();openNotifPanel();}
 function openNotifPanel(){
  var notifs=_getNotifs().slice().sort(function(a,b){return new Date(b.assignedAt||b.ts||0)-new Date(a.assignedAt||a.ts||0);});
- var upd=notifs.map(function(n){var o=Object.assign({},n);o.read=true;return o;});
- _setNotifs(upd);
- buildNotifBadge();
+ var rm=_readMap();
  function fmtDate(d){
   if(!d)return '';
   try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return '';}
@@ -3370,7 +3373,7 @@ function openNotifPanel(){
  }else{
   html+='<div style="max-height:520px;overflow-y:auto">';
   notifs.forEach(function(n){
-   var isNew=!n.read,type=n.type||'',article=n.article||'',member=n.member||'',lob=n.lob||'';
+   var isNew=!_isRead(n,rm),type=n.type||'',article=n.article||'',member=n.member||'',lob=n.lob||'';
    var sum=clean(n.summary||n.msg||''),at=n.assignedAt||n.ts||'',dateStr=fmtDate(at);
    var bc,bg,bBg,bCol,bLabel,icon,title,btn;
    var artSafe=article.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
@@ -3379,7 +3382,7 @@ function openNotifPanel(){
  else if(type==='assignment'||type==='assign'){bc='#3b82f6';bg=isNew?'#f0f7ff':'#fff';bBg='#dbeafe';bCol='#1e3a8a';bLabel='🔵 New Article';icon='📄';title='New Article Assigned';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #3b82f6;border-radius:8px;background:#eff6ff;color:#1d4ed8;cursor:pointer;font-weight:700">📄 Review Article</button>':'';}
  else if(type==='status'){bc='#10b981';bg=isNew?'#f0fdf8':'#fff';bBg='#d1fae5';bCol='#064e3b';bLabel='✅ Status Update';icon='📊';title='Status Updated';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #10b981;border-radius:8px;background:#ecfdf5;color:#047857;cursor:pointer;font-weight:700">📊 View Article</button>':'';}
  else{bc='#e5e7eb';bg=isNew?'#fafafa':'#fff';bBg='#f3f4f6';bCol='#374151';bLabel='📬 Update';icon='🔔';title='Update';btn=article?'<button onclick="goToNotifArticle(\''+artSafe+'\',\''+lobSafe+'\')" style="font-size:11px;padding:5px 14px;border:1.5px solid #9ca3af;border-radius:8px;background:#f9fafb;color:#374151;cursor:pointer;font-weight:700">🔔 View Article</button>':'';}
-   html+='<div style="padding:14px 16px;border-bottom:1px solid #f3f4f6;background:'+bg+';border-left:4px solid '+bc+'">'
+   html+='<div onclick="markNotifRead(\''+_notifId(n).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')" style="cursor:pointer;padding:14px 16px;border-bottom:1px solid #f3f4f6;background:'+bg+';border-left:4px solid '+bc+'">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">'
     +'<div style="display:flex;align-items:center;gap:6px">'
     +'<span style="font-size:15px">'+icon+'</span>'
@@ -3399,6 +3402,7 @@ function openNotifPanel(){
   html+='</div>';
  }
  html+='<div style="padding:8px 16px;border-top:1px solid #e5e7eb;text-align:right;background:#fafafa">'
+  +'<button onclick="markNotifsRead()" style="font-size:11px;padding:4px 10px;margin-right:6px;border:1px solid #FF5900;border-radius:6px;background:#fff;color:#FF5900;cursor:pointer;font-weight:700">Mark all as read</button>'
   +'<button onclick="_setNotifs([]);buildNotifBadge();openNotifPanel();" style="font-size:11px;padding:4px 10px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;color:#9ca3af;cursor:pointer">Clear all</button>'
   +'</div>';
  p.innerHTML=html;
@@ -3408,10 +3412,8 @@ function closeNotifPanel(){
  $('notif-overlay').style.display='none';$('notif-panel').style.display='none';
 }
 function markNotifsRead(){
- var now=Date.now();
- try{localStorage.setItem('notif_last_seen',now.toString());}catch(e){}
- buildNotifBadge();
- openNotifPanel();
+ var m=_readMap();_getNotifs().forEach(function(n){m[_notifId(n)]=true;});
+ _saveReadMap(m);buildNotifBadge();openNotifPanel();
 }
 
 function _emailForMember(nm){
@@ -3426,7 +3428,13 @@ function _emailForMember(nm){
  });
  return acct?acct.email:'';
 }
-var _FIXED_MANAGER_EMAILS=['rawan.kamaleldin@talabat.com','anoud.shehata@talabat.com'];
+// ── EMAIL CONFIG (single place). The "From" address is fixed inside the Apps Script (TEAM_FROM), never set here. ──
+var EMAIL_CONFIG={
+ mailerUrl:'https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',
+ senderName:'Gamification Team',
+ managers:{'anoud.shehata@talabat.com':'Anoud','rawan.kamaleldin@talabat.com':'Rawan'}
+};
+var _FIXED_MANAGER_EMAILS=Object.keys(EMAIL_CONFIG.managers);
 function _allManagerEmails(){
  var seen={},out=[];
  _FIXED_MANAGER_EMAILS.concat((ASSIGNMENTS.managers||[]).map(function(m){return m&&m.email;})).forEach(function(e){
@@ -3434,36 +3442,86 @@ function _allManagerEmails(){
  });
  return out;
 }
-function _notifyChange(nm,artTitle,lobLabel,changes){
- var _mgrName=_actingManagerName();
- var _byLine=_mgrName?(' by '+_mgrName):'';
- var txt=changes.map(function(c){return String(c).replace(/<br>/g,'\n');}).join('\n');
- var body='"'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+' was updated'+_byLine+(nm?' (member: '+nm+')':'')+':\n'+txt;
- var sent={};
- var mem=nm?_emailForMember(nm):'';
- if(mem){sent[mem.toLowerCase()]=1;_sendDashboardEmail(mem,'Article updated: '+artTitle,'Hi '+nm+',\n\n'+body,nm);}
- _allManagerEmails().forEach(function(e){if(sent[e])return;sent[e]=1;_sendDashboardEmail(e,'Article updated: '+artTitle,body,nm||'manager');});
-}
 function _actingManagerName(){
  if(!managerMode||!_managerEmail)return '';
- var pfx=_managerEmail.split('@')[0].split('.')[0];
+ return _nameFromEmail(_managerEmail);
+}
+function _nameFromEmail(email){
+ var cfg=EMAIL_CONFIG.managers[String(email||'').toLowerCase().trim()];if(cfg)return cfg;
+ var pfx=String(email||'').split('@')[0].split('.')[0];
  return pfx?pfx.charAt(0).toUpperCase()+pfx.slice(1):'';
 }
-function _notifyAssignment(nm,artTitle,lobLabel,deadline,priority,notes){
- if(!nm)return;
- var _dl=deadline?('\nDeadline: '+deadline):'';
- var _pr=(priority&&priority!=='None')?('\nPriority: '+priority):'';
- var _nt=notes?('\nNotes: '+notes):'';
- var _mgrName=_actingManagerName();
- var _byLine=_mgrName?(' by '+_mgrName):'';
- var _memberEmailAddr=_emailForMember(nm);
- if(_memberEmailAddr){
-  _sendDashboardEmail(_memberEmailAddr,'New article assigned: '+artTitle,'Hi '+nm+',\n\nYou have been assigned to "'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+_byLine+'.'+_dl+_pr+_nt+'\n\nPlease check the dashboard for details.',nm);
- }else{
-  showToast('⚠️ '+nm+' has no registered email yet — add them via Manage Members to enable email alerts',4500);
- }
- _allManagerEmails().forEach(function(mgrEmail){
-  _sendDashboardEmail(mgrEmail,'Article assigned: '+artTitle,'"'+artTitle+'"'+(lobLabel?' ('+lobLabel+')':'')+' has been assigned to '+nm+_byLine+'.'+_dl+_pr+_nt,nm);
+// ── Emails: only 2 types are ever sent ──────────────────────────────
+// 1) Article assigned  -> member      2) Article completed -> assigning manager
+// Duplicate guard: per-article flags in ASSIGNMENTS.emailFlags[articleKey] (saved with the data):
+//   assignEmailSentTo (member the assign email already went to), doneEmailSent, assignedByEmail
+function _emailFlags(key){
+ if(!ASSIGNMENTS.emailFlags)ASSIGNMENTS.emailFlags={};
+ if(!ASSIGNMENTS.emailFlags[key])ASSIGNMENTS.emailFlags[key]={};
+ return ASSIGNMENTS.emailFlags[key];
+}
+function _escHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function _fmtEmailDate(d){
+ if(!d)return '—';
+ var t=new Date(/^\d{4}-\d{2}-\d{2}$/.test(d)?d+'T00:00:00':d);
+ return isNaN(t.getTime())?String(d):t.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function _dashboardUrl(){return location.href.split('#')[0].split('?')[0];}
+function _emailHtml(preheader,title,intro,rows,url){
+ var trs=rows.map(function(r,i){
+  return '<tr><td style="padding:10px 0;'+(i?'border-top:1px solid #F0E6DC;':'')+'font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#8A8A8A;width:38%;vertical-align:top;">'+_escHtml(r[0])+'</td>'
+   +'<td style="padding:10px 0;'+(i?'border-top:1px solid #F0E6DC;':'')+'font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1F1F1F;font-weight:bold;vertical-align:top;">'+_escHtml(r[1])+'</td></tr>';
+ }).join('');
+ return '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+  +'<body style="margin:0;padding:0;background:#F6F6F6;">'
+  +'<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#F6F6F6;">'+_escHtml(preheader)+'</div>'
+  +'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F6F6F6;"><tr><td align="center" style="padding:24px 12px;">'
+  +'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#FFFFFF;border-radius:12px;border-top:6px solid #FF5A00;">'
+  +'<tr><td style="padding:28px 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;">'
+  +'<div style="font-size:12px;font-weight:bold;letter-spacing:1px;color:#FF5A00;text-transform:uppercase;">Gamification Dashboard</div>'
+  +'<div style="font-size:24px;line-height:30px;font-weight:bold;color:#1F1F1F;padding-top:8px;">'+_escHtml(title)+'</div></td></tr>'
+  +'<tr><td style="padding:8px 28px 4px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;color:#333333;">'+intro+'</td></tr>'
+  +'<tr><td style="padding:16px 28px 8px 28px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FFF7F0;border:1px solid #FFD9BF;border-radius:10px;"><tr><td style="padding:8px 18px;">'
+  +'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'+trs+'</table></td></tr></table></td></tr>'
+  +'<tr><td align="center" style="padding:20px 28px 28px 28px;"><a href="'+_escHtml(url)+'" style="display:inline-block;background:#FF5A00;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:8px;">Open Dashboard</a></td></tr>'
+  +'</table>'
+  +'<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#9A9A9A;padding-top:14px;">Gamification Team</div>'
+  +'</td></tr></table></body></html>';
+}
+// Email 1: article assigned -> member. Sent once per (article, member).
+function _notifyAssignment(nm,artTitle,startDate,deadline,flagKey){
+ if(!nm||!flagKey)return;
+ var f=_emailFlags(flagKey);
+ var who=nm.toLowerCase().trim();
+ f.assignedByEmail=_managerEmail||f.assignedByEmail||'';
+ if(f.assignEmailSentTo===who)return;
+ var to=_emailForMember(nm);
+ if(!to){showToast('⚠️ '+nm+' has no registered email yet — add them via Manage Members to enable email alerts',4500);return;}
+ f.assignEmailSentTo=who;f.doneEmailSent=false;
+ f.assignedAt=new Date().toISOString();
+ var mgr=_nameFromEmail(f.assignedByEmail)||'A manager';
+ var ad=_fmtEmailDate(f.assignedAt);
+ var text='Hi '+nm+',\n\nA new article was assigned to you.\n\nArticle: '+artTitle+'\nAssigned date: '+ad+'\nAssigned by: '+mgr+'\n\nOpen Dashboard: '+_dashboardUrl()+'\n\n— '+EMAIL_CONFIG.senderName;
+ var html=_emailHtml('Assigned by '+mgr+': '+artTitle,'New article assigned','Hi '+_escHtml(nm)+',<br>A new article was assigned to you.',[['Article',artTitle],['Assigned date',ad],['Assigned by',mgr]],_dashboardUrl());
+ _sendDashboardEmail({to:to,toName:nm,replyTo:f.assignedByEmail,subject:'New article assigned: '+artTitle,text:text,html:html,eventKey:'assign::'+flagKey+'::'+who});
+}
+// Email 2: article completed -> the manager who assigned it. Sent once, first time it becomes Done.
+function _notifyDone(flagKey,memberName,artTitle){
+ if(!flagKey)return;
+ var f=_emailFlags(flagKey);
+ if(f.doneEmailSent)return;
+ // Assigning manager if recorded; older articles without a record fall back to all managers.
+ var recipients=f.assignedByEmail?[f.assignedByEmail]:_allManagerEmails();
+ if(!recipients.length)return;
+ f.doneEmailSent=true;
+ var member=memberName||'A team member';
+ recipients.forEach(function(mgrEmail){
+ var mgr=_nameFromEmail(mgrEmail)||'there';
+ var when=_fmtEmailDate(new Date().toISOString());
+ var assigned=f.assignedAt?_fmtEmailDate(f.assignedAt):'Not recorded';
+ var text='Hi '+mgr+',\n\n'+member+' marked an article as Done.\n\nTeam member: '+member+'\nArticle: '+artTitle+'\nDone date: '+when+'\nAssigned date: '+assigned+'\n\nOpen Dashboard: '+_dashboardUrl()+'\n\n— '+EMAIL_CONFIG.senderName;
+ var html=_emailHtml(member+' finished: '+artTitle,'Article done','Hi '+_escHtml(mgr)+',<br><strong>'+_escHtml(member)+'</strong> marked an article as Done.',[['Team member',member],['Article',artTitle],['Done date',when],['Assigned date',assigned]],_dashboardUrl());
+ _sendDashboardEmail({to:mgrEmail,toName:mgr,subject:'Article completed: '+artTitle+' by '+member,text:text,html:html,eventKey:'done::'+flagKey+'::'+mgrEmail});
  });
 }
 function saveAssign(){membersBuilt=false;
@@ -3504,10 +3562,8 @@ if(changes.length>0){_pushNotif({id:Date.now().toString(36),key:_mgrEditKey+'::l
 if(!ASSIGNMENTS.history)ASSIGNMENTS.history={};
 if(!ASSIGNMENTS.history[_mgrEditKey])ASSIGNMENTS.history[_mgrEditKey]=[];
 ASSIGNMENTS.history[_mgrEditKey].push({ts:new Date().toISOString(),user:_myTasksMember()||'Coordinator',summary:changes.join('; ')});}
-if(notifType==='assignment'&&nm){
- _notifyAssignment(nm,artTitle,lobLabel,ov.deadline,ov.priority,ov.notes);
-}else if(changes.length>0){
- _notifyChange(nm,artTitle,lobLabel,changes);
+if(notifType==='assignment'&&nm&&nm!==om){
+ _notifyAssignment(nm,artTitle,ov.startDate,ov.deadline,_mgrEditKey);
 }
 })(); saveAssignments();
  // Save sub-category assignment
@@ -3536,13 +3592,12 @@ if(notifType==='assignment'&&nm){
 
 
 
-var _emailQueue=[],_emailBusy=false;
-function _sendDashboardEmail(emailAddr,subj,bodyText,member){
- var art=String(subj||'').replace(/^[^:]+:\s*/,'');
- var actor=_actingManagerName()||(typeof _myTasksMember==='function'?_myTasksMember():'')||'A team member';
- var when=new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
- var full='By: '+actor+'\nWhen: '+when+'\n\nWhat happened:\n'+bodyText;
- _emailQueue.push({to:emailAddr,subject:'Dashboard update: '+art,body:full,member:member||emailAddr});
+var _emailQueue=[],_emailBusy=false,_emailSeen={};
+function _sendDashboardEmail(job){
+ // Only entry point for sending mail. Same eventKey is never queued twice in one page session.
+ if(!job||!job.to||!job.eventKey||_emailSeen[job.eventKey])return;
+ _emailSeen[job.eventKey]=1;
+ _emailQueue.push({to:job.to,subject:job.subject,body:job.text,html:job.html,eventKey:job.eventKey,replyTo:job.replyTo||'',member:job.toName||job.to});
  _drainEmailQueue();
 }
 function _drainEmailQueue(){
@@ -3556,7 +3611,7 @@ function _drainEmailQueue(){
   setTimeout(function(){_emailBusy=false;_drainEmailQueue();},600);
  };
  // Sequential sends (parallel POSTs to Apps Script get dropped); credentials lets the Google session through the domain-restricted script
- fetch('https://script.google.com/a/macros/talabat.com/s/AKfycbwqxscMKPpki2L631ngEDVFDSGI4nIykcBAsBZR8R-2Bye6uN9xl7Sxzm8g-IR_WYSNjQ/exec',{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body+'\n\n— Gamification Team',senderName:'Gamification Team',name:'Gamification Team',fromName:'Gamification Team',from:'gamification.team@talabat.com',replyTo:'gamification.team@talabat.com'}),mode:'no-cors',credentials:'include',keepalive:false})
+ fetch(EMAIL_CONFIG.mailerUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({to:job.to,subject:job.subject,body:job.body,htmlBody:job.html,eventKey:job.eventKey,replyTo:job.replyTo||''}),mode:'no-cors',credentials:'include',keepalive:false})
   .then(function(){done(true);})
   .catch(function(){done(false);});
 }function saveAssignAndNotify(){
@@ -3573,6 +3628,7 @@ function _drainEmailQueue(){
 }function clearAssign(){
  if(!_mgrEditKey)return;
  delete ASSIGNMENTS.overrides[_mgrEditKey];
+ if(ASSIGNMENTS.emailFlags)delete ASSIGNMENTS.emailFlags[_mgrEditKey];
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
  closeAssignModal();
@@ -3619,7 +3675,7 @@ function saveNewArticle(){
   var _naLobLabel={'default':'Default','tpro':'TPRO','tkt':'Ticketing','uni':'Universal'}[lob]||(ASSIGNMENTS.customTabs||[]).filter(function(ct){return 'ctab-'+ct.id===lob;}).map(function(ct){return ct.name;})[0]||lob;
   _pushNotif({id:Date.now().toString(36),key:name.toLowerCase().trim()+'::'+lob+'::latest',type:'assignment',article:name,member:newMember,lob:_naLobLabel,summary:'👤 Assigned to '+newMember,assignedAt:new Date().toISOString()});
   buildNotifBadge();
-  _notifyAssignment(newMember,name,_naLobLabel,$('addart-deadline').value,$('addart-priority').value,'');
+  _notifyAssignment(newMember,name,'',$('addart-deadline').value,name.toLowerCase().trim()+'::'+lob);
  }
  _assignPending=true;
  var ind=$('mgr-pending');if(ind)ind.style.display='inline';
@@ -4127,17 +4183,17 @@ function saveNewSecItem(){
  var lang=$('secitem-lang-sel').value||'Both';var lob=($('secitem-lob-inp').value||'').trim();
  var sec=(ASSIGNMENTS.customSections||[]).find(function(s){return s.id===_addSecItemTarget;});if(!sec)return;
  if(!sec.items)sec.items=[];
- var oldAssignee='';
+ var oldAssignee='';var _newItemId=Date.now().toString(36);
  if(_editSecItemId){
   var item=sec.items.find(function(it){return it.id===_editSecItemId;});
   if(item){oldAssignee=item.assignee||'';item.text=text;item.assignee=assignee;item.status=status;item.startDate=startDate;item.endDate=endDate;item.lang=lang;item.lob=lob;}
  }else{
-  sec.items.push({id:Date.now().toString(36),text:text,status:status,assignee:assignee,startDate:startDate,endDate:endDate,lang:lang,lob:lob});
+  sec.items.push({id:_newItemId,text:text,status:status,assignee:assignee,startDate:startDate,endDate:endDate,lang:lang,lob:lob});
  }
  if(assignee&&assignee!==oldAssignee){
   _pushNotif({key:'secitem::'+(_editSecItemId||text)+'::assign::'+Date.now(),type:'assignment',article:text,member:assignee,lob:sec.name,summary:'👤 Assigned to '+assignee,assignedAt:new Date().toISOString()});
   buildNotifBadge();
-  _notifyAssignment(assignee,text,sec.name,endDate,'','');
+  _notifyAssignment(assignee,text,startDate,endDate,'secitem::'+(_editSecItemId||_newItemId));
   try{saveAssignments().catch(function(){});}catch(e){}
  }
  _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
@@ -4250,7 +4306,7 @@ function setSecItemStatus(secId,itemId,newStatus){
   var oldStatus=item.status||'Not Started';
   item.status=newStatus;
   try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+newStatus,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
-  try{var _secMgr=_actingManagerName();_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(_secMgr||item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+newStatus,item.assignee);});}catch(e){}
+  if(!managerMode&&newStatus==='Done'&&oldStatus!=='Done')_notifyDone('secitem::'+itemId,item.assignee,item.text);
   _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
   try{saveAssignments().catch(function(){});}catch(e){}
   try{buildUpdateProjectsProgressSummary();}catch(e){}
@@ -4262,7 +4318,7 @@ function cycleSecItemStatus(secId,itemId){
   var oldStatus=item.status||'Not Started';
   item.status=_secNextStatus(item.status);
   try{_pushNotif({key:'secitem::'+itemId+'::status::'+Date.now(),type:'status',article:item.text,member:item.assignee||'',lob:sec.name,summary:'Status: '+oldStatus+' → '+item.status,assignedAt:new Date().toISOString()});buildNotifBadge();}catch(e){}
-  try{var _secMgr2=_actingManagerName();_allManagerEmails().forEach(function(mgrEmail){_sendDashboardEmail(mgrEmail,'Status updated: '+item.text,(_secMgr2||item.assignee||'Someone')+' updated "'+item.text+'"'+(sec.name?' ('+sec.name+')':'')+':\n'+oldStatus+' → '+item.status,item.assignee);});}catch(e){}
+  if(!managerMode&&item.status==='Done'&&oldStatus!=='Done')_notifyDone('secitem::'+itemId,item.assignee,item.text);
   _assignPending=true;var ind=$('mgr-pending');if(ind)ind.style.display='inline';
   try{saveAssignments().catch(function(){});}catch(e){}
   try{buildUpdateProjectsProgressSummary();}catch(e){}
